@@ -16,7 +16,15 @@ const bcrypt = require('bcryptjs');
 const controller = {
     // Initial page is the sign up page to indicate that the user cannot go to the main website without first making an account or logging in.
     getInitial: function(req, res) {
-        res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'});
+        if (req.session.email == undefined)
+            res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'});
+        else
+        {
+            db.findMany(Movie, {}, 'm_name m_image m_id' , function(result){ // 
+                var transaction = result;
+                res.render('index', {layout: '/layouts/layout.hbs', movie:transaction, title: "Main - Filmworks"});
+            });
+        }
     },
 
     // checks if the account is already in the database through the email
@@ -37,7 +45,8 @@ const controller = {
 
     //gets the register page 
     getRegister: function (req, res) {
-        res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'});
+        if (req.session.email == undefined)
+            res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'});
     },
 
     // adds the account to the database once it has been registered
