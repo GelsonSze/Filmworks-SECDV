@@ -14,6 +14,8 @@ This is a movie reservation app, by the name of FILMWORKS, which allows the user
 4. hbs
 5. bcrypt
 6. dotenv
+7. mongoose 
+8. save
 
 ## Website Details
 * Name of Website: Filmworks
@@ -39,8 +41,8 @@ LOCAL INSTRUCTIONS
  * Email: julianne@gmail.com
  * Password: programmer
 
- * Email: hello_world@gmail.com
- * Password: helloworld123
+ * Email: sherilyn@gmail.com
+ * Password: programming
 
 
 3. If not, one can also register one's own account manually.
