@@ -25,8 +25,9 @@ This is a movie reservation app, by the name of FILMWORKS, which allows the user
 ## Guide
 In order to run the code. Please follow the steps.
 LOCAL INSTRUCTIONS
-1. Go to the necessary folder and run node movies.js in CMD/terminal
-2. If one wishes to use random test data for accounts, go to the necessary folder and run node users.js in CMD/terminal.
+1. Run npm install to download all dependencies.
+2. Go to the necessary folder and run node movies.js in CMD/terminal
+3. If one wishes to use random test data for accounts, go to the necessary folder and run node users.js in CMD/terminal.
  - NOTE: The passwords listed in database are hashed, but if you know the actual password, it would still work.
  - Sample Accounts if one wishes to use it
  * Email: hello_world@gmail.com
@@ -45,10 +46,10 @@ LOCAL INSTRUCTIONS
  * Password: programming
 
 
-3. If not, one can also register one's own account manually.
-4. Run node index.js to open the website
-5. Go to your browser of choice and type localhost:3000 to enter the main page
-6. Sign up or login in order to start buying movie tickets.
+4. If not, one can also register one's own account manually.
+5. Run node index.js to open the website
+6. Go to your browser of choice and type localhost:3000 to enter the main page
+7. Sign up or login in order to start buying movie tickets.
 
 HEROKU INSTRUCTIONS
 1. Go to https://ccapdevheroku.herokuapp.com to access the website
