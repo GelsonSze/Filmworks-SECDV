@@ -1,20 +1,20 @@
-#CCAPDEV PHASE 2 AND 3 Submission and Details
-##Group
+# CCAPDEV PHASE 2 AND 3 Submission and Details
+## Group
 Members:
-*Ng, Sherilyn Kaye
-*Vizmanos, Julianne Andrea
+* Ng, Sherilyn Kaye
+* Vizmanos, Julianne Andrea
 
-##Overview
+## Overview
 This is a movie reservation app, by the name of FILMWORKS, which allows the user to select from the list of movies and buy tickets to be brought to a cinema in order to watch the movie. It allows users to select from different dates, timeslots, and number of tickets for the specific movie that the user wishes to watch. It also allows the user to see previously purchased movie tickets and shows whether the movie ticket date has already passed or not. This allows the user, if one wishes, to keep a copy of the ticket as a memento or also allows the user to take note of whether one still has time to go to the cinema and watch the indicated movie. The purchasing of movie tickets is done by selecting the quantity, timeslot, specific movie and adding it to cart and checking out.  The user is also expected to input a card number in order to have the movie tickets added to one's account. However, for safety purposes, the website would not be recording any card details and would just verify whether the card number inputed has the same length as a normal credit card. Actual transactions with actual payment would also not be simulated due to the constraints of this project. 
 
 
 
-##Website Details
-*Name of Website: Filmworks
-*Number of Movies Available: 10 Different Movies
+## Website Details
+* Name of Website: Filmworks
+* Number of Movies Available: 10 Different Movies
 
 
-##Guide
+## Guide
 In order to run the code. Please follow the steps.
 LOCAL INSTRUCTIONS
 1. Go to the necessary folder and run node movies.js in CMD/terminal
@@ -50,5 +50,5 @@ HEROKU INSTRUCTIONS
 
 
 
-##IMPORTANT NOTICE
+## IMPORTANT NOTICE
 The movies used in this application belong to their respective owners and these movies were only selected for simulating the website.
