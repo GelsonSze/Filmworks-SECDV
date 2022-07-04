@@ -1,0 +1,137 @@
+/*
+PHASE 1 
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+*/
+*{
+    margin: 0;
+    padding:0;
+    box-sizing: border-box;
+}
+@font-face {
+    font-family:"Zing Rust Base";
+    src:url(../fonts/zing.rust-demo-base.otf);
+}
+@font-face {
+    font-family:"Intro Rust";
+    src:url(../fonts/IntroHeadR-Base.otf);
+}
+@font-face {
+    font-family:"Cheque";
+    src:url(../fonts/Cheque-Regular.otf);
+}
+@font-face {
+    font-family:"Intro Rust Base";
+    src:url(../fonts/introrust-base.otf);
+}
+@font-face {
+    font-family:"Oswald";
+    src:url(../fonts/Oswald.ttf);
+}
+@font-face {
+    font-family:"RobotoCondensed";
+    src:url(../fonts/RobotoCondensed-Regular.ttf);
+}
+@font-face {
+    font-family:"SourceCodePro";
+    src:url(../fonts/SourceCodePro.ttf);
+}
+@font-face {
+    font-family:"RadioCanada";
+    src:url(../fonts/RadioCanada.ttf);
+}
+.curtain{
+    padding-left: 5%;
+    background-image: url("../images/curtain2.png");
+    
+}
+.normal1{
+    display: flex;
+    color:black;
+    font-family: "Zing Rust Base";
+    font-size: 70px;
+    padding-top: 40px;
+}
+.normal2{
+    display: flex;
+    font-family:"Oswald";
+    font-size: 25px;
+    color:black;
+    margin-bottom: 40px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background-color: #c1e2ff;
+    max-width: 360px;
+    justify-content: center;
+}
+.normal3 {
+    clear: both;
+    top:40px;
+    margin-left:40px;
+    color:black;
+    font-family: "Zing Rust Base";
+    font-size: 45px;
+}
+#normal4 {
+    top:40px;
+    margin-left:40px;
+    margin-bottom: 3%;
+    color:slategrey;
+    font-family: "Zing Rust Base";
+    font-size: 38px;
+}
+.premiere1{
+    margin: 30px 20px 40px 50px;
+    width:200px;
+    height:290px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+.premiere2{
+    margin: 30px 20px 40px 50px;
+    width:200px;
+    height:290px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+.premiere1:hover{
+    transform: scale(1.1);
+    filter: brightness(120%);
+}
+.premiere2:hover{
+    transform: scale(1.1);
+    filter: brightness(50%);
+}
+.deleteAccount {
+    float: right;
+    font-family:"Oswald";
+    font-size: 25px;
+    border-radius: 5px;
+    background-color: #a00909;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 20px;
+    margin-right: 70px;
+}
+.deleteAccount:hover{
+    transform: scale(1.1);
+}
+.movieTicket{
+    float:left;
+    margin: 4% 5% 3% 5%;
+    width:14%;
+    height:43%;
+    border: 5px solid white;
+    transition: 0.5s;
+}
+.movieTicket:hover{
+    background-color: black;
+    filter: brightness(20%);
+    transform: scale(1.2);
+    display: block;
+    cursor:pointer;
+}

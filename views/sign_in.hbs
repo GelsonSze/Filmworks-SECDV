@@ -1,0 +1,21 @@
+<!--
+PHASE 2 & 3
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+-->
+ <div class = "sign_inform">
+                <!--<img src = "/images/icons/cameraleft.png" class = "icons">-->
+                <form id = "loginform" action = "/login" method = "post" enctype="multipart/form-data">
+                    <h2 class = "divh2">SIGN IN</h2>
+                    <label for="email" class = "normal"><b>Email</b></label>
+                    <input type="email" id = "l_email" autocomplete = "off" placeholder="Enter email address" name="l_email" required>
+                
+                    <label for="password" class = "normal"><b>Password</b></label>
+                    <input type="password" id = "l_password" maxlength="20" autocomplete = "off" placeholder="Enter Password" name="l_password" required>
+                    <a id = "link" href = "/register">No account? Click here to register.</a>
+                    <p id = "error">{{error}}</p>
+                    <input type="submit" id = "login" value = "Login">
+                </form>
+</div>

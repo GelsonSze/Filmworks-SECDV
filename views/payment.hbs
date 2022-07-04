@@ -1,0 +1,38 @@
+<!--
+PHASE 2 & 3
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+-->
+                <div class = "cardform">
+                    <form id = "paymentform" action = "/payment" method = "post" enctype="multipart/form-data">
+                        <img src = "../images/icons/credit-card.png" id = "slate">
+                        <h2 class = "normal1">PAYMENT METHOD</h2>
+                        <br><br>
+                        <h4 class = "card"><center>PAYMENT OPTIONS:</center></h4>
+                        <!--Insert images of possible cards here-->
+                        <img src = "../images/icons/mastercard.jpg" class = "cardoptions">
+                        <img src = "../images/icons/visa.jpg" class = "cardoptions">
+                        <img src = "../images/icons/jcb.png" class = "cardoptions">
+                        <div id = "general">
+                            <label class = "normal">Card Number:</label>
+                            <input type="text" name = "cardnum" minlength="16" maxlength="16" placeholder="Enter card number" id="cardnum" required>
+                        
+                       
+                            <label class = "normal">Name in Card:</label>
+                            <input type="text" placeholder="Enter full name" id="fullname" required>
+                        
+
+                            <label class = "normal">Expiration(YYYY/MM):</label>
+                            <input type="text" name = "expiration" placeholder="Enter expiration(yyyy/mm)" id="expiration" required>
+
+                            <label class = "normal">CVV:</label>
+                            <input type="text" minlength="3" maxlength="3" placeholder="Enter CVV" id="cvv" required>
+                            <p id = "error">{{error}}<p></p>
+
+                            <input type="submit" id = "pay" value = "Confirm">
+                        <div>
+                        </a>
+                    </form>
+                <div>

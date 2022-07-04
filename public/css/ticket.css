@@ -1,0 +1,116 @@
+/*
+PHASE 1 
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+
+*/
+*{
+    margin: 0;
+    padding:0;
+    box-sizing: border-box;
+}
+@font-face {
+    font-family:"Zing Rust Base";
+    src:url(../fonts/zing.rust-demo-base.otf);
+}
+@font-face {
+    font-family:"Intro Rust";
+    src:url(../fonts/IntroHeadR-Base.otf);
+}
+@font-face {
+    font-family:"Cheque";
+    src:url(../fonts/Cheque-Regular.otf);
+}
+@font-face {
+    font-family:"Intro Rust Base";
+    src:url(../fonts/introrust-base.otf);
+}
+@font-face {
+    font-family:"Oswald";
+    src:url(../fonts/Oswald.ttf);
+}
+@font-face {
+    font-family:"RobotoCondensed";
+    src:url(../fonts/RobotoCondensed-Regular.ttf);
+}
+@font-face {
+    font-family:"SourceCodePro";
+    src:url(../fonts/SourceCodePro.ttf);
+}
+@font-face {
+    font-family:"RadioCanada";
+    src:url(../fonts/RadioCanada.ttf);
+}
+.poster{
+    float: left;
+    margin: 50px 20px 0px 100px;
+    width:200px;
+    height:290px;
+    border: 5px solid white;
+    transition: 0.5s;
+}
+.normal4{
+    color: white;
+    font-family: "Zing Rust Base";
+    font-size: 50px;
+    margin-left: 350px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.normal5{
+    color: white;
+    font-family: 'SourceCodePro';
+    font-size: 25px;
+    margin-left: 350px;
+}
+#wBackground2{
+    background: white;
+    height: 100%;
+    margin-bottom: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+}
+#wBackground2::after{
+    content: "";
+    clear: both;
+    display: table;
+}
+.synopsis{
+    color: black;
+    font-family: 'RadioCanada';
+    font-size: 20px;
+    padding-top: 25px;
+    margin-top: 25px;
+    margin-left: 350px;
+    margin-right: 50px;
+    text-align: justify;
+}
+.synopbody{
+    color: black;
+    font-family: 'RadioCanada';
+    font-size: 18px;
+    padding-top: 15px;
+    margin-left: 350px;
+    margin-right: 50px;
+    text-align: justify;
+    text-indent: 55px;
+}
+.movieInfo{
+    padding: 20px;
+    width: 100%;
+    position: relative;
+    font-family: 'Zing Rust Base';
+    margin-top: 5%;
+    margin-left: 10%;
+}
+.ticketInfo{
+    font-size: 35px;
+    margin-top: -15px;
+    margin-bottom: 15px;
+}
+.username, .name, .ticketQuantity, .ticketTime{
+    font-size: 25px;
+    margin-bottom: 15px;
+}

@@ -1,0 +1,64 @@
+/*
+PHASE 1 
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+
+*/
+*{
+    margin: 0;
+    padding:0;
+    box-sizing: border-box;
+}
+@font-face {
+    font-family:"Zing Rust Base";
+    src:url(../fonts/zing.rust-demo-base.otf);
+}
+@font-face {
+    font-family:"Intro Rust";
+    src:url(../fonts/IntroHeadR-Base.otf);
+}
+@font-face {
+    font-family:"Cheque";
+    src:url(../fonts/Cheque-Regular.otf);
+}
+@font-face {
+    font-family:"Intro Rust Base";
+    src:url(../fonts/introrust-base.otf);
+}
+@font-face {
+    font-family:"Oswald";
+    src:url(../fonts/Oswald.ttf);
+}
+@font-face {
+    font-family:"RobotoCondensed";
+    src:url(../fonts/RobotoCondensed-Regular.ttf);
+}
+@font-face {
+    font-family:"SourceCodePro";
+    src:url(../fonts/SourceCodePro.ttf);
+}
+@font-face {
+    font-family:"RadioCanada";
+    src:url(../fonts/RadioCanada.ttf);
+}
+body{
+    background-color: #071841;
+}
+a{
+    padding-top: 7px;
+    font-size: 17px;
+}
+.curtain{
+    background-image: url("../images/curtain.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    position:fixed;
+    top:7.5%;
+    right:0px;
+    bottom:0px;
+    left:0px;
+    overflow-y:scroll;
+    
+}

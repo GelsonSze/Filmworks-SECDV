@@ -1,0 +1,17 @@
+<!--
+PHASE 2 & 3
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+-->
+            <div class = "slideshow"> <!--Contains the slideshow part-->          
+                <img id = "feature"> 
+    		    <script defer type="text/javascript" src="../javascript/main.js"></script>
+            </div>
+            <script src = "main.js"></script>
+            <h2 id = "descriptor">FEATURED MOVIES</h2>
+            
+            {{#each movie}}
+                {{> front}}
+            {{/each}}

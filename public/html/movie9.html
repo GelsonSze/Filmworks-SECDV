@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+PHASE 1 
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+-->
+
+<head>
+    <link rel="icon" href="../images/icons/logo.png">
+    <title>Wonder Woman | Filmworks</title>
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+    <link rel="stylesheet" type="text/css" href="../css/movie.css">
+    <script type="text/javascript" src="../javascript/movie.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <script defer src="../javascript/jquery-3.6.0.min.js"></script>
+    <script src="../javascript/general.js"></script>
+</head>
+
+<body>
+    <div>
+        <a href = "index.html"><img src = "../images/icons/logo.png" id = "logo"></a>
+        <h2 id = "title">FILMWORKS</h2>
+        <form>
+            <input type="button" name="searchbutton" id="searchbtn" value = "SEARCH" onclick = "searchMovie()">
+            <input type="text" name="search" id="searchmovie" placeholder = "Enter Movie Name">
+        </form>
+        <a class = "toolbarlinks" href = "cart1.html">CART </a>
+        <a class = "toolbarlinks" href = "sign_in.html">LOGIN</a>
+        <a class = "toolbarlinks" href = "account1.html">ACCOUNT</a>
+        <a class = "toolbarlinks" href = "index.html">HOME</a>
+        
+        <div class = "curtain">
+            <a href="https://youtu.be/1Q8fG0TtVAY" id="trailer">
+                <img src = "../images/movie_posters/wonder_woman.jpg" class = "poster">
+                <img src = "../images/icons/play.png" id = "play"></a>
+            <h2 class = "normal4">Wonder Woman</h2>
+            <p class = "normal5"><strong>CAST: GAL GADOT, CHRIS PINE</strong></p>
+            
+            <div id = "wBackground2">
+                <p class="synopsis"><strong>SYNOPSIS:</strong></p>
+                <p class="synopbody"> Before she was Wonder Woman (Gal Gadot), she was Diana, princess of the Amazons, trained to be an unconquerable warrior. Raised on a sheltered island paradise, Diana meets an American pilot (Chris Pine) who tells her about the massive conflict that's raging in the outside world. Convinced that she can stop the threat, Diana leaves her home for the first time. Fighting alongside men in a war to end all wars, she finally discovers her full powers and true destiny.</p> 
+
+                    <h3 class="normal6" id="firstDate">APRIL 27</h3>
+                    <button onclick="buy1()" class="mainslot" id="firstTime">02:15PM</button>
+                    <button onclick="buy2()" class="timeslot" id="secondTime">05:00PM</button>
+
+                    <h3 class="normal6" id="secondDate">APRIL 28</h3>
+                    <button onclick="buy3()" class="mainslot" id="thirdTime">02:30PM</button>
+                    <button onclick="buy4()" class="timeslot" id="fourthTime">09:30PM</button>
+                
+                <div id="buyTickets">
+                    <h2 class = "normal7"><u>TICKET DETAILS: </u></h2>
+                        <p class="normal8"><strong>DATE: &nbsp</strong><span id="date"></span><br>
+                        <p class="normal9"><strong>TIME: &nbsp</strong><span id="time"></span></p>
+
+                        <center><img src = "../images/icons/ticket.png" id = "ticket"></center>
+
+                        <div class="counter">
+                            <center>
+                                <button class="countButton" onclick="decrement()" id="minus">-</button>
+                                <p id="number">00</p>
+                                <button class="countButton" onclick="increment()" id="plus">+</button>
+                            </center>
+                        </div><br>
+
+                        <button type="submit" class="addCartButton">Add To Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,40 @@
+{
+  "name": "ccapdev-phase1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaede924921/CCAPDEV-MP.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kaede924921/CCAPDEV-MP/issues"
+  },
+  "homepage": "https://github.com/Kaede924921/CCAPDEV-MP#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.0",
+    "connect-multiparty": "^2.2.0",
+    "cryptojs": "^2.5.3",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-fileupload": "^1.4.0",
+    "express-session": "^1.17.3",
+    "express-validator": "^6.14.2",
+    "formidable": "^2.0.1",
+    "hbs": "^4.2.0",
+    "moment-timezone": "^0.5.34",
+    "mongoose": "^6.3.5",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "save": "^2.5.0"
+  },
+  "description": ""
+}

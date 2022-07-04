@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!--
+PHASE 1 
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+-->
+
+<head>
+    <link rel="icon" href="../images/icons/logo.png">
+    <title>Cart - Filmworks</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+    <link rel="stylesheet" href="../css/cart.css">
+    <script defer src="../javascript/jquery-3.6.0.min.js"></script>
+    <script src="../javascript/general.js"></script>
+</head>
+
+<body>
+    <div>
+        <a href = "index.html"><img src = "../images/icons/logo.png" id = "logo"></a>
+        <h2 id = "title">FILMWORKS</h2>
+        <form>
+            <input type="button" name="searchbutton" id="searchbtn" value = "SEARCH" onclick = "searchMovie()">
+            <input type="text" name="search" id="searchmovie" placeholder = "Enter Movie Name">
+        </form>
+        <a class = "toolbarlinks" href = "cart3.html">CART </a>
+        <a class = "toolbarlinks" href = "sign_in.html">LOGIN</a>
+        <a class = "toolbarlinks" href = "account1.html">ACCOUNT</a>
+        <a class = "toolbarlinks" href = "index.html">HOME</a>
+        <div class = "curtain">
+            
+                <h1 class = "checkoutText">MOVIE CART</h1>
+
+                <div class="checkoutCart">
+                    <div class="allMovies">
+                        
+                        <div class="movie">
+                            <img src="../images/movie_posters/la_la_land.jpg" class="moviePicture">
+                            <div class="movieInfo">
+                                <h2 class="movieTitle">La La Land</h2>
+                                <h2 class="ticketPrice">P500</h2>
+                                <h2 class="ticketQuantity">QTY:<input placeholder="1"></h1>
+                                <button class="ticketRemove">Remove</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="cartTotal">
+                    <div class="cartInfo">
+                         <p>
+                            <span>Subtotal:</span>
+                            <span>P500</span>
+                        </p>
+
+                        <p>
+                            <span>Number of Tickets:</span>
+                            <span>1</span>
+                        </p>
+
+                        <p>
+                            <span>PWD/Senior Discount:</span>
+                            <span>P100</span>
+                        </p>
+
+                        <p>
+                            <span>Total:</span>
+                            <span>P400</span>
+                        </p>
+                    </div>
+                    <a href = "payment.html">
+                        <button class="proceedCheckout" href = "payment.html">Proceed to Checkout</button>
+                    </a>
+                </div>
+           
+        </div>
+    </div>
+</body>

@@ -1,0 +1,143 @@
+/*
+PHASE 1 
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+
+*/
+.curtain{
+    padding-left: 5%;
+    background-image: url("../images/curtain2.png");
+}
+.checkoutText{
+	color: black;
+	padding: 30px 40px;
+	font-size: 42px;
+	font-family: "Zing Rust Base";
+    font-size: 70px;
+}
+.moviePicture {
+	width: 101px;
+	height: 150px;
+	margin: 10px 20px 10px 20px;
+}
+.moviePicture:hover{
+	transform: scale(1.07);
+}
+.checkoutCart{
+	display: flex;
+	justify-self: center;
+	justify-items: center;
+}
+.allMovies{
+	flex: 0.80;
+	flex-direction: column;
+	margin-left: auto;
+	margin-right: auto;
+}
+.movie{
+	display: flex;
+	width: 80%;
+	height: 170px;
+	overflow: hidden;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 20px;
+	border: 1px solid silver;
+	padding: 0px;
+	align-items: center;
+	transition: 0.3s;
+}
+.movie:hover{
+	border: none;
+	box-shadow: 4px 4px 6px gray;
+	transform: scale(1.02);
+}
+.movieInfo{
+	padding: 10px;
+	width: 100%;
+	position: relative;
+	font-family: "Zing Rust Base";
+}
+.movieTitle{
+	font-size: 25px;
+	margin-bottom: 15px;
+}
+.ticketPrice, .ticketQuantity, .ticketTime{
+	font-size: 20px;
+	margin-bottom: 7px;
+}
+.ticketRemove{
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	padding: 10px 25px;
+	background: forestgreen;
+	color: white;
+	cursor: pointer;
+	border-radius: 10px;
+	border: none;
+	transition: 0.2s;
+}
+.ticketRemove:hover{
+	background: darkred;
+	font-weight: 600;
+	border: 1px solid silver;
+}
+.cartTotal{
+	width: 350px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 20px;
+	height: 200px;
+	border: 1px solid silver;
+	border-radius: 5px;
+	margin-bottom: 30px;
+}
+.cartInfo{
+	margin-bottom: 10px;
+}
+.cartTotal p{
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	font-size: 20px;
+	overflow: auto;
+}
+.proceedCheckout{
+	display: flex;
+	justify-content: center;
+	width: 50%;
+	padding: 10px;
+	background: darkred;
+	color: white;
+	text-decoration: none;
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 10px;
+	border: none;
+	margin-bottom: 30px;
+	cursor: pointer;
+	transition: 0.3s;
+}
+.proceedCheckout:hover{
+	background: white;
+	color: darkred;
+	font-weight: 600;
+	border: 1px solid darkred;
+	transform: scale(1.15);
+}
+#compute{
+	justify-content: center;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	background: whitesmoke;
+	margin-top: -10px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+#compute:hover{
+	background: forestgreen;
+}

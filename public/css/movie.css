@@ -1,0 +1,259 @@
+/*
+PHASE 1 
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+
+*/
+*{
+    margin: 0;
+    padding:0;
+    box-sizing: border-box;
+}
+@font-face {
+    font-family:"Zing Rust Base";
+    src:url(../fonts/zing.rust-demo-base.otf);
+}
+@font-face {
+    font-family:"Intro Rust";
+    src:url(../fonts/IntroHeadR-Base.otf);
+}
+@font-face {
+    font-family:"Cheque";
+    src:url(../fonts/Cheque-Regular.otf);
+}
+@font-face {
+    font-family:"Intro Rust Base";
+    src:url(../fonts/introrust-base.otf);
+}
+@font-face {
+    font-family:"Oswald";
+    src:url(../fonts/Oswald.ttf);
+}
+@font-face {
+    font-family:"RobotoCondensed";
+    src:url(../fonts/RobotoCondensed-Regular.ttf);
+}
+@font-face {
+    font-family:"SourceCodePro";
+    src:url(../fonts/SourceCodePro.ttf);
+}
+@font-face {
+    font-family:"RadioCanada";
+    src:url(../fonts/RadioCanada.ttf);
+}
+.poster{
+    float: left;
+    margin: 50px 20px 0px 100px;
+    width:200px;
+    height:290px;
+    border: 5px solid white;
+    transition: 0.5s;
+}
+.normal4{
+    color: white;
+    font-family: "Zing Rust Base";
+    font-size: 50px;
+    margin-left: 350px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.normal5{
+    color: white;
+    font-family: 'SourceCodePro';
+    font-size: 25px;
+    margin-left: 350px;
+}
+.normal6{
+    color:black;
+    font-family: "Zing Rust Base";
+    font-size: 50px;
+    margin-left: 110px;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 40px;
+    padding-right: 0;
+    width: 50%;
+}
+.normal7{
+    margin-left:15px;
+    color:black;
+    font-family: "Zing Rust Base";
+    font-size: 25px;
+    padding-top: 5px;
+    top:40px; 
+}
+.normal8{
+    margin-left: 15px;
+    color: black;
+    font-family: 'verdana';
+    font-size: 20px;
+    padding-top: 10px;
+}
+.normal9{
+    margin-left: 15px;
+    color: black;
+    font-family: 'verdana';
+    font-size: 20px;
+    padding-top: 0px;
+    margin-bottom: 5px;
+}
+#wBackground2{
+    background: white;
+    height: 100%;
+    margin-bottom: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+}
+#wBackground2::after{
+    content: "";
+    clear: both;
+    display: table;
+}
+.synopsis{
+    color: black;
+    font-family: 'RadioCanada';
+    font-size: 20px;
+    padding-top: 25px;
+    margin-top: 25px;
+    margin-left: 350px;
+    margin-right: 50px;
+    text-align: justify;
+}
+.synopbody{
+    color: black;
+    font-family: 'RadioCanada';
+    font-size: 18px;
+    padding-top: 15px;
+    margin-left: 350px;
+    margin-right: 50px;
+    text-align: justify;
+    text-indent: 55px;
+}
+.mainslot{
+    background-color: #24186e;
+    color:white;
+    font-family: "Zing Rust Base";
+    font-size: 30px;
+    padding-left: 45px;
+    padding-right: 45px;
+    margin-left: 110px;
+    cursor: pointer;
+    border-radius: 15px;
+    transition: 0.3s;
+}
+.timeslot{
+    background-color: #24186e;
+    color:white;
+    font-family: "Zing Rust Base";
+    font-size: 30px;
+    padding-left: 45px;
+    padding-right: 45px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 15px;
+    transition: 0.3s;
+}
+.mainslot:hover, .timeslot:hover{
+    background-color: #7f0a0a;
+    transform: scale(1.1);
+}
+#buyTickets{
+    display: none;
+    float: right;
+    background: linear-gradient(#a0c7ff, #ffffcc);
+    margin-right: 40px;
+    margin-top: -250px;
+    border-radius: 15px;
+    width: 45%;
+    height: 55%;
+    overflow: hidden;
+}
+#ticket{
+    width: 208px;
+    height: 103px;
+    display: block;
+    padding: 0;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    filter: brightness(1.2);
+}
+.counter{
+    color: black;
+    font-family: "Oswald";
+    font-size: 25px;
+    align-content: space-between;
+}
+.countButton{
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background-color: white;
+    border-radius: 10px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    transition: 0.3s;
+}
+.countButton:hover{
+    background: linear-gradient(violet,skyblue);
+    transform: scale(1.2);
+}
+#minus {
+    display: inline-block;
+    margin-left: 35%;
+    float: left;
+}
+#number{
+    display: inline-block;
+    text-indent: 0px;
+    margin-bottom: 0px;
+    text-align: center;
+}
+#plus {
+    display: inline-block;
+    float: right;
+    margin-right: 35%;
+}
+.addCartButton{
+    display: block;
+    float: right;
+    width: 205px;
+    height: 40px;
+    color: white;
+    font-family: "Zing Rust Base";
+    font-size: 23px;
+    background: #7f0a0a;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: -15px;
+    margin-left: -10px;
+    margin-right: 35px;
+    transition: 0.3s;
+}
+.addCartButton:hover{
+    background: #24186e;
+    transform: scale(1.1);
+}
+.poster:hover {
+    background-color: black;
+    filter: brightness(20%);
+    transform: scale(1.2);
+    display: block;
+}
+#play{
+    display: block;
+    position: flex;
+    float: left;
+    margin-left: -150px;
+    margin-top: 150px;
+    filter: brightness(1.2);
+}
+#play:hover{
+    transform: scale(1.2);
+}
+#errorMessage{
+    font-family: "Zing Rust Base";
+    font-size: 18px;
+}

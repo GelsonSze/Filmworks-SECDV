@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+PHASE 1 
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+-->
+
+<head>
+    <link rel="icon" href="../images/icons/logo.png">
+    <title>Aladdin | Filmworks</title>
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+    <link rel="stylesheet" type="text/css" href="../css/movie.css">
+    <script type="text/javascript" src="../javascript/movie.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <script defer src="../javascript/jquery-3.6.0.min.js"></script>
+    <script src="../javascript/general.js"></script>
+</head>
+
+<body>
+    <div>
+        <a href = "index.html"><img src = "../images/icons/logo.png" id = "logo"></a>
+        <h2 id = "title">FILMWORKS</h2>
+        <form>
+            <input type="button" name="searchbutton" id="searchbtn" value = "SEARCH" onclick = "searchMovie()">
+            <input type="text" name="search" id="searchmovie" placeholder = "Enter Movie Name">
+        </form>
+        <a class = "toolbarlinks" href = "cart1.html">CART </a>
+        <a class = "toolbarlinks" href = "sign_in.html">LOGIN</a>
+        <a class = "toolbarlinks" href = "account1.html">ACCOUNT</a>
+        <a class = "toolbarlinks" href = "index.html">HOME</a>
+        
+        <div class = "curtain">
+            <a href="https://youtu.be/foyufD52aog" id="trailer">
+                <img src = "../images/movie_posters/aladdin.jpg" class = "poster">
+                <img src = "../images/icons/play.png" id = "play"></a>
+            <h2 class = "normal4">Aladdin</h2>
+            <p class = "normal5"><strong>CAST: MENA MASSOUD, NAOMI SCOTT, WILL SMITH</strong></p>
+            
+            <div id = "wBackground2">
+                <p class="synopsis"><strong>SYNOPSIS:</strong></p>
+                <p class="synopbody"> Aladdin is a lovable street urchin who meets Princess Jasmine, the beautiful daughter of the sultan of Agrabah. While visiting her exotic palace, Aladdin stumbles upon a magic oil lamp that unleashes a powerful, wisecracking, larger-than-life genie. As Aladdin and the genie start to become friends, they must soon embark on a dangerous mission to stop the evil sorcerer, Jafar, from overthrowing young Jasmine's kingdom.</p> 
+
+                    <h3 class="normal6" id="firstDate">APRIL 25</h3>
+                    <button onclick="buy1()" class="mainslot" id="firstTime">12:30PM</button>
+                    <button onclick="buy2()" class="timeslot" id="secondTime">08:30PM</button>
+
+                    <h3 class="normal6" id="secondDate">APRIL 29</h3>
+                    <button onclick="buy3()" class="mainslot" id="thirdTime">12:00PM</button>
+                    <button onclick="buy4()" class="timeslot" id="fourthTime">08:30PM</button>
+                
+                <div id="buyTickets">
+                    <h2 class = "normal7"><u>TICKET DETAILS: </u></h2>
+                        <p class="normal8"><strong>DATE: &nbsp</strong><span id="date"></span><br>
+                        <p class="normal9"><strong>TIME: &nbsp</strong><span id="time"></span></p>
+
+                        <center><img src = "../images/icons/ticket.png" id = "ticket"></center>
+
+                        <div class="counter">
+                            <center>
+                                <button class="countButton" onclick="decrement()" id="minus">-</button>
+                                <p id="number">00</p>
+                                <button class="countButton" onclick="increment()" id="plus">+</button>
+                            </center>
+                        </div><br>
+
+                        <button type="submit" class="addCartButton">Add To Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
