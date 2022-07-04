@@ -8,11 +8,8 @@ CCAPDEV S11
 
 const db = require('../database/models/db.js');
 const User = require('../database/models/User.js');
-const Cart = require('../database/models/Cart.js');
 const Movie = require('../database/models/Movie.js');
 const bcrypt = require('bcryptjs');
-const {check} = require('express-validator');
-const e = require('express');
 
 // Add other databases here as well
 

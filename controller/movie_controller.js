@@ -8,7 +8,6 @@ CCAPDEV S11
    
 const db = require('../database/models/db.js');
 const Movie = require('../database/models/Movie.js');
-const moment = require('moment-timezone');
 var PORT = process.env.PORT || 3000;
 const movie_controller = {
 
