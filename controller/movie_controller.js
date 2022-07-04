@@ -102,7 +102,8 @@ const movie_controller = {
     getError: function(req, res){
         res.render('error', {layout: '/layouts/account.hbs', 
         error: 'This movie does not exist or is not part of our database at the moment',
-        error2: 'Please search for another movie or go back to main page.'
+        error2: 'Please search for another movie or go back to main page.',
+        title: 'Error - Filmworks',
     });
     },
     // gets the max capacity available for the movie
