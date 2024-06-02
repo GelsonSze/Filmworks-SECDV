@@ -16,8 +16,8 @@ const path = require('path'); //local path directory for static resource folder
 const hbs = require('hbs');
 //const authRoute = require('./routes/auth');
 const routes = require(`./routes/routes.js`);
-const db = require(`./database/models/db.js`);
-db.connect();
+
+const db = require('./models')
 
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.json());
@@ -37,6 +37,10 @@ app.use(session({
 
 app.use(`/`, routes);
 
-app.listen(PORT, function(){
-    console.log("Node server is running at port 3000.....");
-});
+db.sequelize.sync().then((req) => {
+
+    app.listen(PORT, function(){
+        console.log("Node server is running at port 3000.....");
+    });
+})
+
