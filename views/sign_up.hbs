@@ -15,6 +15,9 @@ CCAPDEV S11
         <label for="l_name" class = "normal"><b>Last Name</b></label>
         <input type="text" name = "l_name" autocomplete = "off" placeholder="Enter last name" id="l_name" required>
 
+        <label for="phone" class="normal"><b>Phone Number</b></label>
+        <input type="text" name="phone" autocomplete="off" placeholder="Enter phone number" id="phone_num" required>
+
         <label for="username" class = "normal"><b>Username</b></label>
         <input type="text" name = "username" autocomplete = "off" placeholder="Enter username" id="username" required>
         
@@ -27,8 +30,9 @@ CCAPDEV S11
         <label for="cpassword" class = "normal"><b>Confirm Password</b></label>
         <input type="password" name = "cpassword" maxlength="20" autocomplete = "off" placeholder="Confirm Password" id="cpassword" required>
 
-        <input type="checkbox" autocomplete = "off" class="normal" name="status" id = "status">
-        <label for="status" class = "normal"> I am a Senior Citizen/PWD </label><br><br>
+        {{!-- Note: I removed the senior citizen/pwd box to make it less complicated for us na --}}
+        {{!-- <input type="checkbox" autocomplete = "off" class="normal" name="status" id = "status">
+        <label for="status" class = "normal"> I am a Senior Citizen/PWD </label><br><br> --}}
 
         <input type="file" id = "file" name="file">
         <br>
