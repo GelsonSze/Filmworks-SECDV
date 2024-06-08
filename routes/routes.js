@@ -87,9 +87,7 @@ app.get(`/register`, function(req, res) {
         res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'})
 });
 
-app.post(`/register`, credentials_controller.successfulRegister, function(req, res){
-    res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
-})
+app.post(`/postregister`, upload.single('file'), credentials_controller.successfulRegister)
 
 app.get(`/login`, function(req, res) {
     if (req.session.email == undefined)
