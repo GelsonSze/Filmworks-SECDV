@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
     const movie = sequelize.define("movie", {
         image: {
-            type: DataTypes.BLOB,
+            type: DataTypes.STRING(128),
             allowNull: false,
             notEmpty: true,
         },

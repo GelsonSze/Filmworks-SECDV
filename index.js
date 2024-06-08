@@ -14,12 +14,14 @@ const session = require('express-session');
 const app = new express();
 const path = require('path'); //local path directory for static resource folder
 const hbs = require('hbs');
+const bodyParser = require('body-parser');
 //const authRoute = require('./routes/auth');
 const routes = require(`./routes/routes.js`);
 
 const db = require('./models')
 
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(fileupload());
 app.use(express.static('public'));

@@ -1,5 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
     const user = sequelize.define("user", {
+        fullName: {
+            type: DataTypes.STRING(256),
+            allowNull: false,
+            notEmpty: true
+        },
         emailAddress: {
             type: DataTypes.STRING(320),
             allowNull: false,
@@ -14,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
             len: [11, 12]
         },
         profilePhoto: {
-            type: DataTypes.BLOB,
+            type: DataTypes.STRING(128),
             allowNull: false,
             notEmpty: true
         },
@@ -26,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         lastLogin: {
             type: DataTypes.DATE,
-            allowNull: false
+            allowNull: true
         }
     })
 
