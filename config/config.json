@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "SomePassword00!!",
-    "database": "MilestoneOne",
+    "database": "milestoneone",
     "host": "localhost",
     "dialect": "mysql"
   },

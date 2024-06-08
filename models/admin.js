@@ -24,22 +24,14 @@ module.exports = (sequelize, DataTypes) => {
             notEmpty: true,
             len: [8, 128]
         },
-        dateCreated: {
-            type: DataTypes.DATE,
-            allowNull: false
-        },
-        lastUpdated: {
-            type: DataTypes.DATE,
-            allowNull: true
-        },
-        lastLogin: {
-            type: DataTypes.DATE,
-            allowNull: false
-        },
         permissionLevel: {
             type: DataTypes.ENUM('read', 'read-write'),
             allowNull: false,
             notEmpty: true
+        },
+        lastLogin: {
+            type: DataTypes.DATE,
+            allowNull: false
         }
     })
 
