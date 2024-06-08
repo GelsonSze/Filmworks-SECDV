@@ -1,18 +1,5 @@
-const user = require('../models/user')
-const admin = require('../models/admin')
+const {user, admin} = require('../models/')
 const bcrypt = require('bcryptjs')
-
-const multer = require('multer')
-const storage = multer.diskStorage({
-    destination: function(req, file, callback){
-        callback(null, 'images')
-    },
-    filename: function(req, file, callback){
-        console.log(file)
-        callback(null, Date.now()+ path.extname(file.originalname))
-    }
-})
-const upload = multer({storage: storage})
 
 const controller = {
     successfulRegister: async function(req, res){
@@ -29,10 +16,9 @@ const controller = {
             user.password = hash
         })
 
-        upload.single("file")
         newUser.image = 'images/' + req.file.filename
 
-        const newRegister = await user.create({fullName: newUser.f_name + newUser.l_name,
+        const newRegister = await user.create({fullName: newUser.f_name + " " + newUser.l_name,
                             emailAddress: newUser.email,
                             phoneNumber: newUser.phone,
                             profilePhoto: newUser.image,
@@ -41,7 +27,7 @@ const controller = {
         })
 
         console.log(newRegister.id)
-
+        // res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
     }
 }
 
