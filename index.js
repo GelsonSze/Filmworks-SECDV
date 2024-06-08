@@ -9,7 +9,6 @@ var PORT = process.env.PORT || 3000;
 
 require('dotenv').config();
 const express = require('express');
-const fileupload = require('express-fileupload');
 const session = require('express-session');
 const app = new express();
 const path = require('path'); //local path directory for static resource folder
@@ -21,9 +20,8 @@ const routes = require(`./routes/routes.js`);
 const db = require('./models')
 
 app.use(express.json());
-app.use(fileupload());
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 //app.use('/user', authRoute); //this refers to the path where the data can be accessed
 

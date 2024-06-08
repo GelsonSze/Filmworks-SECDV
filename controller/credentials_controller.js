@@ -1,5 +1,6 @@
 const {user, admin} = require('../models/')
 const bcrypt = require('bcryptjs')
+const path = require('path')
 
 const controller = {
     successfulRegister: async function(req, res){
@@ -16,7 +17,7 @@ const controller = {
             user.password = hash
         })
 
-        newUser.image = 'images/' + req.file.filename
+        newUser.image = './public/uploads/' + req.file.filename
 
         const newRegister = await user.create({fullName: newUser.f_name + " " + newUser.l_name,
                             emailAddress: newUser.email,
@@ -27,7 +28,7 @@ const controller = {
         })
 
         console.log(newRegister.id)
-        // res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
+        res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
     }
 }
 
