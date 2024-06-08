@@ -1,8 +1,6 @@
 const express = require(`express`);
 const app = express();
 
-const credentials_controller = require('../controller/credentials_controller')
-
 const multer = require('multer')
 const storage = multer.diskStorage({
     destination: function(req, file, callback){
