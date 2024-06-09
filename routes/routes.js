@@ -98,10 +98,7 @@ app.post(`/login`, checkValidInput, limiter, function(req, res) {
     if(res.statusCode == 200)
         res.render('index', {layout: '/layouts/layout.hbs', movie:{}, title: "Main - Filmworks"}) // move to controller next time when db is functioning
     else{
-        res.render('sign_in',{layout: '/layouts/prelogin.hbs', 
-            error: "",
-            title: 'Sign-In - Filmworks'
-        });
+        res.redirect('/');
     }
 });
 
