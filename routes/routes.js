@@ -15,6 +15,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage})
 
 const credentials_controller = require('../controller/credentials_controller')
+const movie_controller = require('../controller/movie_controller')
 
 // import rate limiter
 const rateLimit = require('express-rate-limit');
@@ -98,11 +99,13 @@ app.get(`/login`, function(req, res) {
 app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, function(req, res) {
     console.log(req.rateLimit)
     if(res.statusCode == 200)
-        res.render('index', {layout: '/layouts/layout.hbs', movie:{}, title: "Main - Filmworks"}) // move to controller next time when db is functioning
+        res.redirect('/main') // move to controller next time when db is functioning
     else{
         res.redirect('/');
     }
 });
+
+app.get('/main', movie_controller.getMovies);
 
 
 module.exports = app;
