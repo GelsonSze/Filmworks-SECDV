@@ -5,6 +5,9 @@ CCAPDEV S11
         Ng, Sherilyn Kaye
         Vizmanos, Julianne 
 -->
+<head>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
 <div class = "sign_inform">
                 <!--<img src = "/images/icons/cameraleft.png" class = "icons">-->
                 <form id = "loginform" action = "/login" method = "POST" enctype="application/x-www-form-urlencoded">
@@ -16,6 +19,8 @@ CCAPDEV S11
                     <input type="password" id = "l_password" maxlength="20" autocomplete = "off" placeholder="Enter Password" name="l_password" required>
                     <a id = "link" href = "/register">No account? Click here to register.</a>
                     <p id = "error">{{error}}</p>
+                    <div class="g-recaptcha" data-sitekey="6LcWdvQpAAAAAGmO7xTH5juQyGA99Ye46XycpBif"></div>
+                    <br/>
                     <input type="submit" id = "login" value = "Login">
                 </form>
 </div>
