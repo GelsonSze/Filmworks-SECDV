@@ -56,7 +56,10 @@ const controller = {
             return;
         }
 
-        if (req.files == undefined) {
+        console.log(req.file)
+        console.log(req.file.filename)
+
+        if (req.file == undefined) {
             var info = {
                 error:'No file uploaded'
             }
@@ -76,9 +79,7 @@ const controller = {
             image: ""
         }
 
-        bcrypt.hash(newUser.password, 10, function(err, hash){
-            user.password = hash
-        })
+        newUser.password = await bcrypt.hash(req.body.password, 10);
 
         newUser.image = './public/uploads/' + req.file.filename
 
