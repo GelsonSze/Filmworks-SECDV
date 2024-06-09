@@ -45,6 +45,30 @@ const controller = {
             return;
         }
 
+        const existingUser = await user.findOne({ where: { emailAddress: req.body.email } });
+        if (existingUser) {
+            var info = {
+                error: 'Email already registered'
+            };
+            res.render('sign_up', { layout: '/layouts/prelogin.hbs',
+                error: info.error,
+                title: 'Sign-Up - Filmworks'
+            });
+            return;
+        }
+
+        const existingAdmin = await admin.findOne({ where: { emailAddress: req.body.email } });
+        if (existingAdmin) {
+            var info = {
+                error: 'Invalid Registration'
+            };
+            res.render('sign_up', { layout: '/layouts/prelogin.hbs',
+                error: info.error,
+                title: 'Sign-Up - Filmworks'
+            });
+            return;
+        }
+
         if (!passwordRegex.test(req.body.password)) {
             var info = {
                 error:'Invalid password format'
@@ -55,9 +79,6 @@ const controller = {
             });
             return;
         }
-
-        console.log(req.file)
-        console.log(req.file.filename)
 
         if (req.file == undefined) {
             var info = {
