@@ -110,6 +110,8 @@ const controller = {
 
         newUser.image = './public/uploads/' + req.file.filename
 
+        newUser.phone = newUser.phone.replace(/^\+63/, "0");
+
         const newRegister = await user.create({fullName: newUser.f_name + " " + newUser.l_name,
                             emailAddress: newUser.email,
                             phoneNumber: newUser.phone,
