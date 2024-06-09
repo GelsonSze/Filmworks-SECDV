@@ -12,7 +12,23 @@ const storage = multer.diskStorage({
         callback(null, Date.now() + "_" + file.originalname)
     }
 })
-const upload = multer({storage: storage})
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5242880}}) // 5MB = 5 * 1024 * 1024
+
+function multerError(err, req, res, next) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        var info = {
+            error: 'Exceeded file size limit of 5MB'
+        };
+        res.render('sign_up', { layout: '/layouts/prelogin.hbs',
+            error: info.error,
+            title: 'Sign-Up - Filmworks'
+        });
+    } else {
+        next(err);
+    }
+}
 
 const credentials_controller = require('../controller/credentials_controller')
 const movie_controller = require('../controller/movie_controller')
@@ -89,7 +105,7 @@ app.get(`/register`, function(req, res) {
         res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'})
 });
 
-app.post(`/postregister`, upload.single("file"), credentials_controller.successfulRegister)
+app.post(`/postregister`, upload.single("file"), multerError, credentials_controller.successfulRegister)
 
 app.get(`/login`, function(req, res) {
     if (req.session.email == undefined)
