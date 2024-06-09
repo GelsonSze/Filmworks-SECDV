@@ -5,10 +5,12 @@ const path = require('path')
 const controller = {
     successfulRegister: async function(req, res){
 
-        const emailRegex = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/
+        const emailRegex = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/g
         const nameRegex = /^[a-zA-Z\s]+$/
-        const phoneRegex1 = /^09[0-9]{9}$/
-        const phoneRegex2 = /^\+639[0-9]{9}$/
+        const phoneRegex1 = /^09[0-9]{9}$/g
+        const phoneRegex2 = /^\+639[0-9]{9}$/g
+        const passwordRegex = /^(?=(?:.*[A-Z]){1,})(?=(?:.*[a-z]){1,})(?=(?:.*[0-9]){1,})(?=(?:.*[^A-Za-z0-9]){1,}).{12,64}$/g
+        var phone = false
 
         if (!nameRegex.test(req.body.f_name) || !nameRegex.test(req.body.l_name)) {
             var info = {
@@ -21,7 +23,7 @@ const controller = {
             return;
         }
         
-        if (!phoneRegex1.test(req.body.phone) || !phoneRegex2.test(req.body.phone)) {
+        if (!phoneRegex1.test(req.body.phone) && !phoneRegex2.test(req.body.phone)) {
             var info = {
                 error:'Invalid phone number format'
             }
@@ -35,6 +37,28 @@ const controller = {
         if (!emailRegex.test(req.body.email)) {
             var info = {
                 error:'Invalid email format'
+            }
+            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+                error: info.error,
+                title: 'Sign-Up - Filmworks'
+            });
+            return;
+        }
+
+        if (!passwordRegex.test(req.body.password)) {
+            var info = {
+                error:'Invalid password format'
+            }
+            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+                error: info.error,
+                title: 'Sign-Up - Filmworks'
+            });
+            return;
+        }
+
+        if (req.files == undefined) {
+            var info = {
+                error:'No file uploaded'
             }
             res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
                 error: info.error,
