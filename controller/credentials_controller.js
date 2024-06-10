@@ -1,7 +1,7 @@
 const {user, admin} = require('../models/')
 const bcrypt = require('bcryptjs')
 const path = require('path')
-
+const db = require('../models/index.js')
 const controller = {
     successfulRegister: async function(req, res){
 
@@ -108,7 +108,7 @@ const controller = {
 
         newUser.password = await bcrypt.hash(req.body.password, 10);
 
-        newUser.image = './public/uploads/' + req.file.filename
+        newUser.image = '../uploads/' + req.file.filename
 
         newUser.phone = newUser.phone.replace(/^\+63/, "0");
 
@@ -122,6 +122,17 @@ const controller = {
 
         console.log(newRegister.id)
         res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
+    },
+    displayAccount: async function(req, res){
+        // replace details here after db is fixed
+        res.render('account',{layout: '/layouts/account.hbs',
+            f_name: "Hello",
+            l_name: "World",
+            profile_pic: '../uploads/image.jpg', 
+            doneMovie: "doneMovies",
+            premieringMovies: "premieringMovies",
+            title: 'Account - Filmworks'
+        });
     }
 }
 

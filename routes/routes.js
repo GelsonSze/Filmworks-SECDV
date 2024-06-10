@@ -123,5 +123,6 @@ app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, functi
 
 app.get('/main', movie_controller.getMovies);
 
+app.get('/account', credentials_controller.displayAccount)
 
 module.exports = app;
