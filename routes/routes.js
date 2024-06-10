@@ -74,14 +74,7 @@ const checkValidInput = (req, res, next) => {
     console.log(req.body)
     console.log(req.recaptcha)
     if (!req.recaptcha.error) {
-        if(req.body.l_email == '123@gmail.com' && req.body.l_password == "123"){
-            res.status(200);
-            next();
-        }
-        else{
-            res.status(400);
-            next();
-        }
+        res.status(200);
     } else {
         res.status(403).send("Forbidden"); // change to whatever we need to do when captcha is failed
     }
@@ -112,14 +105,7 @@ app.get(`/login`, function(req, res) {
         res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
 });
 
-app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, function(req, res) {
-    console.log(req.rateLimit)
-    if(res.statusCode == 200)
-        res.redirect('/main') // move to controller next time when db is functioning
-    else{
-        res.redirect('/');
-    }
-});
+app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, credentials_controller.checkLogin);
 
 app.get('/main', movie_controller.getMovies);
 

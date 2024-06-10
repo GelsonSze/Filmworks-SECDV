@@ -123,6 +123,32 @@ const controller = {
         console.log(newRegister.id)
         res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
     },
+
+    checkLogin: async function(req, res){
+        const { l_email, l_password } = req.body;
+        
+        try {
+            // Find user by email
+            const existingUser = await user.findOne({ where: {emailAddress: l_email } });
+
+            if (!existingUser) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Compare provided password with stored hash
+            const isMatch = await bcrypt.compare(l_password, existingUser.password);
+
+            if (isMatch) {
+                res.redirect('/main');
+            } else {
+                res.status(401).json({ message: 'Invalid credentials' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
     displayAccount: async function(req, res){
         // replace details here after db is fixed
         const userInfo = await user.findOne({ where: { emailAddress: 'user@gmail.com' }}, function (result){
@@ -145,7 +171,7 @@ const controller = {
     },
     displayadminPage: async function(req, res){
         // replace details here after db is fixed
-  
+
         const allUsers = await user.findAll();
         const adminInfo = await admin.findOne({ where: { emailAddress: 'admin@gmail.com' }}, function (result){
         })
