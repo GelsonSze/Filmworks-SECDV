@@ -1,9 +1,10 @@
 const {user, admin} = require('../models/')
 const bcrypt = require('bcryptjs')
-const path = require('path')
 const db = require('../models/index.js')
 const controller = {
     successfulRegister: async function(req, res){
+
+        console.log(req.body)
 
         const emailRegex = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/g
         const nameRegex = /^[a-zA-Z\s]+$/
@@ -108,11 +109,12 @@ const controller = {
 
         newUser.password = await bcrypt.hash(req.body.password, 10);
 
-        newUser.image = '../uploads/' + req.file.filename
+        newUser.image = '../uploads/profile/' + req.file.filename
 
         newUser.phone = newUser.phone.replace(/^\+63/, "0");
 
-        const newRegister = await user.create({fullName: newUser.f_name + " " + newUser.l_name,
+        const newRegister = await user.create({
+                            fullName: newUser.f_name + " " + newUser.l_name,
                             emailAddress: newUser.email,
                             phoneNumber: newUser.phone,
                             profilePhoto: newUser.image,

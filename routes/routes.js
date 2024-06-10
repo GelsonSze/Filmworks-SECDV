@@ -1,10 +1,25 @@
 const express = require(`express`);
 const app = express();
 
+const path = require('path')
 const multer = require('multer')
+
+const flagProfileUpload = (req, res, next) => {
+    req.uploadType = "profile"
+    next()
+}
+  
+
 const storage = multer.diskStorage({
     destination: function(req, file, callback){
-        callback(null, './public/uploads/')
+
+        if(req.uploadType == "profile"){
+            callback(null, './public/uploads/profiles')
+        }else{
+            callback(null, './public/uploads/movies')
+        }
+
+        
     },
     filename: function(req, file, callback){
         console.log(file)
@@ -105,7 +120,7 @@ app.get(`/register`, function(req, res) {
         res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'})
 });
 
-app.post(`/postregister`, upload.single("file"), multerError, credentials_controller.successfulRegister)
+app.post(`/postregister`, flagProfileUpload, upload.single("file"), multerError, credentials_controller.successfulRegister)
 
 app.get(`/login`, function(req, res) {
     if (req.session.email == undefined)
