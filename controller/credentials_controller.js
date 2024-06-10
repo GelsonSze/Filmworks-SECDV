@@ -155,7 +155,7 @@ const controller = {
                 full_name: "ADMIN", 
                 // full_name: adminInfo.fullName, 
                 // profile_pic: adminInfo.profilePhoto, 
-                // profile_pic: "../uploads/hello.jpeg", 
+                profile_pic: "../images/icons/profile.png", 
                 user: allUsers,
                 title: 'Admin - Filmworks'
             });
