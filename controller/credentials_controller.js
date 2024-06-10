@@ -125,14 +125,45 @@ const controller = {
     },
     displayAccount: async function(req, res){
         // replace details here after db is fixed
-        res.render('account',{layout: '/layouts/account.hbs',
-            f_name: "Hello",
-            l_name: "World",
-            profile_pic: '../uploads/image.jpg', 
-            doneMovie: "doneMovies",
-            premieringMovies: "premieringMovies",
-            title: 'Account - Filmworks'
-        });
+        const userInfo = await user.findOne({ where: { emailAddress: 'user@gmail.com' }}, function (result){
+        })
+
+        //if user info was obtained correctly go display user info
+        if (userInfo != null){
+            res.render('account',{layout: '/layouts/account.hbs',
+                full_name: userInfo.fullName,
+                profile_pic: userInfo.profilePhoto, 
+                doneMovie: "doneMovies",
+                premieringMovies: "premieringMovies",
+                title: 'Account - Filmworks'
+            });
+        }
+        else{
+            //display error page showing that movies werent rendered properly
+        }
+
+    },
+    displayadminPage: async function(req, res){
+        // replace details here after db is fixed
+  
+        const allUsers = await user.findAll();
+        const adminInfo = await admin.findOne({ where: { emailAddress: 'admin@gmail.com' }}, function (result){
+        })
+        //if user info was obtained correctly go display user info
+        if (allUsers != null){
+            res.render('admin',{layout: '/layouts/account.hbs',
+                full_name: "ADMIN", 
+                // full_name: adminInfo.fullName, 
+                // profile_pic: adminInfo.profilePhoto, 
+                // profile_pic: "../uploads/hello.jpeg", 
+                user: allUsers,
+                title: 'Admin - Filmworks'
+            });
+        }
+        else{
+            //display error page showing that movies werent rendered properly
+        }
+
     }
 }
 

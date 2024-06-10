@@ -135,3 +135,16 @@ CCAPDEV S11
     display: block;
     cursor:pointer;
 }
+
+#displayInfo {
+    border-collapse: collapse;
+    width: 100%;
+}
+#displayinfo, td, th {  
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th, td {
+    padding: 15px;
+}

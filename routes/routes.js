@@ -125,4 +125,6 @@ app.get('/main', movie_controller.getMovies);
 
 app.get('/account', credentials_controller.displayAccount)
 
+app.get('/admin', credentials_controller.displayadminPage)
+
 module.exports = app;

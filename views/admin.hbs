@@ -5,13 +5,23 @@ CCAPDEV S11
         Ng, Sherilyn Kaye
         Vizmanos, Julianne 
 -->  
-                <img src = "../images/icons/profile.png" id = "account_icon">
-                <h2 class = "normal1">{{l_name}}, {{f_name}}</h2>
+                <img src = {{profile_pic}} id = "account_icon">
+                <h2 class = "normal1">{{full_name}}</h2>
                 {{!-- info regarding admin status should be placed here --}}
-                <h4 class = "normal2"><center>{{status}}</center></h4> 
+                <h4 class = "normal2"><center> ADMIN {{permission_level}}</center></h4> 
 
                 {{!-- displays each user and their information --}}
                 <h1 class = "normal3">USERS</h1>
-                {{#each user}}
-                    {{> userinfo}}
-                {{/each}}
+                <table id="displayInfo">
+                    <tr> 
+                    <th>ID</th> 
+                    <th>Name</th> 
+                    <th>Email</th> 
+                    <th>Created On</th> 
+                    <tr>Latest Login</tr> 
+                    <tr>Last Update</tr> 
+                    </tr> 
+                    {{#each user}}
+                        {{> userinfo}}
+                    {{/each}}
+                </table>
