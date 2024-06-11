@@ -156,7 +156,7 @@ const controller = {
     displayAccount: async function(req, res){
         // replace details here after db is fixed
         try{
-            const userInfo = await user.findOne({ where: { emailAddress: 'firefly@gmail.com' }}, function (result){
+            const userInfo = await user.findOne({ where: { emailAddress: 'user@gmail.com' }}, function (result){
             })
 
             if (!userInfo) {
