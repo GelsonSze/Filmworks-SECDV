@@ -109,7 +109,7 @@ const controller = {
 
         newUser.password = await bcrypt.hash(req.body.password, 10);
 
-        newUser.image = '../uploads/profile/' + req.file.filename
+        newUser.image = '../uploads/profiles/' + req.file.filename
 
 
         newUser.phone = newUser.phone.replace(/^\+63/, "0");
@@ -156,7 +156,7 @@ const controller = {
     displayAccount: async function(req, res){
         // replace details here after db is fixed
         try{
-            const userInfo = await user.findOne({ where: { emailAddress: 'user@gmail.com' }}, function (result){
+            const userInfo = await user.findOne({ where: { emailAddress: 'firefly@gmail.com' }}, function (result){
             })
 
             if (!userInfo) {
@@ -196,16 +196,15 @@ const controller = {
 
             if (allUsers != null){
                 res.render('admin',{layout: '/layouts/account.hbs',
-                    full_name: "ADMIN", 
-                    // full_name: adminInfo.fullName, 
-                    // profile_pic: adminInfo.profilePhoto, 
-                    profile_pic: "../images/icons/profile.png", 
+                    full_name: adminInfo.fullName, 
+                    profile_pic: adminInfo.profilePhoto, 
                     user: allUsers,
                     title: 'Admin - Filmworks'
                 });
             }
             else{
-                //display error page showing that movies werent rendered properly
+                console.error(error);
+                res.status(500).json({ message: 'Internal server error' });
             }
         } catch (error) {
             console.error(error);
