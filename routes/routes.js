@@ -90,6 +90,7 @@ const checkValidInput = (req, res, next) => {
     console.log(req.recaptcha)
     if (!req.recaptcha.error) {
         res.status(200);
+        next();
     } else {
         res.status(403).send("Forbidden"); // change to whatever we need to do when captcha is failed
     }
