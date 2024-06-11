@@ -109,7 +109,7 @@ const controller = {
 
         newUser.password = await bcrypt.hash(req.body.password, 10);
 
-        newUser.image = '../uploads/profiles/' + req.file.filename
+        newUser.image = '../uploads/profile/' + req.file.filename
 
 
         newUser.phone = newUser.phone.replace(/^\+63/, "0");
@@ -191,10 +191,10 @@ const controller = {
         // replace details here after db is fixed
         try{
             const allUsers = await user.findAll();
-            const adminInfo = await admin.findOne({ where: { emailAddress: 'admin@gmail.com' }}, function (result){
+            const adminInfo = await admin.findOne({ where: { emailAddress: 'tetsukasuya@gmail.com' }}, function (result){
             })
 
-            if (allUsers != null){
+            if (adminInfo != null){
                 res.render('admin',{layout: '/layouts/account.hbs',
                     full_name: adminInfo.fullName, 
                     profile_pic: adminInfo.profilePhoto, 
