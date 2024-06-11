@@ -1,15 +1,13 @@
 const express = require(`express`);
-const app = express();
-
-const path = require('path')
 const multer = require('multer')
+
+const app = express();
 
 const flagProfileUpload = (req, res, next) => {
     req.uploadType = "profile"
     next()
 }
   
-
 const storage = multer.diskStorage({
     destination: function(req, file, callback){
 
@@ -47,6 +45,7 @@ function multerError(err, req, res, next) {
 
 const credentials_controller = require('../controller/credentials_controller')
 const movie_controller = require('../controller/movie_controller')
+const passport = require('passport');
 
 // import rate limiter
 const rateLimit = require('express-rate-limit');
@@ -116,16 +115,24 @@ app.get(`/register`, function(req, res) {
 
 app.post(`/postregister`, flagProfileUpload, upload.single("file"), multerError, credentials_controller.successfulRegister)
 
-app.get(`/login`, function(req, res) {
-    if (req.session.email == undefined)
-        res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
+app.get('/login', function(req, res) {
+    res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
 });
 
-app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, credentials_controller.checkLogin);
+app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/main'}));
 
-app.get('/main', movie_controller.getMovies);
+app.get('/invalid-login', function(req, res){
+    res.status(401).json({ message: 'Invalid credentials' })
+})
 
-app.get('/account', credentials_controller.displayAccount)
+app.post('/logout', credentials_controller.logoutAccount);
+app.get('/logout', function(req, res){
+    res.redirect('/login')
+});
+
+app.get('/main', credentials_controller.isAuthenticated, movie_controller.getMovies);
+
+app.get('/account', credentials_controller.isAuthenticated, credentials_controller.displayAccount)
 
 app.get('/admin', credentials_controller.displayadminPage)
 

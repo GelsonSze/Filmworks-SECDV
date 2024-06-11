@@ -1,4 +1,4 @@
-const {user, admin} = require('../models/')
+const {user, admin, session} = require('../models/')
 const bcrypt = require('bcryptjs')
 const db = require('../models/index.js')
 const controller = {
@@ -215,6 +215,23 @@ const controller = {
         //if user info was obtained correctly go display user info
 
 
+    },
+    isAuthenticated: function(req, res, next){
+        if(req.user){
+            return next()
+        }else{
+            res.redirect('/login')
+        }
+    },
+    logoutAccount: function(req, res, next){
+        req.logout(function(err){
+            if(err){
+                return next(err)
+            }
+
+            req.session.destroy()
+            session.destroy({where:{ session_id: req.sessionID}})
+        })
     }
 }
 
