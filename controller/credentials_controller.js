@@ -111,6 +111,7 @@ const controller = {
 
         newUser.image = '../uploads/profile/' + req.file.filename
 
+
         newUser.phone = newUser.phone.replace(/^\+63/, "0");
 
         const newRegister = await user.create({
@@ -140,6 +141,7 @@ const controller = {
             // Compare provided password with stored hash
             const isMatch = await bcrypt.compare(l_password, existingUser.password);
 
+
             if (isMatch) {
                 res.redirect('/main');
             } else {
@@ -153,44 +155,65 @@ const controller = {
 
     displayAccount: async function(req, res){
         // replace details here after db is fixed
-        const userInfo = await user.findOne({ where: { emailAddress: 'user@gmail.com' }}, function (result){
-        })
+        try{
+            const userInfo = await user.findOne({ where: { emailAddress: 'user@gmail.com' }}, function (result){
+            })
+
+            if (!userInfo) {
+                return res.status(404).json({ message: 'Problems with loading account details. Reload page.' });
+            }
+
+            if (userInfo != null){
+                res.render('account',{layout: '/layouts/account.hbs',
+                    full_name: userInfo.fullName,
+                    profile_pic: userInfo.profilePhoto, 
+                    doneMovie: "doneMovies",
+                    premieringMovies: "premieringMovies",
+                    title: 'Account - Filmworks'
+                });
+            }
+            else{
+                //error showing account details
+                console.error(error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+
 
         //if user info was obtained correctly go display user info
-        if (userInfo != null){
-            res.render('account',{layout: '/layouts/account.hbs',
-                full_name: userInfo.fullName,
-                profile_pic: userInfo.profilePhoto, 
-                doneMovie: "doneMovies",
-                premieringMovies: "premieringMovies",
-                title: 'Account - Filmworks'
-            });
-        }
-        else{
-            //display error page showing that movies werent rendered properly
-        }
+
 
     },
     displayadminPage: async function(req, res){
         // replace details here after db is fixed
+        try{
+            const allUsers = await user.findAll();
+            const adminInfo = await admin.findOne({ where: { emailAddress: 'admin@gmail.com' }}, function (result){
+            })
 
-        const allUsers = await user.findAll();
-        const adminInfo = await admin.findOne({ where: { emailAddress: 'admin@gmail.com' }}, function (result){
-        })
+            if (allUsers != null){
+                res.render('admin',{layout: '/layouts/account.hbs',
+                    full_name: "ADMIN", 
+                    // full_name: adminInfo.fullName, 
+                    // profile_pic: adminInfo.profilePhoto, 
+                    profile_pic: "../images/icons/profile.png", 
+                    user: allUsers,
+                    title: 'Admin - Filmworks'
+                });
+            }
+            else{
+                //display error page showing that movies werent rendered properly
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+
         //if user info was obtained correctly go display user info
-        if (allUsers != null){
-            res.render('admin',{layout: '/layouts/account.hbs',
-                full_name: "ADMIN", 
-                // full_name: adminInfo.fullName, 
-                // profile_pic: adminInfo.profilePhoto, 
-                profile_pic: "../images/icons/profile.png", 
-                user: allUsers,
-                title: 'Admin - Filmworks'
-            });
-        }
-        else{
-            //display error page showing that movies werent rendered properly
-        }
+
 
     }
 }
