@@ -156,12 +156,8 @@ const controller = {
     displayAccount: async function(req, res){
         // replace details here after db is fixed
         try{
-            const userInfo = await user.findOne({ where: { emailAddress: 'user@gmail.com' }}, function (result){
+            const userInfo = await user.findOne({ where: { emailAddress: req.user.username }}, function (result){
             })
-
-            if (!userInfo) {
-                return res.status(404).json({ message: 'Problems with loading account details. Reload page.' });
-            }
 
             if (userInfo != null){
                 res.render('account',{layout: '/layouts/account.hbs',
@@ -183,22 +179,18 @@ const controller = {
         }
 
 
-        //if user info was obtained correctly go display user info
-
 
     },
     displayadminPage: async function(req, res){
         // replace details here after db is fixed
         try{
             const allUsers = await user.findAll();
-            const adminInfo = await admin.findOne({ where: { emailAddress: 'admin@gmail.com' }}, function (result){
+            const adminInfo = await admin.findOne({ where: { emailAddress: req.user.username }}, function (result){
             })
 
             if (allUsers != null){
                 res.render('admin',{layout: '/layouts/account.hbs',
                     full_name: "ADMIN", 
-                    // full_name: adminInfo.fullName, 
-                    // profile_pic: adminInfo.profilePhoto, 
                     profile_pic: "../images/icons/profile.png", 
                     user: allUsers,
                     title: 'Admin - Filmworks'
@@ -211,8 +203,6 @@ const controller = {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
         }
-
-        //if user info was obtained correctly go display user info
 
 
     },
