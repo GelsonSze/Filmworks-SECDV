@@ -111,11 +111,17 @@ app.get(`/`, function(req, res) {
 app.get(`/register`, function(req, res) {
     if (!req.user)
         res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'})
+app.get(`/`, credentials_controller.checknoAuth, function(req, res) {
+    res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
 });
 
-app.post(`/postregister`, flagProfileUpload, upload.single("file"), multerError, credentials_controller.successfulRegister)
+app.get(`/register`, credentials_controller.checknoAuth, function(req, res) {
+    res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'})
+});
 
-app.get('/login', function(req, res) {
+app.post(`/postregister`, credentials_controller.checknoAuth, flagProfileUpload, upload.single("file"), multerError, credentials_controller.successfulRegister)
+
+app.get('/login', credentials_controller.checknoAuth, function(req, res) {
     res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
 });
 
@@ -123,6 +129,10 @@ app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, passpo
 app.get('/post-login', credentials_controller.userRedirect)
 app.get('/invalid-login', function(req, res){
     res.status(401).json({ message: 'Invalid credentials' })
+app.post(`/login`, credentials_controller.checknoAuth,  recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/main'}));
+
+app.post('/invalid-login', credentials_controller.checknoAuth, function(req, res){
+    res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks', error: 'Invalid user or password'})
 })
 
 app.get('/logout', credentials_controller.logoutAccount);

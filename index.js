@@ -8,6 +8,7 @@ CCAPDEV S11
 var PORT = process.env.PORT || 3000;
 
 require('dotenv').config();
+const nocache = require("nocache");
 const express = require('express');
 const passport = require('passport')
 const hbs = require('hbs')
@@ -43,6 +44,7 @@ app.use(bodyParser.json())
 app.use(cookieParser());
 app.use(passport.initialize())
 app.use(passport.session())
+app.use(nocache());
 
 app.use(function(req, res, next){
     console.log(req.session)
