@@ -86,30 +86,6 @@ const controller = {
             return;
         }
 
-        // if there is no file uploaded
-        if (req.file == undefined) {
-            var info = {
-                error:'No file uploaded'
-            }
-            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
-        }
-
-        // if it is not a picture (jpeg, png, gif)
-        if (!(req.file.mimetype === 'image/jpeg') && !(req.file.mimetype === 'image/png') && !(req.file.mimetype === 'image/gif')) {
-            var info = {
-                error:'Invalid photo format'
-            }
-            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
-        }
-
         var newUser = {
             f_name: req.body.f_name,
             l_name: req.body.l_name,
