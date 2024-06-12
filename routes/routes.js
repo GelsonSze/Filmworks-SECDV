@@ -125,10 +125,10 @@ app.get('/invalid-login', function(req, res){
     res.status(401).json({ message: 'Invalid credentials' })
 })
 
-app.post('/logout', credentials_controller.logoutAccount);
-app.get('/logout', function(req, res){
-    res.redirect('/login')
-});
+app.get('/logout', credentials_controller.logoutAccount);
+// app.get('/logout', function(req, res){
+//     res.redirect('/login')
+// });
 
 app.get('/main', credentials_controller.isAuthenticated, movie_controller.getMovies);
 

@@ -159,11 +159,6 @@ const controller = {
             try{
                 const userInfo = await user.findOne({ where: { emailAddress: req.user.username }}, function (result){
                 })
-
-                // console.log("SESSION IS YES OR NOT")
-                // const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
-
-                // console.log(doneDestroy)
     
                 if (userInfo != null){
                     res.render('account',{layout: '/layouts/account.hbs',
@@ -228,9 +223,12 @@ const controller = {
         }
     },
     logoutAccount: async function(req, res, next) {
+        console.log("entered logout")
         try {
             console.log(req.sessionID)
             const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
+            console.log("LOGOUT RESULTS")
+            console.log(doneDestroy)
             
         } catch (err) {
             return next(err);
