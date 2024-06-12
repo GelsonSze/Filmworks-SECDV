@@ -1,7 +1,7 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcrypt')
-const {user, admin} = require('../models/')
+const {users, admins} = require('../models/')
 
 const userFields = {
     usernameField: 'l_email',
@@ -9,13 +9,25 @@ const userFields = {
 }
 
 const verifyCallback = async function(email, password, callback){
-    const existingUser = await user.findOne({ where: {emailAddress: email} })
+    const findUser = await users.findOne({ where: {emailAddress: email} })
+    const findAdmin = await admins.findOne({ where: {emailAddress: email} })
 
-    if (!existingUser) {
+    if (!findUser && !findAdmin) {
        return callback(null, false)
     }
 
-    const isMatch = await bcrypt.compare(password, existingUser.password)
+    let isMatch = false
+    let existingUser = null
+
+    if(findUser){
+      console.log(findUser)
+      existingUser = findUser
+      isMatch = await bcrypt.compare(password, existingUser.password)
+    }else{
+      console.log(findAdmin)
+      existingUser = findAdmin
+      isMatch = await bcrypt.compare(password, existingUser.password)
+    }
 
     if(!isMatch){
         console.log("no match")

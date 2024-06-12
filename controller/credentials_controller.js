@@ -1,4 +1,4 @@
-const {user, admin, sessions} = require('../models/')
+const {users, admins, sessions} = require('../models/')
 const bcrypt = require('bcryptjs')
 const db = require('../models/index.js')
 const controller = {
@@ -49,7 +49,7 @@ const controller = {
         }
 
         // if the email is already registered by another user
-        const existingUser = await user.findOne({ where: { emailAddress: req.body.email } });
+        const existingUser = await users.findOne({ where: { emailAddress: req.body.email } });
         if (existingUser) {
             var info = {
                 error: 'Email already registered'
@@ -62,7 +62,7 @@ const controller = {
         }
 
         // if the email is the admin email
-        const existingAdmin = await admin.findOne({ where: { emailAddress: req.body.email } });
+        const existingAdmin = await admins.findOne({ where: { emailAddress: req.body.email } });
         if (existingAdmin) {
             var info = {
                 error: 'Invalid Registration'
@@ -109,12 +109,12 @@ const controller = {
 
         newUser.password = await bcrypt.hash(req.body.password, 10);
 
-        newUser.image = '../uploads/profile/' + req.file.filename
+        newUser.image = '../uploads/profiles/' + req.file.filename
 
 
         newUser.phone = newUser.phone.replace(/^\+63/, "0");
 
-        const newRegister = await user.create({
+        const newRegister = await users.create({
                             fullName: newUser.f_name + " " + newUser.l_name,
                             emailAddress: newUser.email,
                             phoneNumber: newUser.phone,
@@ -132,7 +132,7 @@ const controller = {
         
         try {
             // Find user by email
-            const existingUser = await user.findOne({ where: {emailAddress: l_email } });
+            const existingUser = await users.findOne({ where: {emailAddress: l_email } });
 
             if (!existingUser) {
                 return res.status(404).json({ message: 'User not found' });
@@ -157,7 +157,7 @@ const controller = {
         console.log(req.session)
         if (req.user != null){
             try{
-                const userInfo = await user.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                const userInfo = await users.findOne({ where: { emailAddress: req.user.username }}, function (result){
                 })
     
                 if (userInfo != null){
@@ -186,10 +186,10 @@ const controller = {
 
     },
     displayadminPage: async function(req, res){
-        if (req.user != null){
+        if (req.user){
             try{
-                const allUsers = await user.findAll();
-                const adminInfo = await admin.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                const allUsers = await users.findAll();
+                const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }}, function (result){
                 })
 
     
@@ -226,7 +226,7 @@ const controller = {
         console.log("entered logout")
         try {
             console.log(req.sessionID)
-            res.clearCookie('connect.sid')
+            await res.clearCookie('connect.sid')
             const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
             console.log("LOGOUT RESULTS")
             console.log(doneDestroy)
@@ -235,7 +235,7 @@ const controller = {
             return next(err);
         }
 
-        req.logout(function(err){
+        await req.logout(function(err){
             if(err){
                 return next(err)
             }
@@ -244,9 +244,24 @@ const controller = {
                 if (err) {
                     return next(err);
                 }
-                res.redirect('/'); // Redirect after successful logout
+                res.redirect('/login'); // Redirect after successful logout
             });
         })
+    },
+    userRedirect: async function(req, res){
+        const email = req.user.username
+        const findUser = await users.findOne({ where: {emailAddress: email} })
+        
+        if(findUser){
+            findUser.lastLogin = new Date().toISOString().slice(0, 19).replace('T', ' ')
+            await findUser.save();
+            res.redirect('/main')
+        }else{
+            const findAdmin = await admins.findOne({ where: {emailAddress: email} })
+            findAdmin.lastLogin = new Date().toISOString().slice(0, 19).replace('T', ' ')
+            await findAdmin.save();
+            res.redirect('/admin')
+        }
     }
 }
 

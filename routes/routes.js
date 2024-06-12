@@ -104,12 +104,12 @@ app.use(requestIp.mw());
 app.use(checkBan);
 
 app.get(`/`, function(req, res) {
-    if (req.session.email == undefined)
+    if (!req.user)
     res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
 });
 
 app.get(`/register`, function(req, res) {
-    if (req.session.email == undefined)
+    if (!req.user)
         res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'})
 });
 
@@ -119,8 +119,8 @@ app.get('/login', function(req, res) {
     res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
 });
 
-app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/main'}));
-
+app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/post-login'}));
+app.get('/post-login', credentials_controller.userRedirect)
 app.get('/invalid-login', function(req, res){
     res.status(401).json({ message: 'Invalid credentials' })
 })
