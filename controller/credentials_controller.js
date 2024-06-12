@@ -154,54 +154,64 @@ const controller = {
     },
 
     displayAccount: async function(req, res){
-        // replace details here after db is fixed
-        try{
-            const userInfo = await user.findOne({ where: { emailAddress: req.user.username }}, function (result){
-            })
-
-            if (userInfo != null){
-                res.render('account',{layout: '/layouts/account.hbs',
-                    full_name: userInfo.fullName,
-                    profile_pic: userInfo.profilePhoto, 
-                    doneMovie: "doneMovies",
-                    premieringMovies: "premieringMovies",
-                    title: 'Account - Filmworks'
-                });
-            }
-            else{
-                //error showing account details
+        console.log("SESSION DETAILS")
+        console.log(session)
+        console.log(user)
+        if (req.user != null){
+            try{
+                const userInfo = await user.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                })
+    
+                if (userInfo != null){
+                    res.render('account',{layout: '/layouts/account.hbs',
+                        full_name: userInfo.fullName,
+                        profile_pic: userInfo.profilePhoto, 
+                        doneMovie: "doneMovies",
+                        premieringMovies: "premieringMovies",
+                        title: 'Account - Filmworks'
+                    });
+                }
+                else{
+                    //error showing account details
+                    console.error(error);
+                    res.status(500).json({ message: 'Internal server error' });
+                }
+            } catch (error) {
                 console.error(error);
                 res.status(500).json({ message: 'Internal server error' });
             }
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
+        }else{
+            res.redirect('/')
         }
 
 
 
     },
     displayadminPage: async function(req, res){
-        // replace details here after db is fixed
-        try{
-            const allUsers = await user.findAll();
-            const adminInfo = await admin.findOne({ where: { emailAddress: req.user.username }}, function (result){
-            })
-
-            if (allUsers != null){
-                res.render('admin',{layout: '/layouts/account.hbs',
-                    full_name: "ADMIN", 
-                    profile_pic: "../images/icons/profile.png", 
-                    user: allUsers,
-                    title: 'Admin - Filmworks'
-                });
+        if (req.user != null){
+            try{
+                const allUsers = await user.findAll();
+                const adminInfo = await admin.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                })
+    
+                if (allUsers != null){
+                    res.render('admin',{layout: '/layouts/account.hbs',
+                        full_name: adminInfo.fullName, 
+                        profile_pic: adminInfo.profilePhoto, 
+                        user: allUsers,
+                        title: 'Admin - Filmworks'
+                    });
+                }
+                else{
+                    //display error page showing that movies werent rendered properly
+                }
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal server error' });
             }
-            else{
-                //display error page showing that movies werent rendered properly
-            }
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
+        }
+        else{
+            res.redirect('/')
         }
 
 
@@ -213,15 +223,30 @@ const controller = {
             res.redirect('/login')
         }
     },
-    logoutAccount: function(req, res, next){
-        req.logout(function(err){
-            if(err){
-                return next(err)
-            }
+    logoutAccount: async function(req, res, next) {
+        console.log("ENTERED LOGOUT!!");
+        console.log("SESSION DEFINITION")
+        console.log(session)
+        try {
+            console.log(req.sessionID)
+            const done = await session.destroy({ where: { session_id: req.sessionID }});
+            
+            req.logout(function(err){
+                if(err){
+                    return next(err)
+                }})
+            
+        } catch (err) {
+            return next(err);
+        }
 
-            req.session.destroy()
-            session.destroy({where:{ session_id: req.sessionID}})
-        })
+        req.session.destroy(function(err) {
+            if (err) {
+                return next(err);
+            }
+            res.redirect('/'); // Redirect after successful logout
+        });
+
     }
 }
 
