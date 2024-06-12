@@ -103,19 +103,13 @@ var recaptcha = new Recaptcha('6LcWdvQpAAAAAGmO7xTH5juQyGA99Ye46XycpBif', '6LcWd
 app.use(requestIp.mw());
 app.use(checkBan);
 
-app.get(`/`, function(req, res) {
-    if (!req.user)
-    res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
+app.get('/', credentials_controller.checknoAuth, function(req, res) {
+    if (!req.user){
+        res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
+    }
 });
 
-app.get(`/register`, function(req, res) {
-    if (!req.user)
-        res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'})
-app.get(`/`, credentials_controller.checknoAuth, function(req, res) {
-    res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
-});
-
-app.get(`/register`, credentials_controller.checknoAuth, function(req, res) {
+app.get('/register', credentials_controller.checknoAuth, function(req, res) {
     res.render('sign_up', {layout: '/layouts/prelogin.hbs',  title: 'Sign-Up - Filmworks'})
 });
 
@@ -125,20 +119,15 @@ app.get('/login', credentials_controller.checknoAuth, function(req, res) {
     res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
 });
 
-app.post(`/login`, recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/post-login'}));
+app.post('/login', credentials_controller.checknoAuth, recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/post-login'}));
+
 app.get('/post-login', credentials_controller.userRedirect)
-app.get('/invalid-login', function(req, res){
-    res.status(401).json({ message: 'Invalid credentials' })
-app.post(`/login`, credentials_controller.checknoAuth,  recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/main'}));
 
 app.post('/invalid-login', credentials_controller.checknoAuth, function(req, res){
     res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks', error: 'Invalid user or password'})
 })
 
 app.get('/logout', credentials_controller.logoutAccount);
-// app.get('/logout', function(req, res){
-//     res.redirect('/login')
-// });
 
 app.get('/main', credentials_controller.checkAuth, movie_controller.getMovies)
 
@@ -146,4 +135,4 @@ app.get('/account', credentials_controller.checkAuth, credentials_controller.dis
 
 app.get('/admin', credentials_controller.displayadminPage)
 
-module.exports = app;
+module.exports = app
