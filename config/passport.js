@@ -33,8 +33,8 @@ passport.serializeUser(function(user, callback) {
     process.nextTick(function() {
       return callback(null, {
         id: user.id,
-        username: user.username,
-        picture: user.picture
+        username: user.emailAddress,
+        picture: user.profilePhoto
       });
     });
   });
