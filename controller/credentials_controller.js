@@ -1,4 +1,4 @@
-const {user, admin, session} = require('../models/')
+const {user, admin, sessions} = require('../models/')
 const bcrypt = require('bcryptjs')
 const db = require('../models/index.js')
 const controller = {
@@ -154,13 +154,16 @@ const controller = {
     },
 
     displayAccount: async function(req, res){
-        console.log("SESSION DETAILS")
-        console.log(session)
-        console.log(user)
+        console.log(req.session)
         if (req.user != null){
             try{
                 const userInfo = await user.findOne({ where: { emailAddress: req.user.username }}, function (result){
                 })
+
+                // console.log("SESSION IS YES OR NOT")
+                // const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
+
+                // console.log(doneDestroy)
     
                 if (userInfo != null){
                     res.render('account',{layout: '/layouts/account.hbs',
@@ -193,6 +196,7 @@ const controller = {
                 const allUsers = await user.findAll();
                 const adminInfo = await admin.findOne({ where: { emailAddress: req.user.username }}, function (result){
                 })
+
     
                 if (allUsers != null){
                     res.render('admin',{layout: '/layouts/account.hbs',
@@ -224,17 +228,9 @@ const controller = {
         }
     },
     logoutAccount: async function(req, res, next) {
-        console.log("ENTERED LOGOUT!!");
-        console.log("SESSION DEFINITION")
-        console.log(session)
         try {
             console.log(req.sessionID)
-            const done = await session.destroy({ where: { session_id: req.sessionID }});
-            
-            req.logout(function(err){
-                if(err){
-                    return next(err)
-                }})
+            const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
             
         } catch (err) {
             return next(err);
