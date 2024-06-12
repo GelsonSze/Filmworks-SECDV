@@ -135,7 +135,7 @@ const controller = {
             const existingUser = await user.findOne({ where: {emailAddress: l_email } });
 
             if (!existingUser) {
-                return res.status(404).json({ message: 'User not found' });
+                return res.status(404).json({ message: 'Invalid user or password'});
             }
 
             // Compare provided password with stored hash
@@ -145,11 +145,11 @@ const controller = {
             if (isMatch) {
                 res.redirect('/main');
             } else {
-                res.status(401).json({ message: 'Invalid credentials' });
+                res.status(401).json({ message: 'Invalid user or password'});
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(500).json({ message: 'An Error Occurred' });
         }
     },
 
@@ -172,11 +172,11 @@ const controller = {
                 else{
                     //error showing account details
                     console.error(error);
-                    res.status(500).json({ message: 'Internal server error' });
+                    res.status(500).json({ message: 'An Error Occurred' });
                 }
             } catch (error) {
                 console.error(error);
-                res.status(500).json({ message: 'Internal server error' });
+                res.status(500).json({ message: 'An Error Occurred' });
             }
         }else{
             res.redirect('/')
@@ -206,7 +206,7 @@ const controller = {
                 }
             } catch (error) {
                 console.error(error);
-                res.status(500).json({ message: 'Internal server error' });
+                res.status(500).json({ message: 'An Error Occurred' });
             }
         }
         else{
@@ -220,6 +220,13 @@ const controller = {
             return next()
         }else{
             res.redirect('/login')
+        }
+    },
+    checknoAuth: async function(req, res, next){
+        if(!req.user){
+            return next()
+        }else{
+            res.redirect('/main')
         }
     },
     logoutAccount: async function(req, res, next) {
