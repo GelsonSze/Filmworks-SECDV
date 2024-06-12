@@ -215,7 +215,7 @@ const controller = {
 
 
     },
-    isAuthenticated: function(req, res, next){
+    checkAuth: async function(req, res, next){
         if(req.user){
             return next()
         }else{
@@ -226,6 +226,7 @@ const controller = {
         console.log("entered logout")
         try {
             console.log(req.sessionID)
+            res.clearCookie('connect.sid')
             const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
             console.log("LOGOUT RESULTS")
             console.log(doneDestroy)
@@ -234,13 +235,18 @@ const controller = {
             return next(err);
         }
 
-        req.session.destroy(function(err) {
-            if (err) {
-                return next(err);
+        req.logout(function(err){
+            if(err){
+                return next(err)
             }
-            res.redirect('/'); // Redirect after successful logout
-        });
 
+            req.session.destroy(function(err) {
+                if (err) {
+                    return next(err);
+                }
+                res.redirect('/'); // Redirect after successful logout
+            });
+        })
     }
 }
 

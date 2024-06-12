@@ -16,7 +16,6 @@ const Sequelize = require('sequelize')
 const cookieParser = require('cookie-parser')
 const expressSession  = require('express-session')
 const SessionStore = require('express-session-sequelize')(expressSession.Store)
-const routes = require(`./routes/routes.js`);
 const db = require('./models')
 require('./config/passport.js')
 
@@ -50,6 +49,8 @@ app.use(function(req, res, next){
     console.log(req.user)
     next()
 })
+
+const routes = require(`./routes/routes.js`);
 
 //app.use('/user', authRoute); //this refers to the path where the data can be accessed
 

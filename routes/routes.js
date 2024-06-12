@@ -130,9 +130,9 @@ app.get('/logout', credentials_controller.logoutAccount);
 //     res.redirect('/login')
 // });
 
-app.get('/main', credentials_controller.isAuthenticated, movie_controller.getMovies);
+app.get('/main', credentials_controller.checkAuth, movie_controller.getMovies)
 
-app.get('/account', credentials_controller.isAuthenticated, credentials_controller.displayAccount)
+app.get('/account', credentials_controller.checkAuth, credentials_controller.displayAccount)
 
 app.get('/admin', credentials_controller.displayadminPage)
 
