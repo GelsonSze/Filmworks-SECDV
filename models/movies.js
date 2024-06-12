@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const movie = sequelize.define("movie", {
+    const movies = sequelize.define("movies", {
         image: {
             type: DataTypes.STRING(128),
             allowNull: false,
@@ -27,5 +27,5 @@ module.exports = (sequelize, DataTypes) => {
         }
     })
 
-    return movie
+    return movies
 }
