@@ -49,18 +49,18 @@ $(document).ready(function() {
             });
     });
 
-    // ensures password length is not less than 8
+    // ensures password length is not less than 12
     $('#password').keyup(function() {
         var password = $('#password').val(); 
 
-        if (password.length < 8) //means password length is not valid length
+        if (password.length < 12) //means password length is not valid length
         {
             $('#password').css('background-color', 'red');
-            $('#error').text('Password should at least have a length of 8 characters!');
+            $('#error').text('Password should at least have a length of 12 characters!');
         }
-        else if (password.length == 20)
+        else if (password.length == 64)
         {
-            $('#error').text('Password limit of 20 characters has been reached!');
+            $('#error').text('Password limit of 64 characters has been reached!');
         }
         else
         { 
