@@ -3,15 +3,7 @@
 In order to run the code. Please follow the steps.
 
 1. Run npm install to download all dependencies.
-2. Create a .env file with the following elements:
-    NODE_ENV="development"
-    SECRET="MAGICkeyboardCAT"
-    DB_USERNAME=""
-    DB_PASSWORD=""
-    DB_DATABASE=""
-    DB_HOST="localhost"
-    DB_DIALECT="mysql"
-
+2. Copy the .env file to the root folder and change the db credentials to match your own database configuration
 3. Create a database locally with the name milestoneone
 4. Run the sql scripts to ensure that the data needed is included in the database such as the admin account details
 5. Run npm start to start the application
