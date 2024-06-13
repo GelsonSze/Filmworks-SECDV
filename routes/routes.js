@@ -152,7 +152,7 @@ app.get('/main', credentials_controller.checkAuth, movie_controller.getMovies)
 
 app.get('/account', credentials_controller.checkAuth, credentials_controller.displayAccount)
 
-app.get('/admin', credentials_controller.displayadminPage)
+app.get(['/admin', '/analytics'], credentials_controller.checkAuth, credentials_controller.displayadminPage)
 
 app.get('*', function(req, res){
     res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Invalid user or password'})

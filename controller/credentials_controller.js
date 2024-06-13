@@ -186,7 +186,7 @@ const controller = {
                 else{
                     //error showing account details
 
-                    if(node.env.NODE_ENV == "development"){
+                    if(process.env.NODE_ENV == "development"){
                         console.error(error);
                     }
                     
@@ -194,7 +194,7 @@ const controller = {
                 }
             } catch (error) {
                 
-                if(node.env.NODE_ENV == "development"){
+                if(process.env.NODE_ENV == "development"){
                     console.error(error);
                 }
 
@@ -228,7 +228,7 @@ const controller = {
                 }
             } catch (error) {
                 
-                if(node.env.NODE_ENV == "development"){
+                if(process.env.NODE_ENV == "development"){
                     console.error(error);
                 }
 
@@ -258,14 +258,14 @@ const controller = {
     logoutAccount: async function(req, res, next) {
         try {
 
-            if(node.env.NODE_ENV == "development"){
+            if(process.env.NODE_ENV == "development"){
                 console.log(req.sessionID)
             }
 
             await res.clearCookie('connect.sid')
             const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
 
-            if(node.env.NODE_ENV == "development"){
+            if(process.env.NODE_ENV == "development"){
                 console.log("LOGOUT RESULTS")
                 console.log(doneDestroy)
             }
