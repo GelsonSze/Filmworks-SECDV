@@ -87,7 +87,7 @@ $(document).ready(function() {
         } 
     });
 
-    function checkFileType(file) {
+/*    function checkFileType(file) {
         // Allowed file types with their magic numbers (file signatures)
         const fileTypes = {
             'image/gif': '474946383761', // GIF87a
@@ -102,6 +102,63 @@ $(document).ready(function() {
                     const view = new DataView(e.target.result);
                     let signature = '';
                     for (let i = 0; i < 10; i++) {
+                        signature += view.getUint8(i).toString(16).padStart(2, '0');
+                    }
+                    for (const type in fileTypes) {
+                        if (signature.startsWith(fileTypes[type])) {
+                            // Valid file type
+                            resolve(true);
+                            return;
+                        }
+                    }
+                    // Invalid file type
+                    resolve(false);
+                }
+            };
+            reader.onerror = function() {
+                reject(new Error("File reading error"));
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    }
+    
+    // Event listener for file input change
+    $('#profile_pic').change(async function() {
+        const file = this.files[0];
+        if (file) {
+            try {
+                const isValid = await checkFileType(file);
+                if (!isValid) {
+                    // Invalid file type error handling
+                    $('#error').text('Invalid photo format.');
+                    $(this).val(''); // Clear file input
+                } else {
+                    // Valid file type handling (if needed)
+                    $('#error').text('');
+                }
+            } catch (error) {
+                // Handle errors (e.g., file reading errors)
+                $('#error').text('Error reading file.');
+                $(this).val(''); // Clear file input
+            }
+        }
+    }); */
+
+    function checkFileType(file) {
+        // Allowed file types with their magic numbers (file signatures)
+        const fileTypes = {
+            'image/gif': '47494638', // GIF
+            'image/jpeg': 'ffd8ffe0', // JPEG
+            'image/png': '89504e47', // PNG
+        };
+    
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = function(e) {
+                if (e.target.readyState == FileReader.DONE) {
+                    const view = new DataView(e.target.result);
+                    let signature = '';
+                    for (let i = 0; i < 4; i++) { // Read first 4 bytes
                         signature += view.getUint8(i).toString(16).padStart(2, '0');
                     }
                     for (const type in fileTypes) {
