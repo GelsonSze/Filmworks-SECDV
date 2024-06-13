@@ -170,7 +170,7 @@ const controller = {
                         title: 'Account - Filmworks'
                     });
                 }else if(adminInfo){
-                    res.render('account',{layout: '/layouts/account.hbs',
+                    res.render('account',{layout: '/layouts/admin.hbs',
                         full_name: adminInfo.fullName,
                         profile_pic: adminInfo.profilePhoto, 
                         doneMovie: "doneMovies",
@@ -203,7 +203,7 @@ const controller = {
 
     
                 if (adminInfo){
-                    res.render('admin',{layout: '/layouts/account.hbs',
+                    res.render('admin',{layout: '/layouts/admin.hbs',
                         full_name: adminInfo.fullName, 
                         profile_pic: adminInfo.profilePhoto, 
                         user: allUsers,
