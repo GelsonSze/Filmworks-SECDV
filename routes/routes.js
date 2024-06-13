@@ -156,4 +156,8 @@ app.get('/account', credentials_controller.checkAuth, credentials_controller.dis
 
 app.get('/admin', credentials_controller.displayadminPage)
 
+app.get('*', function(req, res){
+    res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Invalid user or password'})
+})
+
 module.exports = app
