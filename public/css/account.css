@@ -82,6 +82,13 @@ CCAPDEV S11
     font-family: "Zing Rust Base";
     font-size: 38px;
 }
+#userInfo {
+    clear: both;
+    margin-left:65px;
+    color:black;
+    font-family: "Zing Rust Base";
+    font-size: 60px;
+}
 .premiere1{
     margin: 30px 20px 40px 50px;
     width:200px;
@@ -134,4 +141,20 @@ CCAPDEV S11
     transform: scale(1.2);
     display: block;
     cursor:pointer;
+}
+
+#displayInfo {
+    border-collapse: collapse;
+    width: 85%;
+    margin: 4% 5% 3% 5%;
+}
+#displayinfo, td, th {  
+    border: 3px solid #ddd;
+    text-align: left;
+}
+
+th, td {
+    padding: 15px;
+    font-family: "Zing Rust Base";
+    font-size: 25px;
 }

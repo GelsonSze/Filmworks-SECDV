@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -17,24 +18,38 @@
   },
   "homepage": "https://github.com/Kaede924921/CCAPDEV-MP#readme",
   "dependencies": {
-    "bcrypt": "^5.0.1",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.0",
+    "busboy": "^1.6.0",
+    "connect": "^3.7.0",
     "connect-multiparty": "^2.2.0",
+    "connect-session-sequelize": "^7.1.7",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "cryptojs": "^2.5.3",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "express-fileupload": "^1.4.0",
-    "express-session": "^1.17.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-fileupload": "^1.5.0",
+    "express-rate-limit": "^7.3.1",
+    "express-recaptcha": "^5.1.0",
+    "express-session": "^1.18.0",
+    "express-session-sequelize": "^2.3.0",
     "express-validator": "^6.14.2",
     "formidable": "^2.0.1",
+    "fs": "^0.0.1-security",
     "hbs": "^4.2.0",
     "moment-timezone": "^0.5.34",
-    "mongoose": "^6.3.5",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^1.4.4-lts.1",
+    "mysql2": "^3.10.0",
+    "nocache": "^4.0.0",
+    "nodemon": "^3.1.2",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "save": "^2.5.0"
+    "path": "^0.12.7",
+    "request-ip": "^3.3.0",
+    "save": "^2.9.0",
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2"
   },
   "description": ""
 }

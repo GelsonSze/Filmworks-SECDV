@@ -1,0 +1,27 @@
+<!--
+PHASE 2 & 3
+CCAPDEV S11
+    Group Members: 
+        Ng, Sherilyn Kaye
+        Vizmanos, Julianne 
+-->  
+                <img src = {{profile_pic}} id = "account_icon">
+                <h2 class = "normal1">{{full_name}}</h2>
+                {{!-- info regarding admin status should be placed here --}}
+                <h4 class = "normal2"><center> ADMIN {{permission_level}}</center></h4> 
+
+                {{!-- displays each user and their information --}}
+                <h1 id = "userInfo">LIST OF USERS</h1>
+                <table id="displayInfo">
+                    <tr> 
+                    <th>ID</th> 
+                    {{!-- <th>Name</th>  --}}
+                    {{!-- <th>Email</th>  --}}
+                    {{!-- <th>Created On</th>  --}}
+                    <th>Latest Login</th> 
+                    {{!-- <th>Last Update</th>  --}}
+                    </tr> 
+                    {{#each user}}
+                        {{> userinfo}}
+                    {{/each}}
+                </table>

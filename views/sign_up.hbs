@@ -6,7 +6,7 @@ CCAPDEV S11
         Vizmanos, Julianne 
 -->
 <div class = "sign_upform">
-    <form id = "registerform" action = "/register" method ="post" enctype="multipart/form-data">
+    <form id = "registerform" action = "/postregister" method ="post" enctype="multipart/form-data">
         <h2 class = "divh2">SIGN UP</h2>
 
         <label for="f_name" class = "normal"><b>First Name</b></label>
@@ -15,22 +15,25 @@ CCAPDEV S11
         <label for="l_name" class = "normal"><b>Last Name</b></label>
         <input type="text" name = "l_name" autocomplete = "off" placeholder="Enter last name" id="l_name" required>
 
-        <label for="username" class = "normal"><b>Username</b></label>
-        <input type="text" name = "username" autocomplete = "off" placeholder="Enter username" id="username" required>
+        <label for="phone" class="normal"><b>Phone Number</b></label>
+        <input type="text" name="phone" autocomplete="off" placeholder="Enter phone number" id="phone_num" required>
         
         <label for="email" class = "normal"><b>Email</b></label>
         <input type="email" name = "email" autocomplete = "off" placeholder="Enter email address" id="email" required>
                 
         <label for="password" class = "normal"><b>Password</b></label>
-        <input type="password" name = "password" maxlength="20" autocomplete = "off" placeholder="Enter Password" id="password" required>
-
+        <input type="password" name = "password" maxlength="64" autocomplete = "off" placeholder="Enter Password" id="password" required>
+        <p id = "rules">At least 12 characters and 64 characters at most</p>
+        <p id = "rules">At least 1 upper case letter</p>
+        <p id = "rules">At least 1 lower case letter</p>
+        <p id = "rules">At least 1 digit</p>    
+        <p id = "rules">At least 1 special character</p>    
+        
         <label for="cpassword" class = "normal"><b>Confirm Password</b></label>
-        <input type="password" name = "cpassword" maxlength="20" autocomplete = "off" placeholder="Confirm Password" id="cpassword" required>
+        <input type="password" name = "cpassword" maxlength="64" autocomplete = "off" placeholder="Confirm Password" id="cpassword" required>
 
-        <input type="checkbox" autocomplete = "off" class="normal" name="status" id = "status">
-        <label for="status" class = "normal"> I am a Senior Citizen/PWD </label><br><br>
-
-        <input type="file" id = "file" name="file">
+        <label for="profile_pic" class = "normal"><b>Profile Picture</b></label>
+        <input type="file" id="profile_pic" name="file">
         <br>
         <a id = "link" href = "/login">Already have an account? Click here to login.</a>
         <p id = "error">{{error}}<p>
