@@ -123,7 +123,7 @@ app.post('/login', credentials_controller.checknoAuth, recaptcha.middleware.veri
 
 app.get('/post-login', credentials_controller.userRedirect)
 
-app.post('/invalid-login', credentials_controller.checknoAuth, function(req, res){
+app.get('/invalid-login', credentials_controller.checknoAuth, function(req, res){
     res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks', error: 'Invalid user or password'})
 })
 

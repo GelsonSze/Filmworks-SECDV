@@ -159,11 +159,21 @@ const controller = {
             try{
                 const userInfo = await users.findOne({ where: { emailAddress: req.user.username }}, function (result){
                 })
+                const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                })
     
-                if (userInfo != null){
+                if (userInfo){
                     res.render('account',{layout: '/layouts/account.hbs',
                         full_name: userInfo.fullName,
                         profile_pic: userInfo.profilePhoto, 
+                        doneMovie: "doneMovies",
+                        premieringMovies: "premieringMovies",
+                        title: 'Account - Filmworks'
+                    });
+                }else if(adminInfo){
+                    res.render('account',{layout: '/layouts/account.hbs',
+                        full_name: adminInfo.fullName,
+                        profile_pic: adminInfo.profilePhoto, 
                         doneMovie: "doneMovies",
                         premieringMovies: "premieringMovies",
                         title: 'Account - Filmworks'
@@ -193,7 +203,7 @@ const controller = {
                 })
 
     
-                if (allUsers != null){
+                if (adminInfo){
                     res.render('admin',{layout: '/layouts/account.hbs',
                         full_name: adminInfo.fullName, 
                         profile_pic: adminInfo.profilePhoto, 
@@ -202,7 +212,7 @@ const controller = {
                     });
                 }
                 else{
-                    //display error page showing that movies werent rendered properly
+                    res.redirect('/main')
                 }
             } catch (error) {
                 console.error(error);
