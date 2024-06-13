@@ -84,6 +84,51 @@ $(document).ready(function() {
             $('#password').css('background-color', 'white');
             $('#cpassword').css('background-color', 'white');
             $('#error').text("");
+        } 
+    });
+
+    function checkFileType(file) {
+        // Allowed file types with their magic numbers (file signatures)
+        const fileTypes = {
+            'image/gif': '474946383761', // GIF87a
+            'image/jpeg': 'ffd8ffe000104a464946', // JPEG/JFIF
+            'image/png': '89504e470d0a1a0a', // PNG
+        };
+
+        const reader = new FileReader();
+        reader.onloadend = function(e) {
+            if (e.target.readyState == FileReader.DONE) {
+                const view = new DataView(e.target.result);
+                let signature = '';
+                for (let i = 0; i < 10; i++) {
+                    signature += view.getUint8(i).toString(16);
+                }
+                for (const type in fileTypes) {
+                    if (signature.startsWith(fileTypes[type])) {
+                        // Valid file type
+                        return true;
+                    }
+                }
+                // Invalid file type
+                return false;
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // Event listener for file input change
+    $('#profile_pic').change(function() {
+        const file = this.files[0];
+        if (file) {
+            if (!checkFileType(file)) {
+                // Invalid file type error handling
+                $('#error').text('Invalid photo format.');
+                $(this).val(''); // Clear file input
+            } else {
+                // Valid file type handling (if needed)
+                $('#error').text('');
+            }
         }
     });
+    
 })
