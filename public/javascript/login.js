@@ -87,116 +87,53 @@ $(document).ready(function() {
         } 
     });
 
-/*    function checkFileType(file) {
-        // Allowed file types with their magic numbers (file signatures)
-        const fileTypes = {
-            'image/gif': '474946383761', // GIF87a
-            'image/jpeg': 'ffd8ffe000104a464946', // JPEG/JFIF
-            'image/png': '89504e470d0a1a0a', // PNG
-        };
-    
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = function(e) {
-                if (e.target.readyState == FileReader.DONE) {
-                    const view = new DataView(e.target.result);
-                    let signature = '';
-                    for (let i = 0; i < 10; i++) {
-                        signature += view.getUint8(i).toString(16).padStart(2, '0');
-                    }
-                    for (const type in fileTypes) {
-                        if (signature.startsWith(fileTypes[type])) {
-                            // Valid file type
-                            resolve(true);
-                            return;
-                        }
-                    }
-                    // Invalid file type
-                    resolve(false);
-                }
-            };
-            reader.onerror = function() {
-                reject(new Error("File reading error"));
-            };
-            reader.readAsArrayBuffer(file);
-        });
-    }
-    
-    // Event listener for file input change
-    $('#profile_pic').change(async function() {
-        const file = this.files[0];
-        if (file) {
-            try {
-                const isValid = await checkFileType(file);
-                if (!isValid) {
-                    // Invalid file type error handling
-                    $('#error').text('Invalid photo format.');
-                    $(this).val(''); // Clear file input
-                } else {
-                    // Valid file type handling (if needed)
-                    $('#error').text('');
-                }
-            } catch (error) {
-                // Handle errors (e.g., file reading errors)
-                $('#error').text('Error reading file.');
-                $(this).val(''); // Clear file input
-            }
-        }
-    }); */
-
     function checkFileType(file) {
-        // Allowed file types with their magic numbers (file signatures)
         const fileTypes = {
-            'image/gif': '47494638', // GIF
-            'image/jpeg': 'ffd8ffe0', // JPEG
-            'image/png': '89504e47', // PNG
+            'image/gif': '47494638',    // file signature of GIF
+            'image/jpeg': 'ffd8ffe0',   // file signature of JPG, JPEG, JFIF
+            'image/png': '89504e47',    // file signature of PNG
         };
     
         return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = function(e) {
-                if (e.target.readyState == FileReader.DONE) {
-                    const view = new DataView(e.target.result);
-                    let signature = '';
-                    for (let i = 0; i < 4; i++) { // Read first 4 bytes
+            const reader = new FileReader();                    // to read contents of file (async)
+            reader.onloadend = function(e) {                    // when the read operation is done
+                if (e.target.readyState == FileReader.DONE) {   // check if read is done
+                    const view = new DataView(e.target.result); // read the binary data of the file
+                    let signature = '';                         // to store the file's signature
+                    for (let i = 0; i < 4; i++) {               // read first 4 bytes
                         signature += view.getUint8(i).toString(16).padStart(2, '0');
                     }
                     for (const type in fileTypes) {
                         if (signature.startsWith(fileTypes[type])) {
-                            // Valid file type
-                            resolve(true);
+                            resolve(true);                      // valid file type
                             return;
                         }
                     }
-                    // Invalid file type
-                    resolve(false);
+                    resolve(false);                             // invalid file type
                 }
             };
-            reader.onerror = function() {
+            reader.onerror = function() {                       // when the read operation encountered an error
                 reject(new Error("File reading error"));
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsArrayBuffer(file);                     // read the file to array of binary 
         });
     }
     
-    // Event listener for file input change
+    // listener for file input change
     $('#profile_pic').change(async function() {
-        const file = this.files[0];
-        if (file) {
+        const file = this.files[0];     // get the file
+        if (file) {                     // if file exists
             try {
-                const isValid = await checkFileType(file);
-                if (!isValid) {
-                    // Invalid file type error handling
+                const isValid = await checkFileType(file);      // check if file is valid
+                if (!isValid) {                                 // if file is not valid
                     $('#error').text('Invalid photo format.');
-                    $(this).val(''); // Clear file input
-                } else {
-                    // Valid file type handling (if needed)
+                    $(this).val('');                            // clear file input
+                } else {                                        // if file is valid
                     $('#error').text('');
                 }
-            } catch (error) {
-                // Handle errors (e.g., file reading errors)
+            } catch (error) {                                   // if error 
                 $('#error').text('Error reading file.');
-                $(this).val(''); // Clear file input
+                $(this).val('');                                // clear file input
             }
         }
     });
