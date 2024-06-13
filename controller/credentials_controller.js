@@ -111,7 +111,6 @@ const controller = {
 
         newUser.image = '../uploads/profiles/' + req.file.filename
 
-
         newUser.phone = newUser.phone.replace(/^\+63/, "0");
 
         const newRegister = await users.create({

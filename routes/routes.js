@@ -7,27 +7,39 @@ const flagProfileUpload = (req, res, next) => {
     req.uploadType = "profile"
     next()
 }
-  
+
 const storage = multer.diskStorage({
     destination: function(req, file, callback){
-
         if(req.uploadType == "profile"){
             callback(null, './public/uploads/profiles')
         }else{
             callback(null, './public/uploads/movies')
         }
-
-        
     },
     filename: function(req, file, callback){
         console.log(file)
-
         callback(null, Date.now() + "_" + file.originalname)
     }
 })
+
+const fileFilter = function(req, file, callback) {
+    // if there is no file uploaded
+    if (file == undefined) {
+        callback(new Error('LIMIT_FILE_NONE'), false);
+    } // if it is not a picture (jpeg, png, gif)
+    else if (!(file.mimetype === 'image/jpeg') && !(file.mimetype === 'image/png') && !(file.mimetype === 'image/gif')) { 
+        callback(new Error('LIMIT_FILE_TYPE'), false);
+    } else {
+        callback(null, true)
+    } 
+    // if file signature / magic numbers is not a picture (jpeg, png, gif)
+};
+
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5242880}}) // 5MB = 5 * 1024 * 1024
+    limits: {fileSize: 5242880},  // 5MB = 5 * 1024 * 1024
+    fileFilter: fileFilter
+}) 
 
 function multerError(err, req, res, next) {
     if (err.code === 'LIMIT_FILE_SIZE') {
@@ -38,6 +50,27 @@ function multerError(err, req, res, next) {
             error: info.error,
             title: 'Sign-Up - Filmworks'
         });
+        return;
+
+    } else if (err.message === 'LIMIT_FILE_TYPE'){
+        var info = {
+            error:'Invalid photo format'
+        }
+        res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+            error: info.error,
+            title: 'Sign-Up - Filmworks'
+        });
+        return;
+        
+    } else if (err.message === 'LIMIT_FILE_NONE') {
+        var info = {
+            error:'No file uploaded'
+        }
+        res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+            error: info.error,
+            title: 'Sign-Up - Filmworks'
+        });
+        return;
     } else {
         next(err);
     }
