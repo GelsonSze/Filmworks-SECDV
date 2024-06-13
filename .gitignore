@@ -8,4 +8,5 @@ node_modules/
 .env
 
 #uploads folder
-public/uploads
+public/uploads/profiles/*
+!public/uploads/profiles/paimonpf.jpg
