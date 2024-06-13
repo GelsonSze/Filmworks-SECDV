@@ -21,7 +21,11 @@ const storage = multer.diskStorage({
         }
     },
     filename: function(req, file, callback){
-        console.log(file)
+
+        if(process.env.NODE_ENV == "development"){
+            console.log(file)
+        }
+
         callback(null, Date.now() + "_" + file.originalname)
     }
 })
@@ -84,15 +88,6 @@ function multerError(err, req, res, next) {
 const rateLimit = require('express-rate-limit');
 const requestIp = require('request-ip');
 
-// temporary list, will move to db? when implemented
-
-// const checkBan = (req, res, next) => {
-//     console.log("WE ARE DOING CHECK BANS RN")
-//     console.log("THIS IS THE CLIENT IP: " + req.clientIp)
-//     credentials_controller.findBannedIP
-//     next();
-// };
-
 const limiter = rateLimit({
     requestWasSuccessful: (req, res) => res.statusCode == 200,
     skipSuccessfulRequests: true,
@@ -105,14 +100,17 @@ const limiter = rateLimit({
 })
 
 const checkValidInput = (req, res, next) => {
-    console.log("TESTING");
-    console.log(req.body)
-    console.log(req.recaptcha)
+
+    if(process.env.NODE_ENV == "development"){
+        console.log(req.body)
+        console.log(req.recaptcha)
+    }
+
     if (!req.recaptcha.error) {
         res.status(200);
         next();
     } else {
-        res.status(403).send("Forbidden"); // change to whatever we need to do when captcha is failed
+        res.status(403).send("Incorrect Captcha"); // change to whatever we need to do when captcha is failed
     }
 }
 

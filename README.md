@@ -1,4 +1,3 @@
-
 ## CSSECDV - Milestone One Guide
 In order to run the code. Please follow the steps.
 

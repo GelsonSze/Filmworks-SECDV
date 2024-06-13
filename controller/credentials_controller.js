@@ -4,8 +4,11 @@ const db = require('../models/index.js')
 const controller = {
     successfulRegister: async function(req, res){
 
-        console.log(req.body)
+        if(process.env.NODE_ENV == "development"){
+            console.log(req.body)
 
+        }
+        
         const emailRegex = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/g
         const nameRegex = /^[a-zA-Z\s]+$/
         const phoneRegex1 = /^09[0-9]{9}$/g
@@ -122,7 +125,10 @@ const controller = {
                             lastLogin: null
         })
 
-        console.log(newRegister.id)
+        if(process.env.NODE_ENV == "development"){
+            console.log("New Register ID" + newRegister.id)
+        }
+
         res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
     },
 
@@ -153,7 +159,6 @@ const controller = {
     },
 
     displayAccount: async function(req, res){
-        console.log(req.session)
         if (req.user != null){
             try{
                 const userInfo = await users.findOne({ where: { emailAddress: req.user.username }}, function (result){
@@ -180,11 +185,19 @@ const controller = {
                 }
                 else{
                     //error showing account details
-                    console.error(error);
+
+                    if(node.env.NODE_ENV == "development"){
+                        console.error(error);
+                    }
+                    
                     res.status(500).json({ message: 'An Error Occurred' });
                 }
             } catch (error) {
-                console.error(error);
+                
+                if(node.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
                 res.status(500).json({ message: 'An Error Occurred' });
             }
         }else{
@@ -214,7 +227,11 @@ const controller = {
                     res.redirect('/main')
                 }
             } catch (error) {
-                console.error(error);
+                
+                if(node.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
                 res.status(500).json({ message: 'An Error Occurred' });
             }
         }
@@ -239,13 +256,19 @@ const controller = {
         }
     },
     logoutAccount: async function(req, res, next) {
-        console.log("entered logout")
         try {
-            console.log(req.sessionID)
+
+            if(node.env.NODE_ENV == "development"){
+                console.log(req.sessionID)
+            }
+
             await res.clearCookie('connect.sid')
             const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
-            console.log("LOGOUT RESULTS")
-            console.log(doneDestroy)
+
+            if(node.env.NODE_ENV == "development"){
+                console.log("LOGOUT RESULTS")
+                console.log(doneDestroy)
+            }
             
         } catch (err) {
             return next(err);
@@ -280,7 +303,6 @@ const controller = {
         }
     },
     findBannedIP: async function(req, res, next){
-        console.log("FROM CONTROLLER, THIS IS THE CLIENT IP: " + req.clientIp)
         const findIP = await bannedIPs.findOne({where: {IPAddress: req.clientIp}})
         
         if(findIP){
@@ -293,8 +315,6 @@ const controller = {
         const newBannedIP = await bannedIPs.create({
             IPAddress: req.clientIp
         })
-
-        console.log("ENTERED INSERT BANNED IP")
 
         res.status(400).json({
             message: 'Your IP has been permanently banned',

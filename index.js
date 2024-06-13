@@ -1,10 +1,3 @@
-/*
-PHASE 2 & 3
-CCAPDEV S11
-    Group Members: 
-        Ng, Sherilyn Kaye
-        Vizmanos, Julianne 
-*/
 var PORT = process.env.PORT || 3000;
 
 require('dotenv').config();
@@ -46,15 +39,15 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(nocache());
 
-app.use(function(req, res, next){
-    console.log(req.session)
-    console.log(req.user)
-    next()
-})
+if(process.env.NODE_ENV == "development"){
+    app.use(function(req, res, next){
+        console.log(req.session)
+        console.log(req.user)
+        next()
+    })
+}
 
 const routes = require(`./routes/routes.js`);
-
-//app.use('/user', authRoute); //this refers to the path where the data can be accessed
 
 app.set('views', __dirname + './views'); 
 app.set('view engine', 'hbs');
@@ -65,7 +58,9 @@ app.use(`/`, routes);
 db.sequelize.sync().then((req) => {
 
     app.listen(PORT, function(){
-        console.log("Node server is running at port 3000.....");
+        if(process.env.NODE_ENV == "development"){
+            console.log("Node server is running at port 3000.....");
+        }
     });
 })
 
