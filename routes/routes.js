@@ -3,6 +3,10 @@ const multer = require('multer')
 
 const app = express();
 
+const credentials_controller = require('../controller/credentials_controller')
+const movie_controller = require('../controller/movie_controller')
+const passport = require('passport');
+
 const flagProfileUpload = (req, res, next) => {
     req.uploadType = "profile"
     next()
@@ -76,41 +80,25 @@ function multerError(err, req, res, next) {
     }
 }
 
-const credentials_controller = require('../controller/credentials_controller')
-const movie_controller = require('../controller/movie_controller')
-const passport = require('passport');
-
 // import rate limiter
 const rateLimit = require('express-rate-limit');
 const requestIp = require('request-ip');
 
 // temporary list, will move to db? when implemented
-const bannedIPs = [];
-const checkBan = (req, res, next) => {
-    const ip = req.clientIp;
-    
-    // If IP ban has expired, remove it from the banned list
-    if (bannedIPs.length != 0 && bannedIPs.includes(ip)) {
-        return res.status(403).json({ message: 'Your IP has been permanently banned.' });
-    }
-    
-    next();
-};
+
+// const checkBan = (req, res, next) => {
+//     console.log("WE ARE DOING CHECK BANS RN")
+//     console.log("THIS IS THE CLIENT IP: " + req.clientIp)
+//     credentials_controller.findBannedIP
+//     next();
+// };
 
 const limiter = rateLimit({
     requestWasSuccessful: (req, res) => res.statusCode == 200,
     skipSuccessfulRequests: true,
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 3, // limit each IP to 3 requests per windowMs
-    handler:  (req, res, next, options) => {
-        const ip = req.clientIp;
-
-        // Add IP to the banned list
-        bannedIPs.push(ip);
-        res.status(400).json({
-            message: 'Your IP has been permanently banned',
-        });
-    },
+    handler:  credentials_controller.banIP,
     keyGenerator: (req, res) => {
         return req.clientIp // IP address 
     }
@@ -134,7 +122,7 @@ var options = { hl: 'de' }
 var recaptcha = new Recaptcha('6LcWdvQpAAAAAGmO7xTH5juQyGA99Ye46XycpBif', '6LcWdvQpAAAAACw4JmltpAPbZ_xPJlQag-JNfpDY', options)
 
 app.use(requestIp.mw());
-app.use(checkBan);
+app.use(credentials_controller.findBannedIP);
 
 app.get('/', credentials_controller.checknoAuth, function(req, res) {
     if (!req.user){
