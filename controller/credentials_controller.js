@@ -1,4 +1,4 @@
-const {users, admins, sessions} = require('../models/')
+const {users, admins, sessions, bannedIPs} = require('../models/')
 const bcrypt = require('bcryptjs')
 const db = require('../models/index.js')
 const controller = {
@@ -278,6 +278,27 @@ const controller = {
             await findAdmin.save();
             res.redirect('/admin')
         }
+    },
+    findBannedIP: async function(req, res, next){
+        console.log("FROM CONTROLLER, THIS IS THE CLIENT IP: " + req.clientIp)
+        const findIP = await bannedIPs.findOne({where: {IPAddress: req.clientIp}})
+        
+        if(findIP){
+            return res.status(403).json({ message: 'Your IP has been permanently banned.' });
+        }
+
+        next()
+    },
+    banIP: async function(req, res){
+        const newBannedIP = await bannedIPs.create({
+            IPAddress: req.clientIp
+        })
+
+        console.log("ENTERED INSERT BANNED IP")
+
+        res.status(400).json({
+            message: 'Your IP has been permanently banned',
+        });
     }
 }
 
