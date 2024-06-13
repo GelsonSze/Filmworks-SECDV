@@ -146,7 +146,7 @@ app.get('/invalid-login', credentials_controller.checknoAuth, function(req, res)
     res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks', error: 'Invalid user or password'})
 })
 
-app.get('/logout', credentials_controller.logoutAccount);
+app.get('/logout', credentials_controller.checkAuth, credentials_controller.logoutAccount);
 
 app.get('/main', credentials_controller.checkAuth, movie_controller.getMovies)
 
