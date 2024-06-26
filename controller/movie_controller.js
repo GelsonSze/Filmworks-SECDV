@@ -5,6 +5,49 @@ const movie_controller = {
         const allMovies = await movies.findAll();
         res.render('index', {layout: '/layouts/layout.hbs', movie:allMovies, title: "Main - Filmworks"}) // move to controller next time when db is functioning
     },
+
+    redirectToMoviePage: async function(req, res) {  
+        //code not working and displaying page as intended 
+        console.log("MOVIE INFORMATION")
+        console.log(req.body.m_id)
+       
+        // const movie = await movies.findOne({ where: { id:  req.body.m_id } });
+        const movie = await movies.findOne({ where: { id:  1} });
+        if (movie){
+            //insert code for adding timestamp of website
+            console.log("MOVIE DETAILS")
+            console.log(movie)
+
+            res.render('movie', {layout: '/layouts/layout.hbs', 
+                m_id: movie.id,
+                m_trailer: movie.trailer,
+                m_name: movie.title,
+                m_image: movie.image,
+                m_cast: movie.starring,
+                m_synopsis: movie.synopsis,
+                timeSlotJQ: "outputJQ",
+                title: movie.title + " - Filmworks"
+                // review: movie.reviews 
+                //idk how we will handle this for now but i will just leave design of webpage muna
+            });
+        }else{
+            //means there was no movie found given that information
+            //redirect to error page
+            if(process.env.NODE_ENV == "development"){
+                console.error(error);
+            }
+            
+            res.status(500).json({ message: 'An Error Occurred' });
+        }
+        
+        
+    }, 
+
+    addReview: async function(req, res) { 
+        //function for adding reviews for a specific movie
+
+    }
 }
+
 
 module.exports = movie_controller

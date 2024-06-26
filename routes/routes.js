@@ -158,4 +158,8 @@ app.get('*', function(req, res){
     res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Invalid user or password'})
 })
 
+app.post('/get-movie', movie_controller.redirectToMoviePage)
+
+app.post('/comment')
+
 module.exports = app

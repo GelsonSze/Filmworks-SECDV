@@ -374,3 +374,99 @@ input[type=text], input[type=password],input[type=email] {
     margin-right: 5%;
     margin-top: 20%;
 }
+
+#postReview {
+    width: min(90%, 1140px);
+    margin: 7rem auto;
+}
+
+.commentContainer {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.commentCard {
+    display: flex; /* Use flexbox for layout */
+    align-items: flex-start; /* Align items to the top */
+    padding: 30px;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    font-family: 'Helvetica';
+    font-weight: normal;
+}
+
+.reviewpic {
+    width: 208px;
+    height: 103px;
+    margin-right: 20px; /* Add space between the image and the content */
+}
+
+.reviewContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.commenterName {
+    font-family: "Zing Rust Base";
+    font-size: 25px;
+    margin: 0; /* Remove default margin */
+    padding-bottom: 5px;
+}
+
+.reviewContent p {
+    margin: 5px 0 0 0; /* Adjust margins */
+    font-size: 1rem; /* Adjust font size */
+}
+
+#newReview {
+    font-family: "Helvetica";
+}
+
+#commentButton{
+    font-family: "Zing Rust Base";
+    display: block;
+    margin: 20px auto;
+    padding: 10px 50px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+#commentButton:hover{
+    background-color: #b5262c;
+    cursor: pointer;
+}
+
+#editButton{
+    font-family: "Zing Rust Base";
+    display: block;
+    margin: 20px auto;
+    padding: 5px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    float: right; /* Add this line to align the button to the right */
+    position: relative;
+    right: 25; /* Position the button to the right */
+    bottom: 0;
+
+}
+
+#editButton:hover{
+    background-color: #b5262c;
+    cursor: pointer;
+}
+
+/* .commentContainer::before{
+    content: "";
+    background-color: grey;
+    position: absolute;
+    min-height: 100%;
+    width: 1px;
+    left: -10px;
+} */

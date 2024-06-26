@@ -101,11 +101,16 @@ CCAPDEV S11
     margin-bottom: 5px;
 }
 #wBackground2{
-    background: white;
+    /* background: white;
     height: 100%;
     margin-bottom: 2%;
     margin-left: 2%;
-    margin-right: 2%;
+    margin-right: 2%; */
+    background: white;
+    width: 100%; /* Make the element take the full width of its container */
+    margin-bottom: 2%;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    padding: 20px; /* Add some padding for better appearance */
 }
 #wBackground2::after{
     content: "";
@@ -256,4 +261,14 @@ CCAPDEV S11
 #errorMessage{
     font-family: "Zing Rust Base";
     font-size: 18px;
+}
+
+.descriptions {
+    clear: both;
+    top:40px;
+    margin-left:20px;
+    color:black;
+    font-family: "Zing Rust Base";
+    font-size: 45px;
+    padding-bottom: 15px;
 }

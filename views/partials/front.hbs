@@ -1,2 +1,6 @@
-<a href="javascript:;" onclick="" class = "movieref" name = {{id}}><img src = {{image}} alt = {{id}} class = "movie2"></a>
-<input type="hidden" name="m_id" value = {{m_id}}>
+<form id="movieForm" action="/get-movie" method="post" enctype="multipart/form-data">
+    <a href="javascript:;" onclick="this.parentNode.submit();" class="movieref" name="{{id}}">
+        <img src="{{image}}" alt="{{id}}" class="movie2">
+    </a>
+    <input type="hidden" name="m_id" value="{{m_id}}">
+</form>
