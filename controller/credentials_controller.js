@@ -4,6 +4,9 @@ const db = require('../models/index.js')
 const controller = {
     successfulRegister: async function(req, res){
 
+        console.log("REGISTRATION CONTENTS")
+        console.log(req.body)
+
         if(process.env.NODE_ENV == "development"){
             console.log(req.body)
 

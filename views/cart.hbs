@@ -1,0 +1,36 @@
+                <h1 class = "checkoutText">MOVIE CART</h1>
+                <div class="checkoutCart">
+                    <div class="allMovies">
+                        {{#each item}}
+                            {{>cartitems}}
+                        {{/each}}
+                    </div>
+                </div>
+
+                <div class="cartTotal">
+                    <div class="cartInfo">
+                        <p>
+                            <span>Subtotal:</span>
+                            <span id="subtotal"></span>
+                        </p>
+
+                        <p>
+                            <span>Number of Tickets:</span>
+                            <span id="quantity"></span>
+                        </p>
+
+                        <p>
+                            <span>PWD/Senior Discount:</span>
+                            <span id="discount"></span>
+                        </p>
+
+                        <p>
+                            <span>Total:</span>
+                            <span id="total"></span>
+                        </p>
+                    </div>
+                    <a href = "/payment">
+                        <button class="proceedCheckout" href = "/payment">Proceed to Checkout</button>
+                    </a>
+                    <center><button id="compute">Compute Total</button></center>
+                </div>

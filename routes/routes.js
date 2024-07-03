@@ -4,8 +4,10 @@ const multer = require('multer')
 const app = express();
 
 const credentials_controller = require('../controller/credentials_controller')
+const cart_controller = require('../controller/cart_controller')
 const movie_controller = require('../controller/movie_controller')
 const passport = require('passport');
+
 
 const flagProfileUpload = (req, res, next) => {
     req.uploadType = "profile"
@@ -121,6 +123,12 @@ var recaptcha = new Recaptcha('6LcWdvQpAAAAAGmO7xTH5juQyGA99Ye46XycpBif', '6LcWd
 
 app.use(requestIp.mw());
 app.use(credentials_controller.findBannedIP);
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Middleware to parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
+
 
 app.get('/', credentials_controller.checknoAuth, function(req, res) {
     if (!req.user){
@@ -140,6 +148,8 @@ app.get('/login', credentials_controller.checknoAuth, function(req, res) {
 
 app.post('/login', credentials_controller.checknoAuth, recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/post-login'}));
 
+app.post('/get-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.redirectToMoviePage)
+
 app.get('/post-login', credentials_controller.userRedirect)
 
 app.get('/invalid-login', credentials_controller.checknoAuth, function(req, res){
@@ -154,12 +164,21 @@ app.get('/account', credentials_controller.checkAuth, credentials_controller.dis
 
 app.get(['/admin', '/analytics'], credentials_controller.checkAuth, credentials_controller.displayadminPage)
 
+app.get('/payment', cart_controller.getPayment) 
+
+app.post('/postpayment', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, cart_controller.postPayment)
+
+app.get('/cart', cart_controller.getCart) 
+
+
 app.get('*', function(req, res){
     res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Invalid user or password'})
 })
 
-app.post('/get-movie', movie_controller.redirectToMoviePage)
 
-app.post('/comment')
+
+
+
+
 
 module.exports = app

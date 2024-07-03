@@ -301,4 +301,9 @@ $(document).ready(function() {
             $('#error').text("");
         }
     });
+
+    //if user is banner, a pop up shows up confirming one's decision
+    $('#banButton').click(function(){
+        
+    });
 })

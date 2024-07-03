@@ -462,6 +462,26 @@ input[type=text], input[type=password],input[type=email] {
     cursor: pointer;
 }
 
+#banButton{
+    font-family: "Zing Rust Base";
+    display: block;
+    margin: 20px auto;
+    padding: 5px 20px;
+    background-color: #b5262c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    float: right; /* Add this line to align the button to the right */
+    position: relative;
+    right: 25; /* Position the button to the right */
+    bottom: 0;
+}
+
+#banButton:hover{
+    background-color: black;
+    cursor: pointer;
+}
 /* .commentContainer::before{
     content: "";
     background-color: grey;
