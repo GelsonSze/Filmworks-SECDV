@@ -55,7 +55,7 @@ hbs.registerPartials(__dirname + `/views/partials`);
 
 app.use(`/`, routes);
 
-db.sequelize.sync().then((req) => {
+db.sequelize.sync({force: true}).then((req) => {
 
     app.listen(PORT, function(){
         if(process.env.NODE_ENV == "development"){
