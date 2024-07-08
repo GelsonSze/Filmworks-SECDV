@@ -1,5 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
     const movies = sequelize.define("movies", {
+        movieID: {
+            type: DataTypes.UUID,
+            defaultValue: sequelize.UUIDV4,
+            allowNull: false,
+            primaryKey: true
+        },
         image: {
             type: DataTypes.STRING(128),
             allowNull: false,
@@ -26,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
             notEmpty: true
         }
     })
+
+    movies.associate = function(models){
+        movies.belongsToMany(models.carts, {through: 'cart_movies', foreignKey: 'movieID', otherkey: 'cartID'})
+    }
 
     return movies
 }

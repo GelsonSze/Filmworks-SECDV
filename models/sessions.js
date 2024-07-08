@@ -1,20 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
-    const sessions = sequelize.define("sessions", {
+    const sessions = sequelize.define("Session", {
         session_id: {
-            type: DataTypes.STRING(32),
-            allowNull: false,
-            notEmpty: true,
-        },
-        expires: {
-            type: DataTypes.DATE,
-            allowNull: true,
-            notEmpty: true
-        },
-        data: {
-            type: DataTypes.TEXT,
-            allowNull: true,
-            notEmpty: true
-        }
+			type: DataTypes.STRING(32),
+			primaryKey: true,
+		},
+        expires: DataTypes.DATE,
+		data: DataTypes.TEXT
     })
 
     return sessions
