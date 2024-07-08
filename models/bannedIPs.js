@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const bannedIPs = sequelize.define("bannedIPs", {
         banID: {
             type: DataTypes.UUID,
-            defaultValue: sequelize.UUIDV4,
+            defaultValue: DataTypes.UUIDV4,
             allowNull: false,
             primaryKey: true
         },

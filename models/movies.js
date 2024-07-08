@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const movies = sequelize.define("movies", {
         movieID: {
             type: DataTypes.UUID,
-            defaultValue: sequelize.UUIDV4,
+            defaultValue: DataTypes.UUIDV4,
             allowNull: false,
             primaryKey: true
         },
