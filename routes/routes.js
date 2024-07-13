@@ -148,7 +148,9 @@ app.get('/login', credentials_controller.checknoAuth, function(req, res) {
 
 app.post('/login', credentials_controller.checknoAuth, recaptcha.middleware.verify, checkValidInput, limiter, passport.authenticate('local', { failureRedirect: '/invalid-login', successRedirect: '/post-login'}));
 
-app.post('/get-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.redirectToMoviePage)
+app.get('/getmovie/:movieID', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.redirectToMoviePage)
+
+
 
 app.get('/post-login', credentials_controller.userRedirect)
 
@@ -172,7 +174,7 @@ app.get('/cart', cart_controller.getCart)
 
 
 app.get('*', function(req, res){
-    res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Invalid user or password'})
+    res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Unknown Page'})
 })
 
 
