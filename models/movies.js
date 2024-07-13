@@ -30,11 +30,22 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(128),
             allowNull: false,
             notEmpty: true
+        },
+        price: {
+            type: DataTypes.FLOAT,
+            allowNullL: false,
+            notEmpty: true
+        },
+        quantity: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            notEmpty: true
         }
     })
 
     movies.associate = function(models){
         movies.belongsToMany(models.carts, {through: 'cart_movies', foreignKey: 'movieID', otherkey: 'cartID'})
+        movies.belongsToMany(models.time_slots, {through: 'movie_times', foreignKey: 'movieID', otherkey: 'timeID'})
     }
 
     return movies
