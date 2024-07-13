@@ -1,11 +1,3 @@
-/*
-PHASE 2 & 3 
-CCAPDEV S11
-    Group Members: 
-        Ng, Sherilyn Kaye
-        Vizmanos, Julianne 
-*/
-
 $(document).ready(function() {
     var data = 0;
 

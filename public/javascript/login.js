@@ -1,11 +1,3 @@
-/*
-PHASE 2 & 3 
-CCAPDEV S11
-    Group Members: 
-        Ng, Sherilyn Kaye
-        Vizmanos, Julianne 
-*/
-
 $(document).ready(function() {
     // check if email is part of database
     // if yes, shows error message as email should be unique per user 
