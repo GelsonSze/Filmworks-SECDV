@@ -47,9 +47,9 @@ const movie_controller = {
     redirectToMoviePage: async function(req, res) {  
         //code not working and displaying page as intended 
         console.log("MOVIE INFORMATION")
-        console.log(req.body.id)
+        console.log(req.params.movieID)
        
-        const movie = await movies.findOne({ where: { id:  req.body.id } });
+        const movie = await movies.findOne({ where: { movieID:  req.params.movieID } });
         // const movie = await movies.findOne({ where: { id:  1} });
         if (movie){
             //insert code for adding timestamp of website
@@ -59,7 +59,7 @@ const movie_controller = {
         
             //adjust this depending on whether admin or user is accessing the page
             res.render('movie', {layout: '/layouts/layout.hbs', 
-                m_id: movie.id,
+                m_id: movie.movieID,
                 m_trailer: movie.trailer,
                 m_name: movie.title,
                 m_image: movie.image,

@@ -55,8 +55,7 @@ hbs.registerPartials(__dirname + `/views/partials`);
 
 app.use(`/`, routes);
 
-db.sequelize.sync({force: true}).then((req) => {
-
+db.sequelize.sync({force: false}).then((req) => {
     app.listen(PORT, function(){
         if(process.env.NODE_ENV == "development"){
             console.log("Node server is running at port 3000.....");
