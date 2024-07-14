@@ -74,10 +74,10 @@ const movie_controller = {
             //means there was no movie found given that information
             //redirect to error page
             if(process.env.NODE_ENV == "development"){
-                console.error(error);
+                console.error(`movie with id ${req.params.movieID} not found`);
             }
             
-            res.status(500).json({ message: 'An Error Occurred' });
+            res.status(500).redirect('/error');
         }
         
         

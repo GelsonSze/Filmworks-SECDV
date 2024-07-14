@@ -1,4 +1,4 @@
-const {users, admins, sessions, bannedIPs} = require('../models/')
+const {users, admins, sessions, bannedIPs, carts} = require('../models/')
 const bcrypt = require('bcryptjs')
 const db = require('../models/index.js')
 const controller = {
@@ -127,9 +127,13 @@ const controller = {
                             password: newUser.password,
                             lastLogin: null
         })
+        
+        //create cart for user
+        const newCart = await carts.create({userID: newRegister.userID})
 
         if(process.env.NODE_ENV == "development"){
-            console.log("New Register ID" + newRegister.id)
+            console.log("New Register ID " + newRegister.userID)
+            console.log("New User Cart ID " + newCart.cartID)
         }
 
         res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})

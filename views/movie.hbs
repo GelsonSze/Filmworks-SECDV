@@ -1,15 +1,7 @@
-<!--
-PHASE 2 & 3
-CCAPDEV S11
-    Group Members: 
-        Ng, Sherilyn Kaye
-        Vizmanos, Julianne 
--->
-        
             <a href={{m_trailer}} id="trailer">
                 <img src = {{m_image}} class = "poster">
                 <img src = "../images/icons/play.png" id = "play"></a>
-            <h2 class = "normal4" id="movieTitle" alt="{{m_id}}">{{m_name}}</h2>
+            <h2 class = "normal4" id="movieTitle">{{m_name}}</h2>
             <p class = "normal5"><strong>CAST: {{m_cast}}</strong></p>
             
             <div id = "wBackground2">
@@ -35,9 +27,8 @@ CCAPDEV S11
                             </center>
                         </div><br>
                         <center><div id="errorMessage"></div></center><br><br>
-                        <button type="submit" class="addCartButton">Add To Cart</button>
+                        <a href="/addcart/{{m_id}}" class="addCartButton">Add To Cart</a>
                 </div>
-
 
                 <div id="postReview">
                     <h1 class = "descriptions">REVIEWS</h1>
