@@ -3,18 +3,17 @@ module.exports = (sequelize, DataTypes) => {
         timeID: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            primaryKey: true,
-            autoIncrement: true
+            primaryKey: true
         },
-        time: {
+        start_time: {
             type: DataTypes.STRING(128),
             allowNull: false,
             notEmpty: true,
         },
-        isMorning: {
-            type: DataTypes.BOOLEAN,
+        end_time: {
+            type: DataTypes.STRING(128),
             allowNull: false,
-            notEmpty: true
+            notEmpty: true,
         }
     }, { timestamps: false })
 
