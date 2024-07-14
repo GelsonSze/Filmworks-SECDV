@@ -25,6 +25,8 @@ module.exports = {
         trailer: "https://youtu.be/nfK6UgLra7g",
         price: 250,
         quantity: 75,
+        start_date: "2024-01-01",
+        end_date: "2024-01-14",
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -37,6 +39,8 @@ module.exports = {
         trailer: "https://youtu.be/ZQ-YX-5bAs0",
         price: 250,
         quantity: 75,
+        start_date: "2024-01-14",
+        end_date: "2024-01-28",
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -49,6 +53,8 @@ module.exports = {
         trailer: "https://youtu.be/iwROgK94zcM",
         price: 250,
         quantity: 75,
+        start_date: "2024-03-01",
+        end_date: "2024-03-14",
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -61,6 +67,8 @@ module.exports = {
         trailer: "https://youtu.be/xi-1NchUqMA",
         price: 250,
         quantity: 75,
+        start_date: "2024-03-14",
+        end_date: "2024-03-28",
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -73,6 +81,8 @@ module.exports = {
         trailer: "https://youtu.be/xU47nhruN-Q",
         price: 250,
         quantity: 75,
+        start_date: "2024-05-01",
+        end_date: "2024-05-14",
         createdAt: new Date(),
         updatedAt: new Date()
       }
