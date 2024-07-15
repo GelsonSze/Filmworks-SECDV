@@ -158,7 +158,7 @@
     transform: scale(1.1);
 }
 #buyTickets{
-    display: none;
+    display: block;
     float: right;
     background: linear-gradient(#a0c7ff, #ffffcc);
     margin-right: 40px;
@@ -228,6 +228,8 @@
     margin-left: -10px;
     margin-right: 35px;
     transition: 0.3s;
+    text-decoration: none;
+    text-align: center;
 }
 .addCartButton:hover{
     background: #24186e;

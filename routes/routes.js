@@ -150,7 +150,8 @@ app.post('/login', credentials_controller.checknoAuth, recaptcha.middleware.veri
 
 app.get('/getmovie/:movieID', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.redirectToMoviePage)
 
-
+app.get('/addcart/:movieID', credentials_controller.checkAuth, cart_controller.addMovieToCart)
+app.delete('/deletecart/:movieID', credentials_controller.checkAuth, cart_controller.deleteMovieFromCart)
 
 app.get('/post-login', credentials_controller.userRedirect)
 
@@ -170,12 +171,16 @@ app.get('/payment', cart_controller.getPayment)
 
 app.post('/postpayment', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, cart_controller.postPayment)
 
-app.get('/cart', cart_controller.getCart) 
+app.get('/cart', credentials_controller.checkAuth, cart_controller.getCart) 
 
+app.post(`/add-review/:movieID`, credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.addReview)
 
-app.get('*', function(req, res){
+app.post(`/find-movie`, credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.findMovie)
+
+app.get(['*','/error'], function(req, res){
     res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Unknown Page'})
 })
+
 
 
 
