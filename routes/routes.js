@@ -195,7 +195,7 @@ app.post('/post-update-movie', credentials_controller.checkAuth, flagProfileUplo
 
 
 app.get(['*','/error'], function(req, res){
-    res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Unknown Page'})
+    res.render('error',  {layout: '/layouts/prelogin.hbs',  title: 'Error', error: 'Unknown Page'})
 })
 
 
