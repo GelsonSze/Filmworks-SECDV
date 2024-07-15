@@ -173,10 +173,14 @@ app.post('/postpayment', credentials_controller.checkAuth, flagProfileUpload, up
 
 app.get('/cart', credentials_controller.checkAuth, cart_controller.getCart) 
 
+app.post(`/add-review/:movieID`, credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.addReview)
+
+app.post(`/find-movie`, credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.findMovie)
 
 app.get(['*','/error'], function(req, res){
     res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Unknown Page'})
 })
+
 
 
 

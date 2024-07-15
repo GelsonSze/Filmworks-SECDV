@@ -36,9 +36,20 @@
                         <div class = "commentCard">
                             <div class = "reviewContent">
                                 <h3 class = "commenterName">ADD REVIEW</h3>
-                                <textarea name = "" id = "newReview" cols = "120" rows = "3">
-                                </textarea>
-                                <button id="commentButton">Post</button>
+                                <form action="/add-review/{{m_id}}" method = "POST" enctype="application/x-www-form-urlencoded">
+                                    <label for="rating">Rate the movie (1 - 5)</label>
+                                    <select name="rating" id="rating">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                    <br><br>
+                                    <textarea name = "" id = "newReview" cols = "120" rows = "3">
+                                    </textarea>
+                                    <input type="submit" id = "commentButton" value="Post">
+                                </form>
                             </div>
                         </div>
                     </div>
