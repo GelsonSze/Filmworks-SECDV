@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     }, { timestamps: false })
 
     time_slots.associate = function(models){
-        time_slots.belongsToMany(models.movies, {through: 'movie_times', foreignKey: 'timeID', otherKey: 'movieID'})
+        time_slots.belongsToMany(models.movies, {through: models.movie_times, foreignKey: 'timeID', otherKey: 'movieID'})
     }
 
     return time_slots

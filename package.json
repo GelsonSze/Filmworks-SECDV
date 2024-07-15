@@ -7,7 +7,8 @@
     "start": "nodemon index.js",
     "create:seed": "npx sequelize-cli seed:generate",
     "create:migration": "npx sequelize-cli migration:generate",
-    "db:setup": "npx sequelize-cli db:migrate --debug && npx sequelize-cli db:seed:all --debug"
+    "db:setup": "npx sequelize-cli db:migrate --debug && npx sequelize-cli db:seed:all --debug",
+    "db:upgrade": "npx sequelize-cli db:migrate --debug"
   },
   "repository": {
     "type": "git",

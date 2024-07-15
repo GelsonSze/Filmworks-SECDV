@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
 
     carts.associate = function(models){
         carts.belongsTo(models.users, {foreignKey: 'userID'});
-        carts.belongsToMany(models.movies, {through: 'cart_movies', foreignKey: 'cartID', otherkey: 'movieID'})
+        carts.belongsToMany(models.movies, {through: models.cart_movies, foreignKey: 'cartID', otherkey: 'movieID'})
     }
 
     return carts
