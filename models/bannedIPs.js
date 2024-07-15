@@ -12,8 +12,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(46),
             allowNull: false,
             notEmpty: true
+        },
+        bannedAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            allowNull: false,
+            notEmpty: true
         }
-    })
+    }, {timestamps: false})
 
     return bannedIPs
 }

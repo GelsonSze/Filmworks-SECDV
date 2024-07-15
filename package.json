@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
     "create:seed": "npx sequelize-cli seed:generate",
-    "seed:all": "npx sequelize-cli db:seed:all"
+    "create:migration": "npx sequelize-cli migration:generate",
+    "db:setup": "npx sequelize-cli db:migrate --debug && npx sequelize-cli db:seed:all --debug"
   },
   "repository": {
     "type": "git",
