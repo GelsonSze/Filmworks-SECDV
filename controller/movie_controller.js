@@ -313,8 +313,93 @@ const movie_controller = {
 
     postUpdateMovieDetails: async function(req, res){
         //check information in the form
-        //redirect to movie page and show updated movie information
+        //redirect to main page of website
     },
+
+    getAddTimeSlot: async function(req, res){
+
+        //selects the movie who needs more timeslots
+        //display first the get delete movie page except that user inputs the movie ID of page one wishes to update
+
+        //render page for deleting movie information
+        //check first if user is admin
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+
+            const timeslots = await time_slots.findAll()
+            if (timeslots){
+                //after checking if user is admin, display page to be rendered and checking if timeslots are available
+                res.render('add-timeslot', {layout: '/layouts/layout_admin.hbs', 
+                    time: timeslots
+                });
+            }
+
+        }
+    },
+
+    postAddTimeSlot: async function(req, res){
+        //redirects to the page which shows the timeslot options to be added for the movie
+
+        //render page for deleting movie information
+        //check first if user is admin
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //check contents of each field in the form
+            //redirect to main page and show the updated list of movies
+            try{
+                console.log("MOVIE TO BE UPDATED")
+                console.log(req.body.movie_title)
+                const [start_time, end_time] = req.body.time_slots.split(' - ');
+                const movie_title = req.body.movie_title.toUpperCase()
+                
+                //given movie title find movie
+                const movie_update = await movies.findOne({ where: { title: movie_title }})
+                
+                //means movie exists
+                if (movie_update){
+                    const timeslot = await time_slots.findOne({ where: { 
+                        start_time: start_time,
+                        end_time: end_time
+                    }})
+                    
+                    console.log("TESTING RESULTS OBTAINED FROM TIMESLOT")
+                    console.log(timeslot)
+                   
+                    //double check this part since it is not working
+                    // const addedTimeslot = movie_times.create({
+                    //     movieID: movie_update.movieID,  //get the ID of the movie 
+                    //     timeID: timeslot.timeID
+                    // })
+                    
+                    // console.log("ADDING TO MOVIE TIMES DB")
+                    // console.log(addedTimeslot)
+    
+                    //maybe show a success message??
+                    res.redirect('/')
+                }else{
+                    //movie doesnt exist so error happens
+                    if(process.env.NODE_ENV == "development"){
+                        console.error(error);
+                    }
+
+                    res.status(500).json({ message: 'An Error Occurred' });
+                }
+
+
+            }catch(error){
+                //show error information
+                if(process.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
+                res.status(500).json({ message: 'An Error Occurred' });
+            }
+        }
+    },
+
+
 
     findMovie: async function(req, res){
         //get movie title

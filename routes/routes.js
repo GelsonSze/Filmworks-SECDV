@@ -193,6 +193,11 @@ app.post('/update-movie-details', credentials_controller.checkAuth, flagProfileU
 
 app.post('/post-update-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postUpdateMovieDetails)
 
+app.get('/add-timeslot', movie_controller.getAddTimeSlot)
+
+app.post('/update-movie-timeslot', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postAddTimeSlot)
+
+
 
 app.get(['*','/error'], function(req, res){
     res.render('error',  {layout: '/layouts/prelogin.hbs',  title: 'Error', error: 'Unknown Page'})
