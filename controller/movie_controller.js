@@ -1,4 +1,4 @@
-const {movies, users, admins, reviews} = require('../models/')
+const {movies, users, admins, reviews, time_slots, movie_times} = require('../models/')
 
 const movie_controller = {
     getMovies: async function(req, res) {   
@@ -84,9 +84,163 @@ const movie_controller = {
         
     }, 
 
+    getAddMovies: async function(req, res){
+        //get the page for adding movies
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //after checking if user is admin, display page to be rendered
+            res.render('add-movies', {layout: '/layouts/layout_admin.hbs'});
+        }
+    }, 
+
+    addMovie: async function(req, res){
+        //render page for adding movie information
+        //check first if user is admin
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //after checking if user is admin, display page to be rendered
+            res.render('add-movie-db', {layout: '/layouts/layout_admin.hbs'});
+        }
+    },
+
+    postaddMovie: async function(req, res){
+        //check contents of each field in the form
+        //redirect to main page and show the new movie 
+    },
+
+    getDeleteMovie: async function(req, res){
+        //render page for deleting movie information
+        //check first if user is admin
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //after checking if user is admin, display page to be rendered
+            res.render('delete-movie-db', {layout: '/layouts/layout_admin.hbs'});
+        }
+    },
+
+    postDeleteMovie: async function(req, res){
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //check contents of each field in the form
+            //redirect to main page and show the updated list of movies
+            try{
+                console.log("MOVIE TO BE DELETED")
+                console.log(req.body.movie_title)
+                const movie_title = req.body.movie_title.toUpperCase()
+                
+                //given movie title find movie
+                const movie_delete = await movies.findOne({ where: { title: movie_title }})
+                //replace above with this
+                // const movie_delete = await movies.destroy({ where: { title: movie_title }})
+
+
+                //get the movietimes and information needed
+                //error with this code to be fixed later once the time slots db has been populated
+                // const movieTimes = await movie_times.findAll({ where: { movieID: movie_delete.movieID }})
+                // const timeIDs = movieTimes.map(entry => entry.timeID);
+                // const time_delete = await time_slots.findOne({ where: { timeID: timeIDs }})
+    
+                console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
+                console.log(movie_delete)
+                // console.log(time_delete)
+
+                const allMovies = await movies.findAll(); //display movies that were not deleted
+                res.render('index',{layout: '/layouts/layout_admin.hbs',
+                    movie: allMovies,
+                    title: "Main - Filmworks"
+                });
+            }catch(error){
+                //show error information
+                if(process.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
+                res.status(500).json({ message: 'An Error Occurred' });
+            }
+
+
+
+        }
+
+    },
+
+    getUpdateMovie: async function(req, res){
+        //display first the get delete movie page except that user inputs the movie ID of page one wishes to update
+
+        //render page for deleting movie information
+        //check first if user is admin
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //after checking if user is admin, display page to be rendered
+            res.render('update-movie-db', {layout: '/layouts/layout_admin.hbs'});
+        }
+    },
+
+    updateMovieDetails: async function(req, res){
+        //after submitting it, redirect to this page and check 
+        //display the create page except the parameters are the ones from the db
+        //user has option to 
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //check contents of each field in the form
+            //redirect to main page and show the updated list of movies
+            try{
+                console.log("MOVIE TO BE UPDATED")
+                console.log(req.body.movie_title)
+                const movie_title = req.body.movie_title.toUpperCase()
+                
+                //given movie title find movie
+                const movie_update = await movies.findOne({ where: { title: movie_title }})
+                //replace above with this
+                // const movie_delete = await movies.destroy({ where: { title: movie_title }})
+
+
+                //get the movietimes and information needed
+                //error with this code to be fixed later once the time slots db has been populated
+                // const movieTimes = await movie_times.findAll({ where: { movieID: movie_delete.movieID }})
+                // const timeIDs = movieTimes.map(entry => entry.timeID);
+                // const time_delete = await time_slots.findOne({ where: { timeID: timeIDs }})
+    
+                console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
+                console.log(movie_update.title)
+                res.render('update-movie-details', {layout: '/layouts/layout_admin.hbs', 
+                    movie_title: movie_update.title,
+                    movie_cast: movie_update.starring,
+                    movie_synopsis: movie_update.synopsis,
+                    movie_trailer: movie_update.trailer,
+                    movie_price: movie_update.price,
+                    movie_quantity: movie_update.quantity
+                });
+
+            }catch(error){
+                //show error information
+                if(process.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
+                res.status(500).json({ message: 'An Error Occurred' });
+            }
+
+
+
+        }
+
+    },
+
+    postUpdateMovieDetails: async function(req, res){
+        //check information in the form
+        //redirect to movie page and show updated movie information
+    },
+
     findMovie: async function(req, res){
         //get movie title
-        var movie_name = req.body.search
+        const movie_name = req.body.search
         movie_name = movie_name.toUpperCase()
 
         //check movie if it exists

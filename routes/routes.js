@@ -177,6 +177,23 @@ app.post(`/add-review/:movieID`, credentials_controller.checkAuth, flagProfileUp
 
 app.post(`/find-movie`, credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.findMovie)
 
+app.get('/add-movie', movie_controller.getAddMovies) 
+
+app.get('/add-movie-db', movie_controller.addMovie)
+
+app.post('/post-add-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postaddMovie)
+
+app.get('/delete-movie', movie_controller.getDeleteMovie)
+
+app.post('/post-delete-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postDeleteMovie)
+
+app.get('/update-movie', movie_controller.getUpdateMovie)
+
+app.post('/update-movie-details', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.updateMovieDetails)
+
+app.post('/post-update-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postUpdateMovieDetails)
+
+
 app.get(['*','/error'], function(req, res){
     res.render('error',  {layout: '/layouts/layout.hbs',  title: 'Error', error: 'Unknown Page'})
 })

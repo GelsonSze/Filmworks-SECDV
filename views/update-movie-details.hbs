@@ -1,0 +1,28 @@
+<div class = "sign_upform">
+    <form id = "registerform" action = "/post-update-movie" method ="post" enctype="multipart/form-data">
+        <h2 class = "divh2">UPDATE MOVIE</h2>
+
+        <label for="movie_title" class = "normal"><b>Title</b></label>
+        <input type="text" name = "movie_title" autocomplete = "off" placeholder="Enter movie title" id="movie_title" value="{{movie_title}}" required>
+                    
+        <label for="movie_cast" class = "normal"><b>Cast</b></label>
+        <input type="text" name = "movie_cast" autocomplete = "off" placeholder="Enter movie cast" id="movie_cast" value="{{movie_cast}}" required>
+
+        <label for="movie_synopsis" class = "normal"><b>Synopsis</b></label>
+        <input type="text" name = "movie_synopsis" autocomplete = "off" placeholder="Enter movie synopsis" id="movie_synopsis" value="{{movie_synopsis}}" required>
+
+        <label for="movie_trailer" class = "normal"><b>Trailer URL</b></label>
+        <input type="text" name = "movie_trailer" autocomplete = "off" placeholder="Enter movie trailer URL" id="movie_trailer" value="{{movie_trailer}}" required>
+
+        <label for="movie_price" class="normal"><b>Price</b></label>
+        <input type="text" name="movie_price" autocomplete="off" placeholder="Enter movie price" id="movie_price" value="{{movie_price}}" required>
+
+        <label for="movie_quantity" class="normal"><b>Ticket Quantity</b></label>
+        <input type="text" name="movie_quantity" autocomplete="off" placeholder="Enter movie ticket quantity" id="movie_quantity" value="{{movie_quantity}}" required>
+        
+        <label for="movie_poster" class = "normal"><b>Movie Poster</b></label>
+        <input type="file" id="movie_poster" name="file">
+        <br>
+        <input type="submit" id = "commentButton" value = "UPDATE MOVIE">
+    </form>
+</div>
