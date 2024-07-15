@@ -20,6 +20,14 @@
         <label for="movie_quantity" class="normal"><b>Ticket Quantity</b></label>
         <input type="text" name="movie_quantity" autocomplete="off" placeholder="Enter movie ticket quantity" id="movie_quantity" value="{{movie_quantity}}" required>
         
+        <label for="timeslots" class = "normal">Movie Timeslot</label>
+        <select name="time_slots" id="time_slots">
+            {{#each time}}
+                {{> timeslots}}
+            {{/each}}
+        </select>
+        <br>
+        
         <label for="movie_poster" class = "normal"><b>Movie Poster</b></label>
         <input type="file" id="movie_poster" name="file">
         <br>

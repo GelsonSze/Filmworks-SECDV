@@ -177,7 +177,7 @@ app.post(`/add-review/:movieID`, credentials_controller.checkAuth, flagProfileUp
 
 app.post(`/find-movie`, credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.findMovie)
 
-app.get('/add-movie', movie_controller.getAddMovies) 
+app.get('/movie-details', movie_controller.getAddMovies) 
 
 app.get('/add-movie-db', movie_controller.addMovie)
 

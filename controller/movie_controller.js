@@ -90,7 +90,7 @@ const movie_controller = {
         //means user is admin
         if (adminInfo){
             //after checking if user is admin, display page to be rendered
-            res.render('add-movies', {layout: '/layouts/layout_admin.hbs'});
+            res.render('movie-details', {layout: '/layouts/layout_admin.hbs'});
         }
     }, 
 
@@ -100,14 +100,90 @@ const movie_controller = {
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
         //means user is admin
         if (adminInfo){
-            //after checking if user is admin, display page to be rendered
-            res.render('add-movie-db', {layout: '/layouts/layout_admin.hbs'});
+            //get timeslots list from db
+            const timeslots = await time_slots.findAll()
+
+            res.render('add-movie-db', {layout: '/layouts/layout_admin.hbs', 
+                time: timeslots
+            });
         }
     },
 
     postaddMovie: async function(req, res){
         //check contents of each field in the form
         //redirect to main page and show the new movie 
+        const wordsRegex = /^[a-zA-Z0-9]+$/
+        const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
+        const numberRegex = /^[0-9]+$/
+        
+        if (!wordsRegex.test(req.body.movie_title) || !wordsRegex.test(req.body.movie_cast) || !wordsRegex.test(req.body.movie_synopsis)) {
+            var info = {
+                error:'Invalid text format'
+            }
+            res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                error: info.error,
+                title: 'Error - Filmworks'
+            });
+            return;
+        }
+
+        if (!trailerRegex.test(req.body.movie_trailer)) {
+            var info = {
+                error:'Invalid URL for trailer'
+            }
+            res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                error: info.error,
+                title: 'Error - Filmworks'
+            });
+            return;
+        }
+        
+        if (!numberRegex.test(req.body.movie_price) || !numberRegex.test(req.body.movie_quantity)) {
+            var info = {
+                error:'Invalid input for ticket quantity and/or price'
+            }
+            res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                error: info.error,
+                title: 'Error - Filmworks'
+            });
+            return;
+        }
+
+        if (req.file == undefined) {
+            var info = {
+                error:'No file uploaded'
+            }
+            res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                error: info.error,
+                title: 'Error - Filmworks'
+            });
+            return;
+        }
+
+        var newMovie = {
+            title: req.body.movie_title,
+            starring: req.body.movie_cast,
+            synopsis: req.body.movie_synopsis,
+            trailer: req.body.movie_trailer,
+            price: req.body.movie_price,
+            quantity: req.body.movie_quantity,
+            // start_date: 
+            // end_date:
+        }
+        
+        newMovie.image = '../uploads/movies/' + req.file.filename
+
+        //add the newly created movie to the db
+        const insertMovie = await movies.create({
+            title: newMovie.title,
+            starring: newMovie.starring,
+            synopsis: newMovie.synopsis,
+            trailer:newMovie.trailer,
+            price: newMovie.price,
+            quantity: newMovie.quantity,
+            // start_date: 
+            // end_date:
+        })
     },
 
     getDeleteMovie: async function(req, res){
@@ -138,11 +214,8 @@ const movie_controller = {
                 // const movie_delete = await movies.destroy({ where: { title: movie_title }})
 
 
-                //get the movietimes and information needed
-                //error with this code to be fixed later once the time slots db has been populated
-                // const movieTimes = await movie_times.findAll({ where: { movieID: movie_delete.movieID }})
-                // const timeIDs = movieTimes.map(entry => entry.timeID);
-                // const time_delete = await time_slots.findOne({ where: { timeID: timeIDs }})
+
+                // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
     
                 console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
                 console.log(movie_delete)
@@ -197,6 +270,10 @@ const movie_controller = {
                 
                 //given movie title find movie
                 const movie_update = await movies.findOne({ where: { title: movie_title }})
+                const timeslots = await time_slots.findAll()
+
+
+
                 //replace above with this
                 // const movie_delete = await movies.destroy({ where: { title: movie_title }})
 
@@ -215,7 +292,8 @@ const movie_controller = {
                     movie_synopsis: movie_update.synopsis,
                     movie_trailer: movie_update.trailer,
                     movie_price: movie_update.price,
-                    movie_quantity: movie_update.quantity
+                    movie_quantity: movie_update.quantity, 
+                    time: timeslots
                 });
 
             }catch(error){
