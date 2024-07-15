@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
         timeID: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
         start_time: {
             type: DataTypes.STRING(128),
@@ -18,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     }, { timestamps: false })
 
     time_slots.associate = function(models){
-        time_slots.belongsToMany(models.movies, {through: 'movie_times', foreignKey: 'timeID', otherkey: 'movieID'})
+        time_slots.belongsToMany(models.movies, {through: 'movie_times', foreignKey: 'timeID', otherKey: 'movieID'})
     }
 
     return time_slots

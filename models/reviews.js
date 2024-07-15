@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
 
     reviews.associate = function(models){
         reviews.belongsTo(models.users, {foreignKey: 'userID'})
+        reviews.belongsToMany(models.movies, {through: "movie_reviews", foreignKey: "reviewID", otherKey: "movieID"})
     }
 
     return reviews
