@@ -50,6 +50,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         date_purchased: {
             type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
             allowNull: false,
             notEmpty: true
         }

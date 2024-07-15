@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
         timeID: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
         start_time: {
             type: DataTypes.STRING(128),
