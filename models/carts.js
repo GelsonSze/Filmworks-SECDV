@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true
         },
+        userID: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            primaryKey: true
+        },
     })
 
     carts.associate = function(models){
