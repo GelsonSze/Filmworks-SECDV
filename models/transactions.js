@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     const transactions = sequelize.define("transactions", {
         transactionID: {
             type: DataTypes.UUID,
-            defaultValue: uuidv4(),
+            defaultValue: function(){
+                return uuidv4()
+            },
             allowNull: false,
             primaryKey: true
         },

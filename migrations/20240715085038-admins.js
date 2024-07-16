@@ -14,7 +14,9 @@ module.exports = {
     await queryInterface.createTable('admins', {
       adminID: {
         type: Sequelize.DataTypes.UUID,
-        defaultValue: uuidv4(),
+        defaultValue: function(){
+          return uuidv4()
+        },
         allowNull: false,
         primaryKey: true
       },

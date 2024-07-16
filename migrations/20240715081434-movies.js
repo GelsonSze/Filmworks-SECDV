@@ -13,7 +13,9 @@ module.exports = {
     queryInterface.createTable('movies', {
       movieID: {
         type: Sequelize.DataTypes.UUID,
-        defaultValue: uuidv4(),
+        defaultValue: function(){
+          return uuidv4()
+        },
         allowNull: false,
         primaryKey: true
       },
