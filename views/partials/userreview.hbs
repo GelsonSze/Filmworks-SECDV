@@ -1,10 +1,25 @@
-                    <div class = "commentContainer">
-                        <div class = "commentCard">
-                            {{!-- <img src = {{this.profilePhoto}} class = "reviewpic"> --}}
-                            <div class = "reviewContent">
-                                <h3 class = "commenterName">{{reviewer}}</h3>
-                                <h2 class = "commenterName"> Rating: {{rating}}</h3>
-                                <p>{{description}}</p>
+                    
+                        <div class = "commentContainer">
+                            <div class = "commentCard">
+                                {{!-- <img src = {{this.profilePhoto}} class = "reviewpic"> --}}
+                                <div class = "reviewContent">
+                                    <form action="/edit-review/{{reviewID}}" method = "POST" enctype="application/x-www-form-urlencoded">
+                                        <h3 class = "commenterName">{{reviewer}}</h3>
+                                        <div class="reviewContainer">
+                                            <h3 class = "commenterName"> Rating: </h3>
+                                            <textarea cols = "10" rows = "1" name="rating" id="editRating" readonly>{{rating}}</textarea>
+                                        </div>
+                                        
+                                        <textarea id="description" cols = "120" rows = "3" name="description" readonly>{{description}}</textarea>
+                                        <div class="reviewContainer">
+                                            <input type="submit" id = "saveButton" value="Save">
+                                            <input type="button" id = "editButton" value="Edit">
+                                    </form>
+                                    
+                                    <form action="/delete-review/{{reviewID}}" method = "POST" enctype="application/x-www-form-urlencoded">
+                                        <input type="submit" id = "deleteButton" value="Delete">
+                                    </form>
+                                        </div>
+                                </div>
                             </div>
                         </div>
-                    </div>

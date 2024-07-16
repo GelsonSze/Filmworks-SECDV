@@ -6,7 +6,10 @@ const db = require('../models/index.js')
 const cart_controller = {
     getCart: async function(req, res) {
         const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
-        const usercart = await carts.findOne({where: {userID: user.userID}, include:'movies'})
+        const usercart = await carts.findOne({where: {userID: user.userID}, include:movies})
+
+        console.log(usercart)
+
         var totalPrice = 0;
         var totalQuantity = 0;
         usercart.movies.forEach((movie)=>{

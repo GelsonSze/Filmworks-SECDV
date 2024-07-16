@@ -19,6 +19,48 @@ function play(){
     displayPlay.style.display = "block";
 }
 
+$(document).ready(function() {
+    const textareaValue = $('#description').val().trim();
+    const ratingValue = $('#editRating').val().trim();
+
+    $('#editButton').click(function() {
+        $('#description').removeAttr('readonly');
+        $('#editRating').removeAttr('readonly');
+
+        $('#editButton').hide();
+        $('#saveButton').show();
+    });
+
+    $('#saveButton').click(function(event) {
+        var textarea = $('#description').val().trim();
+        var rating = $('#editRating').val().trim();
+
+        if (!textarea || !rating) {
+            alert('The fields cannot be empty.');
+            $('#description').val(textareaValue);
+            $('#editRating').val(ratingValue);
+
+            $('#description').attr('readonly', true);
+            $('#editRating').attr('readonly', true);
+
+            $('#editButton').show();
+            $('#saveButton').hide();
+            event.preventDefault();
+        } else if ( rating < 1 || rating > 5) {
+            alert('Rating ranges from 1 to 5 only.');
+            $('#description').val(textareaValue);
+            $('#editRating').val(ratingValue);
+
+            $('#description').attr('readonly', true);
+            $('#editRating').attr('readonly', true);
+            
+            $('#editButton').show();
+            $('#saveButton').hide();
+            event.preventDefault();
+        }
+    });
+})
+
 /*
 
 function buy1(){
@@ -76,5 +118,4 @@ function buy4(){
     }
     document.getElementById("date").innerHTML = document.getElementById("secondDate").innerHTML;
     document.getElementById("time").innerHTML = document.getElementById("fourthTime").innerHTML;
-}
-*/
+} */
