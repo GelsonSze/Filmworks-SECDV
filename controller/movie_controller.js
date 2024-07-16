@@ -619,6 +619,73 @@ const movie_controller = {
             res.status(500).redirect('/error');
         }
 
+    },
+
+    deleteReview: async function(req, res) { 
+        //function for deleting reviews for a specific movie
+        //check if reviewID exists 
+
+        console.log(req.params.reviewID)
+        const review = await reviews.findOne({where: {reviewID: req.params.reviewID}})
+        console.log("review")
+        console.log(review)
+        
+        //if reviewID exists, means we can delete a review 
+        if (review){
+            const currentUserID = await users.findOne({
+                attributes: ['userID'],
+                where: {emailAddress: req.session.passport.user.username}
+            })
+
+            // if user deleting review is the user that posted the review exists first
+            if (currentUserID.userID === review.userID){
+                const movieReview = await movie_reviews.findOne({where: {reviewID: req.params.reviewID}})
+                const movie = await movies.findOne({where: {movieID: movieReview.movieID} })
+                const movieReviewDestroy = await movie_reviews.destroy({where: {reviewID: req.params.reviewID}})
+                const reviewDestroy = await reviews.destroy({where: {reviewID: req.params.reviewID}})
+
+                const movieReviews = await movie_reviews.findAll({
+                    attributes: ['reviewID'],
+                    where: {movieID: movie.movieID}
+                })
+
+                const reviewIDs = movieReviews.map(review => review.reviewID);
+            
+                const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
+
+                //after removing the review from the db
+                //render the movie page again with the updated review list
+                //get the reviews given the movieID from the DB
+                res.render('movie', {layout: '/layouts/layout.hbs', 
+                    m_id: movie.movieID,
+                    m_trailer: movie.trailer,
+                    m_name: movie.title,
+                    m_image: movie.image,
+                    m_cast: movie.starring,
+                    m_synopsis: movie.synopsis,
+                    timeSlotJQ: "outputJQ",
+                    title: movie.title + " - Filmworks",
+                    review: allReviews 
+                    //idk how we will handle this for now but i will just leave design of webpage muna
+                });
+            }
+            else{
+                //error
+                if(process.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+                
+                res.status(500).json({ message: 'An Error Occurred' });
+            }
+
+        }else{
+            //error occured
+            if(process.env.NODE_ENV == "development"){
+                console.error(`movie with id ${req.params.movieID} not found`);
+            }
+            
+            res.status(500).redirect('/error');
+        }
     }
 }
 
