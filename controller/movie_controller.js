@@ -114,78 +114,135 @@ const movie_controller = {
     postaddMovie: async function(req, res){
         //check contents of each field in the form
         //redirect to main page and show the new movie 
-        const wordsRegex = /^[a-zA-Z0-9]+$/
-        const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
-        const numberRegex = /^[0-9]+$/
-        
-        if (!wordsRegex.test(req.body.movie_title) || !wordsRegex.test(req.body.movie_cast) || !wordsRegex.test(req.body.movie_synopsis)) {
-            var info = {
-                error:'Invalid text format'
-            }
-            res.render('error',{layout: '/layouts/layout_admin.hbs', 
-                error: info.error,
-                title: 'Error - Filmworks'
-            });
-            return;
-        }
 
-        if (!trailerRegex.test(req.body.movie_trailer)) {
-            var info = {
-                error:'Invalid URL for trailer'
-            }
-            res.render('error',{layout: '/layouts/layout_admin.hbs', 
-                error: info.error,
-                title: 'Error - Filmworks'
-            });
-            return;
-        }
-        
-        if (!numberRegex.test(req.body.movie_price) || !numberRegex.test(req.body.movie_quantity)) {
-            var info = {
-                error:'Invalid input for ticket quantity and/or price'
-            }
-            res.render('error',{layout: '/layouts/layout_admin.hbs', 
-                error: info.error,
-                title: 'Error - Filmworks'
-            });
-            return;
-        }
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
 
-        if (req.file == undefined) {
-            var info = {
-                error:'No file uploaded'
+            console.log("USER IS ADMIN")
+            
+            const wordsRegex = /^[a-zA-Z0-9 ,.!?()_-]*$/
+            const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
+            const numberRegex = /^[0-9]+$/
+
+            if (!wordsRegex.test(req.body.movie_title) || !wordsRegex.test(req.body.movie_cast) || !wordsRegex.test(req.body.movie_synopsis)) {
+                var info = {
+                    error:'Invalid text format'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
             }
-            res.render('error',{layout: '/layouts/layout_admin.hbs', 
-                error: info.error,
-                title: 'Error - Filmworks'
-            });
-            return;
-        }
 
-        var newMovie = {
-            title: req.body.movie_title,
-            starring: req.body.movie_cast,
-            synopsis: req.body.movie_synopsis,
-            trailer: req.body.movie_trailer,
-            price: req.body.movie_price,
-            quantity: req.body.movie_quantity,
-            // start_date: 
-            // end_date:
-        }
-        
-        newMovie.image = '../uploads/movies/' + req.file.filename
+            if (!trailerRegex.test(req.body.movie_trailer)) {
+                var info = {
+                    error:'Invalid URL for trailer'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+            
+            if (!numberRegex.test(req.body.movie_price) || !numberRegex.test(req.body.movie_quantity)) {
+                var info = {
+                    error:'Invalid input for ticket quantity and/or price'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
 
-        //add the newly created movie to the db
-        const insertMovie = await movies.create({
-            title: newMovie.title,
-            starring: newMovie.starring,
-            synopsis: newMovie.synopsis,
-            trailer:newMovie.trailer,
-            price: newMovie.price,
-            quantity: newMovie.quantity,
-            // start_date: 
-            // end_date:
-        })
+            if (req.file == undefined) {
+                var info = {
+                    error:'No file uploaded'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+
+            //check the input for start date and end date
+            const start = new Date(req.body.start_date);
+            const end = new Date(req.body.end_date);
+
+            console.log("END AND START DATE INFO")
+            console.log(end)
+            console.log(start)
+            
+            // Check if dates are not empty 
+            if (!start || !end) {
+                var info = {
+                    error:'Date input is not valid'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+            
+            // Check if end date is not earlier than start date
+
+            if (end < start) {
+                //if end is less than start check if they are equal
+                //if not equal error
+                if(!(start.getFullYear() === end.getFullYear() &&
+                start.getMonth() === end.getMonth() &&
+                start.getDate() === end.getDate())){
+                    //date is not the same so error
+                    var info = {
+                        error:'Date input is not valid'
+                    }
+                    res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                        error: info.error,
+                        title: 'Error - Filmworks'
+                    });
+                    return;
+                }
+            }
+
+            console.log("ALL INPUTS WERE OK")
+
+            var newMovie = {
+                title: req.body.movie_title,
+                starring: req.body.movie_cast,
+                synopsis: req.body.movie_synopsis,
+                trailer: req.body.movie_trailer,
+                price: req.body.movie_price,
+                quantity: req.body.movie_quantity,
+                start_date: req.body.start_date,
+                end_date: req.body.end_date
+            }
+            
+            newMovie.image = '../uploads/movies/' + req.file.filename
+
+            //add the newly created movie to the db
+            const insertMovie = await movies.create({
+                title: newMovie.title,
+                starring: newMovie.starring,
+                synopsis: newMovie.synopsis,
+                trailer:newMovie.trailer,
+                price: newMovie.price,
+                quantity: newMovie.quantity,
+                start_date: req.body.start_date,
+                end_date: req.body.end_date,
+                image: newMovie.image
+            })
+
+            if (insertMovie){
+                //movie was successfully created
+                res.redirect('/')
+            }
+
+        }
     },
 
     getDeleteMovie: async function(req, res){
@@ -365,21 +422,55 @@ const movie_controller = {
                         start_time: start_time,
                         end_time: end_time
                     }})
+
+                    const timeslotID = timeslot.timeID
+                    const movieInfo = movie_update.movieID
+
                     
                     console.log("TESTING RESULTS OBTAINED FROM TIMESLOT")
-                    console.log(timeslot)
-                   
-                    //double check this part since it is not working
-                    // const addedTimeslot = movie_times.create({
-                    //     movieID: movie_update.movieID,  //get the ID of the movie 
-                    //     timeID: timeslot.timeID
-                    // })
+                    console.log(timeslot.timeID)
                     
-                    // console.log("ADDING TO MOVIE TIMES DB")
-                    // console.log(addedTimeslot)
-    
-                    //maybe show a success message??
-                    res.redirect('/')
+                    //check first if timeslot is already part of DB
+                    const checkDupe = await movie_times.findOne({ where:{
+                        movieID: movieInfo,  //get the ID of the movie 
+                        timeID: timeslotID
+                    }})
+
+                    if (checkDupe){
+                        //means theres a duplicate already \
+                        console.log(checkDupe)
+                        if(process.env.NODE_ENV == "development"){
+                            console.error(`duplicate timeslot exists`);
+                        }
+                        
+                        res.status(500).redirect('/error');
+                    }else{
+
+                        console.log("INPUT PLACED IN DB")
+                        console.log(movieInfo)
+                        console.log(timeslotID)
+
+
+                        const addedTimeslot = await movie_times.create({
+                            movieID: movieInfo,  
+                            timeID: timeslotID   
+                        });
+                        
+                        console.log("ADDING TO MOVIE TIMES DB")
+                        console.log(addedTimeslot)
+                        if (addedTimeslot){
+                            //means it was added to DB
+                            res.redirect('/')
+                        }else{
+                            if(process.env.NODE_ENV == "development"){
+                                console.error('timeslot not added properly');
+                            }
+        
+                            res.status(500).json({ message: 'An Error Occurred' });
+                        }
+                    }
+                    
+
                 }else{
                     //movie doesnt exist so error happens
                     if(process.env.NODE_ENV == "development"){

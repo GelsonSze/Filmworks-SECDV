@@ -9,8 +9,9 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         timeID: {
-            type: DataTypes.UUID,
-            defaultValue: uuidv4(),
+            // type: DataTypes.UUID,
+            // defaultValue: uuidv4(),
+            type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true
         }
