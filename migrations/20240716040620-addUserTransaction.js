@@ -11,12 +11,14 @@ module.exports = {
      */
 
     await queryInterface.addColumn(
-      'cart_movies', 
-      'quantity', 
+      'transactions',
+      'userID',
     {
-      type: Sequelize.DataTypes.INTEGER,
-      allowNull: false,
-      notEmpty: true
+      type: Sequelize.DataTypes.UUID,
+      references: {
+        model: 'users',
+        key: 'userID'
+      }
     })
   },
 
@@ -28,6 +30,6 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
 
-    await queryInterface.removeColumn('cart_movies', 'quantity')
+    await queryInterface.removeColumn('transactions', 'userID')
   }
 };

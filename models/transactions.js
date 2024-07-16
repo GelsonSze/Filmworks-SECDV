@@ -55,8 +55,17 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.NOW,
             allowNull: false,
             notEmpty: true
+        },
+        userID: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            primaryKey: true
         }
     }, {timestamps: false})
+
+    transactions.associate = function(models){
+        transactions.belongsTo(models.users, {foreignKey: 'userID'})
+    }
 
     return transactions
 }

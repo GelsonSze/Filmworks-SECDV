@@ -47,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
 
     users.associate = function(models){
         users.hasMany(models.reviews, {foreignKey: 'userID'})
+        users.hasMany(models.transactions, {foreignKey: 'userID'})
         users.hasOne(models.carts, {foreignKey: 'userID'});
     }
 
