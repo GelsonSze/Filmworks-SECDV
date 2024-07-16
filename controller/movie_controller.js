@@ -2,7 +2,7 @@ const { ResultWithContext } = require('express-validator/src/chain');
 const {movies, users, admins, reviews, time_slots, movie_reviews, movie_times} = require('../models/')
 const { v4: uuidv4 } = require('uuid');
 const { where } = require('sequelize');
-import sanitizeHtml from 'sanitize-html';
+const sanitizeHtml = require('sanitize-html');
 
 const movie_controller = {
     getMovies: async function(req, res) {   
@@ -69,20 +69,42 @@ const movie_controller = {
             const reviewIDs = movieReviews.map(review => review.reviewID);
         
             const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
+            const timeslots = await movie_times.findAll({ where: { movieID: req.params.movieID } });
+        
+            if (timeslots.length > 0) {
+                // Means movie has existing timeslot
+                console.log("TIMESLOT EXISTS");
+                const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                const movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+                res.render('movie', {layout: '/layouts/layout.hbs', 
+                    m_id: movie.movieID,
+                    m_trailer: movie.trailer,
+                    m_name: movie.title,
+                    m_image: movie.image,
+                    m_cast: movie.starring,
+                    m_synopsis: movie.synopsis,
+                    timeSlotJQ: movieTime,
+                    title: movie.title + " - Filmworks",
+                    review: allReviews
+                    //idk how we will handle this for now but i will just leave design of webpage muna
+                });
+            }else{
+                res.render('movie', {layout: '/layouts/layout.hbs', 
+                    m_id: movie.movieID,
+                    m_trailer: movie.trailer,
+                    m_name: movie.title,
+                    m_image: movie.image,
+                    m_cast: movie.starring,
+                    m_synopsis: movie.synopsis,
+                    timeSlotJQ: "movieTime",
+                    title: movie.title + " - Filmworks",
+                    review: allReviews
+                    //idk how we will handle this for now but i will just leave design of webpage muna
+                });
+            }
         
             //adjust this depending on whether admin or user is accessing the page
-            res.render('movie', {layout: '/layouts/layout.hbs', 
-                m_id: movie.movieID,
-                m_trailer: movie.trailer,
-                m_name: movie.title,
-                m_image: movie.image,
-                m_cast: movie.starring,
-                m_synopsis: movie.synopsis,
-                timeSlotJQ: "outputJQ",
-                title: movie.title + " - Filmworks",
-                review: allReviews
-                //idk how we will handle this for now but i will just leave design of webpage muna
-            });
+
         }else{
             //means there was no movie found given that information
             //redirect to error page

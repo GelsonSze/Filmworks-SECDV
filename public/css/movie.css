@@ -159,14 +159,13 @@
 }
 #buyTickets{
     display: block;
-    float: right;
     background: linear-gradient(#a0c7ff, #ffffcc);
-    margin-right: 40px;
-    margin-top: -250px;
+    margin: 2rem auto; /* Center horizontally and add some margin on top */
     border-radius: 15px;
     width: 45%;
-    height: 55%;
+    height: auto; /* Adjust height as needed */
     overflow: hidden;
+    padding: 1rem; /* Add padding for better content spacing */
 }
 #ticket{
     width: 208px;

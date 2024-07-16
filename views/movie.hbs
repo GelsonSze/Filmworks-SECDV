@@ -7,11 +7,14 @@
             <div id = "wBackground2">
                 <p class="synopsis"><strong>SYNOPSIS:</strong></p>
                 <p class="synopbody">{{m_synopsis}}</p>         
+                    
             
-            {{#each timeSlotJQ}}
-                {{> timeslot}}
-            {{/each}}            
-                
+            <label for="timeslots" class = "normal">Movie Timeslots</label>
+            <select name="time_slots" id="time_slots">
+                {{#each timeSlotJQ}}
+                    {{> timeslots}}
+                {{/each}}            
+            </select>
                 <div id="buyTickets">
                     <h2 class = "normal7"><u>TICKET DETAILS: </u></h2>
                         <p class="normal8"><strong>DATE: &nbsp</strong><span id="date"></span><br>
