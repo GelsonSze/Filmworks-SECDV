@@ -10,3 +10,11 @@ node_modules/
 #uploads folder
 public/uploads/profiles/*
 !public/uploads/profiles/paimonpf.jpg
+
+#movies folder
+public/uploads/movies/*
+!public/uploads/movies/a_silent_voice.jpg
+!public/uploads/movies/crazy_rich_asians.jpg
+!public/uploads/movies/howls_moving_castle.jpg
+!public/uploads/movies/knives_out.jpg
+!public/uploads/movies/your_name.jpg
