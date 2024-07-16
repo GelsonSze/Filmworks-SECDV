@@ -1,0 +1,16 @@
+<div class = "sign_inform">
+                <!--<img src = "/images/icons/cameraleft.png" class = "icons">-->
+                <form id = "loginform" action = "/update-movie-timeslot" method = "POST">
+                    <h2 class = "divh2">ADD TIMESLOT</h2>
+                    <!-- Hidden input field to securely submit the movie ID -->
+                    <input type="hidden" id="movieID" name="movieID" value="{{movieID}}">
+                    <label for="timeslots" class = "normal">Movie Timeslot</label>
+                    <select name="time_slots" id="time_slots">
+                        {{#each time}}
+                            {{> timeslots}}
+                        {{/each}}
+                    </select>
+                    <br>
+                    <input type="submit" id = "commentButton" value = "SELECT MOVIE">
+                </form>
+</div>

@@ -1,7 +1,7 @@
 <div class = "sign_upform">
-    <form id = "registerform" action = "/post-update-movie" method ="post" enctype="multipart/form-data">
+    <form id = "registerform" action = "/final-update" method ="post" enctype="multipart/form-data">
         <h3 class = "divh2">UPDATE MOVIE</h3>
-
+        <input type="hidden" id="movieID" name="movieID" value="{{movieID}}">
         <label for="movie_title" class = "normal"><b>Title</b></label>
         <input type="text" name = "movie_title" autocomplete = "off" placeholder="Enter movie title" id="movie_title" value="{{movie_title}}" required>
                     
@@ -28,14 +28,14 @@
 
 
         <label for="timeslots" class = "normal">Original Movie Timeslot</label>
-        <select name="time_slots" id="time_slots">
-            {{#each time}}
+        <select name="movie_time" id="movie_time">
+            {{#each movieTime}}
                 {{> timeslots}}
             {{/each}}
         </select>
         <br><br>
 
-        <label for="timeslots" class = "normal">Updated Movie Timeslot</label>
+        <label for="timeslots" class = "normal">Update Timeslot Options</label>
         <select name="time_slots" id="time_slots">
             {{#each time}}
                 {{> timeslots}}

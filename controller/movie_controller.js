@@ -238,8 +238,8 @@ const movie_controller = {
                 end_time: end_time
             }})
             
-            if (!timeslot){
-                //timeslot does not exist in db
+            if (timeslot){
+                //means timeslot for movie already exists
                 var info = {
                     error:'Timeslot input is not valid'
                 }
@@ -346,8 +346,6 @@ const movie_controller = {
                 //replace above with this
                 // const movie_delete = await movies.destroy({ where: { title: movie_title }})
 
-
-
                 // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
     
                 console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
@@ -431,7 +429,7 @@ const movie_controller = {
     getUpdateMovie: async function(req, res){
         //display first the get delete movie page except that user inputs the movie ID of page one wishes to update
 
-        //render page for deleting movie information
+        //render page for updating movie information
         //check first if user is admin
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
         //means user is admin
@@ -441,50 +439,32 @@ const movie_controller = {
         }
     },
 
-    updateMovieDetails: async function(req, res){
-        //after submitting it, redirect to this page and check 
-        //display the create page except the parameters are the ones from the db
-        //user has option to 
+    listMoviesUpdate: async function(req, res){
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
         //means user is admin
         if (adminInfo){
             //check contents of each field in the form
             //redirect to main page and show the updated list of movies
             try{
-                console.log("MOVIE TO BE UPDATED")
-                console.log(req.body.movie_title)
                 const movie_title = req.body.movie_title.toUpperCase()
                 
                 //given movie title find movie
-                const movie_update = await movies.findOne({ where: { title: movie_title }})
-                const timeslots = await time_slots.findAll()
-
-
-
+                const movie_update = await movies.findAll({ where: { title: movie_title }})
                 //replace above with this
                 // const movie_delete = await movies.destroy({ where: { title: movie_title }})
 
 
-                //get the movietimes and information needed
-                //error with this code to be fixed later once the time slots db has been populated
-                // const movieTimes = await movie_times.findAll({ where: { movieID: movie_delete.movieID }})
-                // const timeIDs = movieTimes.map(entry => entry.timeID);
-                // const time_delete = await time_slots.findOne({ where: { timeID: timeIDs }})
+
+                // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
     
                 console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
-                console.log(movie_update.title)
-                res.render('update-movie-details', {layout: '/layouts/layout_admin.hbs', 
-                    movie_title: movie_update.title,
-                    movie_cast: movie_update.starring,
-                    movie_synopsis: movie_update.synopsis,
-                    movie_trailer: movie_update.trailer,
-                    movie_price: movie_update.price,
-                    movie_quantity: movie_update.quantity, 
-                    time: timeslots,
-                    start_date: movie_update.start_date,
-                    end_date: movie_update.end_date
-                });
+                console.log(movie_update)
 
+                //shows all movies with the same title
+                res.render('update-movies-page',{layout: '/layouts/layout_admin.hbs',
+                    movie: movie_update,
+                    title: "Movies to be updated - Filmworks"
+                });
             }catch(error){
                 //show error information
                 if(process.env.NODE_ENV == "development"){
@@ -500,7 +480,69 @@ const movie_controller = {
 
     },
 
+    updateMovieDetails: async function(req, res){
+        try {
+            // Assuming req.user.username contains the email address of the admin
+            const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username } });
+        
+            // means user is admin
+            if (adminInfo) {
+                // Check contents of each field in the form
+                // Redirect to the main page and show the updated list of movies
+        
+                // Given movie title find all movies with the same title
+                const movie_update = await movies.findOne({ where: { movieID: req.body.movieID } });
+        
+                let movieTime = "";
+                let originalTimeslots = "";
+        
+                if (movie_update) {
+                    // Gets the timeslot ID of all with the same movieID
+                    const timeslots = await movie_times.findAll({ where: { movieID: movie_update.movieID } });
+        
+                    if (timeslots.length > 0) {
+                        // Means movie has existing timeslot
+                        console.log("TIMESLOT EXISTS");
+                        const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                        movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+                        originalTimeslots = await time_slots.findAll();
+                    }
+        
+                    res.render('update-movie-details', {
+                        movieID: movie_update.movieID,
+                        layout: '/layouts/layout_admin.hbs',
+                        movie_title: movie_update.title,
+                        movie_cast: movie_update.starring,
+                        movie_synopsis: movie_update.synopsis,
+                        movie_trailer: movie_update.trailer,
+                        movie_price: movie_update.price,
+                        movie_quantity: movie_update.quantity,
+                        movieTime: movieTime, // Refers to the timeslots already existing for that movie
+                        time: originalTimeslots,
+                        start_date: movie_update.start_date,
+                        end_date: movie_update.end_date
+                    });
+                } else {
+                    // If the movie is not found
+                    res.status(404).json({ message: 'Movie not found' });
+                }
+            } else {
+                // If the user is not an admin
+                res.status(403).json({ message: 'Unauthorized' });
+            }
+        } catch (error) {
+            // Show error information
+            if (process.env.NODE_ENV === "development") {
+                console.error(error);
+            }
+            res.status(500).json({ message: 'An Error Occurred' });
+        }
+        
+
+    },
+
     postUpdateMovieDetails: async function(req, res){
+        console.log("FINALLY")
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
         //means user is admin
         if (adminInfo){
@@ -510,7 +552,7 @@ const movie_controller = {
             const wordsRegex = /^[a-zA-Z0-9 ,.!?()_-]*$/
             const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
             const numberRegex = /^[0-9]+$/
-
+            const timeSlotRegex = /^(\d{2}:\d{2} (?:AM|PM) - \d{2}:\d{2} (?:AM|PM))$/;
             if (!wordsRegex.test(req.body.movie_title) || !wordsRegex.test(req.body.movie_cast) || !wordsRegex.test(req.body.movie_synopsis)) {
                 var info = {
                     error:'Invalid text format'
@@ -536,17 +578,6 @@ const movie_controller = {
             if (!numberRegex.test(req.body.movie_price) || !numberRegex.test(req.body.movie_quantity)) {
                 var info = {
                     error:'Invalid input for ticket quantity and/or price'
-                }
-                res.render('error',{layout: '/layouts/layout_admin.hbs', 
-                    error: info.error,
-                    title: 'Error - Filmworks'
-                });
-                return;
-            }
-
-            if (req.file == undefined) {
-                var info = {
-                    error:'No file uploaded'
                 }
                 res.render('error',{layout: '/layouts/layout_admin.hbs', 
                     error: info.error,
@@ -594,6 +625,52 @@ const movie_controller = {
                     return;
                 }
             }
+            if (!timeSlotRegex.test(req.body.time_slots) || !timeSlotRegex.test(req.body.movie_time)) {
+                // Handle invalid time slots format
+                    //date is not the same so error
+                var info = {
+                    error:'Timeslot input is not valid'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+
+            //should only push through once the timeslot was valid
+            const [start_time_new, end_time_new] = req.body.time_slots.split(' - ')
+            const [start_time_old, end_time_old] = req.body.movie_time.split(' - ') 
+            //the new is used since thats the one we are attempting to update
+            const timeslot = await time_slots.findOne({ where: { 
+                start_time: start_time_new,
+                end_time: end_time_new
+            }})
+
+            const originalTime = await time_slots.findOne({ where: { 
+                start_time: start_time_old,
+                end_time: end_time_old
+            }})
+
+            const check = await movie_times.findOne({ where: { 
+                movieID: req.body.movieID,
+                timeID: originalTime.timeID
+            }})
+
+
+            //means timeslot was not found and movie times does not have given time chosen
+            if (!check || !timeslot){
+                console.log("TIMESLOT NOT FOUND")
+                //means timeslot for movie already exists or input is not valid
+                var info = {
+                    error:'Timeslot input is not valid'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
 
             console.log("ALL INPUTS WERE OK")
 
@@ -607,26 +684,97 @@ const movie_controller = {
                 start_date: req.body.start_date,
                 end_date: req.body.end_date
             }
-            
-            newMovie.image = '../uploads/movies/' + req.file.filename
 
-            //add the newly created movie to the db
-            const updateMovie = await movies.create({ where:{
-                title: newMovie.title,
-                starring: newMovie.starring,
-                synopsis: newMovie.synopsis,
-                trailer:newMovie.trailer,
-                price: newMovie.price,
-                quantity: newMovie.quantity,
-                start_date: req.body.start_date,
-                end_date: req.body.end_date,
-                image: newMovie.image
+            //check if timeslot is part of movietimes db already given movieID
+            const checkDupe = await movie_times.findOne({ where:{
+                movieID: req.body.movieID,  //get the ID of the movie 
+                timeID: timeslot.timeID
             }})
 
-            if (updateMovie){
-                //movie was successfully updated
-                res.redirect('/')
+            if (checkDupe){
+                //means theres a duplicate already \
+                console.log("DUPLICATE TIMESLOT")
+                var info = {
+                    error:'Timeslot input is not valid'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }else{
+                console.log("NO DUPLICATE")
+
+                //adds the new timeslot to movie times db
+                const addedTimeslot = await movie_times.create({
+                    movieID: req.body.movieID,  
+                    timeID: timeslot.timeID   
+                });
+
+                const deleteTimeslot = await movie_times.destroy({ where:{
+                    movieID: req.body.movieID,  
+                    timeID: originalTime.timeID
+                }
+                });
+                
+                console.log("ADDING TO MOVIE TIMES DB")
+                console.log(addedTimeslot)
+                //means creation of movie and timeslot was successful
+                if (!addedTimeslot || !deleteTimeslot){
+                    //timeslot was not added properly
+                    if(process.env.NODE_ENV == "development"){
+                        console.error(`error with movie creation`);
+                    }
+                    
+                    res.status(500).redirect('/error');
+                }
             }
+
+            if (req.file != undefined){
+                //in case user decides to update the filename of user
+                newMovie.image = '../uploads/movies/' + req.file.filename
+                const updateMovie = await movies.update({ 
+                    title: newMovie.title,
+                    starring: newMovie.starring,
+                    synopsis: newMovie.synopsis,
+                    trailer:newMovie.trailer,
+                    price: newMovie.price,
+                    quantity: newMovie.quantity,
+                    start_date: req.body.start_date,
+                    end_date: req.body.end_date,
+                    image: newMovie.image
+                }, {where: {movieID: req.body.movieID}})
+
+                if (updateMovie){
+                    //movie was successfully updated
+                    res.redirect('/')
+                }
+            }else{
+                const updateMovie = await movies.update({ 
+                    title: newMovie.title,
+                    starring: newMovie.starring,
+                    synopsis: newMovie.synopsis,
+                    trailer:newMovie.trailer,
+                    price: newMovie.price,
+                    quantity: newMovie.quantity,
+                    start_date: req.body.start_date,
+                    end_date: req.body.end_date,
+                },{where: {movieID: req.body.movieID}}
+                    )
+
+                if (updateMovie){
+                    //movie was successfully updated
+                    res.redirect('/')
+                }
+            }
+            
+
+
+
+            //add the newly created movie to the db
+
+
+
 
         }
     },
@@ -653,6 +801,58 @@ const movie_controller = {
         }
     },
 
+    listMoviesTime: async function(req, res){
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //check contents of each field in the form
+            //redirect to main page and show the updated list of movies
+            try{
+                const movie_title = req.body.movie_title.toUpperCase()
+                
+                //given movie title find movie
+                const movie_all = await movies.findAll({ where: { title: movie_title }})
+                //replace above with this
+                // const movie_delete = await movies.destroy({ where: { title: movie_title }})
+
+                // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
+
+                res.render('timeslots-page',{layout: '/layouts/layout_admin.hbs',
+                    movie: movie_all,
+                    title: "Movies - Filmworks"
+                });
+            }catch(error){
+                //show error information
+                if(process.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
+                res.status(500).json({ message: 'An Error Occurred' });
+            }
+
+
+
+        }
+    },
+
+    showTimeSlotOptions: async function(req, res){
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            const movie_update = await movies.findOne({ where: { movieID: req.body.movieID }})
+            const timeslots = await time_slots.findAll()
+            
+            if (movie_update) //means movie exists
+            {
+                res.render('final-timeslot',{layout: '/layouts/layout_admin.hbs',
+                    movieID: req.body.movieID,
+                    title: "Movie Timeslot - Filmworks",
+                    time: timeslots
+                });
+            }
+        }
+    }, 
+
     postAddTimeSlot: async function(req, res){
         //redirects to the page which shows the timeslot options to be added for the movie
 
@@ -663,14 +863,14 @@ const movie_controller = {
         if (adminInfo){
             //check contents of each field in the form
             //redirect to main page and show the updated list of movies
+            console.log(req.body.movieID)
             try{
                 console.log("MOVIE TO BE UPDATED")
-                console.log(req.body.movie_title)
+                console.log(req.body.movieID)
                 const [start_time, end_time] = req.body.time_slots.split(' - ');
-                const movie_title = req.body.movie_title.toUpperCase()
                 
                 //given movie title find movie
-                const movie_update = await movies.findOne({ where: { title: movie_title }})
+                const movie_update = await movies.findOne({ where: { movieID: req.body.movieID }})
                 
                 //means movie exists
                 if (movie_update){
