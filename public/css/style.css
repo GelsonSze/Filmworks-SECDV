@@ -388,11 +388,13 @@ input[type=text], input[type=password],input[type=email] {
     font-weight: normal;
 }
 
+/*
 .reviewpic {
     width: 208px;
     height: 103px;
-    margin-right: 20px; /* Add space between the image and the content */
+    margin-right: 20px; /* Add space between the image and the content 
 }
+*/
 
 .reviewContent {
     display: flex;
