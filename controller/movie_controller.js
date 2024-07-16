@@ -1,4 +1,6 @@
-const {movies, users, admins, reviews, time_slots, movie_times} = require('../models/')
+const { ResultWithContext } = require('express-validator/src/chain');
+const {movies, users, admins, reviews, time_slots, movie_reviews, movie_times} = require('../models/')
+const { v4: uuidv4 } = require('uuid');
 
 const movie_controller = {
     getMovies: async function(req, res) {   
@@ -448,14 +450,29 @@ const movie_controller = {
             const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
             console.log("USER DETAILS")
             console.log(user)
+            console.log("req.body")
+            console.log(req.body)
 
             //get and add details of review and place it into the review database
             //check first if user exists
             if (user){
                 //get info from the indicated places
                 //add it to reviews db
+                const id = uuidv4()
 
-                
+                const newReview = await reviews.create({
+                    reviewID: id,
+                    rating: req.body.rating,
+                    description: req.body.newReview,
+                    reviewer: user.fullName,
+                    userID: user.userID
+                })
+
+                const newMovieReview = await movie_reviews.create({
+                    movieID: req.params.movieID,
+                    reviewID: id
+                })
+
                 //after adding the review to the db
                 //render the movie page again with the updated review
                 //get the reviews given the movieID from the DB
@@ -492,6 +509,5 @@ const movie_controller = {
 
     }
 }
-
 
 module.exports = movie_controller
