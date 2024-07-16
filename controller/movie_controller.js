@@ -805,10 +805,8 @@ const movie_controller = {
             if (user){
                 //get info from the indicated places
                 //add it to reviews db
-                const id = uuidv4()
 
                 const newReview = await reviews.create({
-                    reviewID: id,
                     rating: req.body.rating,
                     description: req.body.newReview,
                     reviewer: user.fullName,
@@ -817,7 +815,7 @@ const movie_controller = {
 
                 const newMovieReview = await movie_reviews.create({
                     movieID: req.params.movieID,
-                    reviewID: id
+                    reviewID: newReview.reviewID
                 })
 
                 const movieReviews = await movie_reviews.findAll({
