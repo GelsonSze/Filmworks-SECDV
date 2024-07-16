@@ -408,6 +408,13 @@ input[type=text], input[type=password],input[type=email] {
     padding-bottom: 5px;
 }
 
+#editRating{
+    font-family: "Zing Rust Base";
+    font-size: 25px;
+    margin-left: 10px; /* Remove default margin */
+    padding-bottom: 5px;
+}
+
 .reviewContent p {
     margin: 5px 0 0 0; /* Adjust margins */
     font-size: 1rem; /* Adjust font size */
@@ -454,6 +461,55 @@ input[type=text], input[type=password],input[type=email] {
 #editButton:hover{
     background-color: #b5262c;
     cursor: pointer;
+}
+
+#saveButton{
+    font-family: "Zing Rust Base";
+    display: none;
+    margin: 20px auto;
+    padding: 5px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    float: right; /* Add this line to align the button to the right */
+    position: relative;
+    right: 25; /* Position the button to the right */
+    bottom: 0;
+
+}
+
+#saveButton:hover{
+    background-color: #b5262c;
+    cursor: pointer;
+}
+
+#deleteButton{
+    font-family: "Zing Rust Base";
+    display: block;
+    margin: 20px auto;
+    padding: 5px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    float: right; /* Add this line to align the button to the right */
+    position: relative;
+    right: 25; /* Position the button to the right */
+    bottom: 0;
+
+}
+
+#deleteButton:hover{
+    background-color: #b5262c;
+    cursor: pointer;
+}
+
+.reviewContainer {
+    display: flex;
+    align-items: center;
 }
 
 #banButton{
