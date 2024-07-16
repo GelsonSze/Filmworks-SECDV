@@ -210,6 +210,7 @@ app.post('/final-timeslot', credentials_controller.checkAuth, flagProfileUpload,
 
 app.post('/update-movie-timeslot', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postAddTimeSlot)
 
+app.post('/ban-user', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, credentials_controller.banUser)
 
 
 app.get(['*','/error'], function(req, res){

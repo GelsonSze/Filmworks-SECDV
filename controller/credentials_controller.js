@@ -1,4 +1,4 @@
-const {users, admins, sessions, bannedIPs, carts} = require('../models/')
+const {users, admins, sessions, bannedIPs, carts, banned_users} = require('../models/')
 const bcrypt = require('bcryptjs')
 const db = require('../models/index.js')
 const controller = {
@@ -220,6 +220,7 @@ const controller = {
                 const allUsers = await users.findAll();
                 const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }}, function (result){
                 })
+                const bannedUsers = await banned_users.findAll()
 
     
                 if (adminInfo){
@@ -227,6 +228,7 @@ const controller = {
                         full_name: adminInfo.fullName, 
                         profile_pic: adminInfo.profilePhoto, 
                         user: allUsers,
+                        bannedUsers: bannedUsers,
                         title: 'Admin - Filmworks'
                     });
                 }
@@ -248,6 +250,57 @@ const controller = {
 
 
     },
+    banUser: async function(req, res, next){
+        try {
+            //check if current user is admin first
+            const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+
+            //if user is admin
+            if (adminInfo){
+                const bannedUser = await users.findOne({ where: { userID: req.body.userID }})
+                //means user exists
+                if (bannedUser){
+                    //add bannedUser to banned_users db
+                    const check = await banned_users.create({
+                        userID: bannedUser.userID,
+                        fullName: bannedUser.fullName,
+                        emailAddress: bannedUser.emailAddress,
+                        phoneNumber: bannedUser.phoneNumber,
+                        profilePhoto: bannedUser.profilePhoto,
+                        password: bannedUser.password
+                    })
+                    //remove user from user db
+                    const removeCart = await carts.destroy({ where:{
+                        userID: bannedUser.userID
+                    }})
+                    const deleteUser = await users.destroy({ where:{
+                        userID: bannedUser.userID
+                    }})
+
+                    if (check && deleteUser && removeCart){
+                        //means the banning of user was successful
+                        const users = await users.findAll()
+                        const banned = await banned_users.findAll()
+                        res.render('admin',{layout: '/layouts/admin.hbs',
+                            full_name: adminInfo.fullName, 
+                            profile_pic: adminInfo.profilePhoto, 
+                            user: users,
+                            bannedUsers: banned,
+                            title: 'Admin - Filmworks'
+                        });
+                    }
+                }
+            }
+
+        } catch (error) {
+            if(process.env.NODE_ENV == "development"){
+                console.error(error);
+            }
+
+            res.status(500).json({ message: 'An Error Occurred' });
+        }
+    },
+
     checkAuth: async function(req, res, next){
         if(req.user){
             return next()

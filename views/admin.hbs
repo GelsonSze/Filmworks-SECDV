@@ -6,15 +6,33 @@
                 {{!-- displays each user and their information --}}
                 <h1 id = "userInfo">LIST OF USERS</h1>
                 <table id="displayInfo">
+                    
                     <tr> 
-                    <th>ID</th> 
+                    <th>USER ID</th> 
                     {{!-- <th>Name</th>  --}}
                     {{!-- <th>Email</th>  --}}
                     {{!-- <th>Created On</th>  --}}
-                    <th>Latest Login</th> 
                     {{!-- <th>Last Update</th>  --}}
                     </tr> 
                     {{#each user}}
                         {{> userinfo}}
                     {{/each}}
+
+
                 </table>
+                <h1 id = "userInfo">BANNED USER LIST</h1>
+                <table id="displayInfo">
+                    <tr> 
+                    <th>USER ID</th> 
+                    {{!-- <th>Name</th>  --}}
+                    {{!-- <th>Email</th>  --}}
+                    {{!-- <th>Created On</th>  --}}
+                    {{!-- <th>Last Update</th>  --}}
+                    </tr> 
+                    {{#each bannedUsers}}
+                        {{> banneduser}}
+                    {{/each}}
+
+
+                </table>
+

@@ -2,6 +2,7 @@ const { ResultWithContext } = require('express-validator/src/chain');
 const {movies, users, admins, reviews, time_slots, movie_reviews, movie_times} = require('../models/')
 const { v4: uuidv4 } = require('uuid');
 const { where } = require('sequelize');
+import sanitizeHtml from 'sanitize-html';
 
 const movie_controller = {
     getMovies: async function(req, res) {   
@@ -130,12 +131,22 @@ const movie_controller = {
 
             console.log("USER IS ADMIN")
             
-            const wordsRegex = /^[a-zA-Z0-9 ,.!?()_-]*$/
+            const wordsRegex = /^[a-zA-Z0-9 ',.!?()_-]*$/
             const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
             const numberRegex = /^[0-9]+$/
             const timeSlotRegex = /^(\d{2}:\d{2} (?:AM|PM) - \d{2}:\d{2} (?:AM|PM))$/;
 
-            if (!wordsRegex.test(req.body.movie_title) || !wordsRegex.test(req.body.movie_cast) || !wordsRegex.test(req.body.movie_synopsis)) {
+            const sanitizedTitle = sanitizeHtml(req.body.movie_title);
+            const sanitizedCast = sanitizeHtml(req.body.movie_cast);
+            const sanitizedSynopsis = sanitizeHtml(req.body.movie_synopsis);
+            const sanitizedTrailer = sanitizeHtml(req.body.movie_trailer);
+            const sanitizedPrice = sanitizeHtml(req.body.movie_price);
+            const sanitizedQuantity = sanitizeHtml(req.body.movie_quantity);
+            const sanitizedStartDate = sanitizeHtml(req.body.start_date);
+            const sanitizedEndDate = sanitizeHtml(req.body.end_date);
+            const sanitizedTimeSlots = sanitizeHtml(req.body.time_slots);
+
+            if (!wordsRegex.test(sanitizedTitle) || !wordsRegex.test(sanitizedCast) || !wordsRegex.test(sanitizedSynopsis)) {
                 var info = {
                     error:'Invalid text format'
                 }
@@ -146,7 +157,7 @@ const movie_controller = {
                 return;
             }
 
-            if (!trailerRegex.test(req.body.movie_trailer)) {
+            if (!trailerRegex.test(sanitizedTrailer)) {
                 var info = {
                     error:'Invalid URL for trailer'
                 }
@@ -157,7 +168,7 @@ const movie_controller = {
                 return;
             }
             
-            if (!numberRegex.test(req.body.movie_price) || !numberRegex.test(req.body.movie_quantity)) {
+            if (!numberRegex.test(sanitizedPrice) || !numberRegex.test(sanitizedQuantity)) {
                 var info = {
                     error:'Invalid input for ticket quantity and/or price'
                 }
@@ -180,8 +191,8 @@ const movie_controller = {
             }
 
             //check the input for start date and end date
-            const start = new Date(req.body.start_date);
-            const end = new Date(req.body.end_date);
+            const start = new Date(sanitizedStartDate);
+            const end = new Date(sanitizedEndDate);
 
             console.log("END AND START DATE INFO")
             console.log(end)
@@ -219,7 +230,7 @@ const movie_controller = {
                 }
             }
 
-            if (!timeSlotRegex.test(req.body.time_slots)) {
+            if (!timeSlotRegex.test(sanitizedTimeSlots)) {
                 // Handle invalid time slots format
                     //date is not the same so error
                 var info = {
@@ -232,7 +243,7 @@ const movie_controller = {
                 return;
             }
             //should only push through once the timeslot was valid
-            const [start_time, end_time] = req.body.time_slots.split(' - ')
+            const [start_time, end_time] = sanitizedTimeSlots.split(' - ')
             const timeslot = await time_slots.findOne({ where: { 
                 start_time: start_time,
                 end_time: end_time
@@ -250,17 +261,15 @@ const movie_controller = {
                 return;
             }
 
-            console.log("ALL INPUTS WERE OK")
-
             var newMovie = {
-                title: req.body.movie_title.toUpperCase(),
-                starring: req.body.movie_cast.toUpperCase(),
-                synopsis: req.body.movie_synopsis,
-                trailer: req.body.movie_trailer,
-                price: req.body.movie_price,
-                quantity: req.body.movie_quantity,
-                start_date: req.body.start_date,
-                end_date: req.body.end_date
+                title: sanitizedTitle.toUpperCase(),
+                starring: sanitizedCast.toUpperCase(),
+                synopsis: sanitizedSynopsis,
+                trailer: sanitizedTrailer,
+                price: sanitizedPrice,
+                quantity: sanitizedQuantity,
+                start_date: sanitizedStartDate,
+                end_date: sanitizedEndDate
             }
             
             newMovie.image = '../uploads/movies/' + req.file.filename
@@ -339,7 +348,8 @@ const movie_controller = {
             //check contents of each field in the form
             //redirect to main page and show the updated list of movies
             try{
-                const movie_title = req.body.movie_title.toUpperCase()
+                const movie_name = sanitizeHtml(req.body.movie_title)
+                const movie_title = movie_name
                 
                 //given movie title find movie
                 const movie_delete = await movies.findAll({ where: { title: movie_title }})
@@ -382,15 +392,17 @@ const movie_controller = {
             try{
                 console.log("MOVIE TO BE DELETED")
                 console.log(req.body.movieID)
+
+                const movie_ID = sanitizeHtml(req.body.movieID)
                 
                 //given movie ID find specific movie
-                const movie_find = await movies.findOne({ where: { movieID: req.body.movieID }})
+                const movie_find = await movies.findOne({ where: { movieID: movie_ID }})
                 if (movie_find){
                     //movie was found
-                    const removeTime = await movie_times.destroy({ where: { movieID: req.body.movieID }})
+                    const removeTime = await movie_times.destroy({ where: { movieID:movie_ID }})
 
                     //replace above with this
-                    const movie_delete = await movies.destroy({ where: { movieID: req.body.movieID }})
+                    const movie_delete = await movies.destroy({ where: { movieID: movie_ID }})
     
                     // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
                     if (movie_delete && removeTime){
@@ -446,7 +458,8 @@ const movie_controller = {
             //check contents of each field in the form
             //redirect to main page and show the updated list of movies
             try{
-                const movie_title = req.body.movie_title.toUpperCase()
+                const movie_name = sanitizeHtml(req.body.movie_title)
+                const movie_title = movie_name.toUpperCase()
                 
                 //given movie title find movie
                 const movie_update = await movies.findAll({ where: { title: movie_title }})
@@ -491,7 +504,8 @@ const movie_controller = {
                 // Redirect to the main page and show the updated list of movies
         
                 // Given movie title find all movies with the same title
-                const movie_update = await movies.findOne({ where: { movieID: req.body.movieID } });
+                const movie_ID = sanitizeHtml(req.body.movieID)
+                const movie_update = await movies.findOne({ where: { movieID: movie_ID } });
         
                 let movieTime = "";
                 let originalTimeslots = "";
@@ -553,7 +567,18 @@ const movie_controller = {
             const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
             const numberRegex = /^[0-9]+$/
             const timeSlotRegex = /^(\d{2}:\d{2} (?:AM|PM) - \d{2}:\d{2} (?:AM|PM))$/;
-            if (!wordsRegex.test(req.body.movie_title) || !wordsRegex.test(req.body.movie_cast) || !wordsRegex.test(req.body.movie_synopsis)) {
+
+            const sanitizedTitle = sanitizeHtml(req.body.movie_title)
+            const sanitizedCast = sanitizeHtml(req.body.movie_cast)
+            const sanitizedSynopsis = sanitizeHtml(req.body.movie_synopsis)
+            const sanitizedTrailer = sanitizeHtml(req.body.movie_trailer)
+            const sanitizedPrice = sanitizeHtml(req.body.movie_price)
+            const sanitizedQuantity = sanitizeHtml(req.body.movie_quantity)
+            const sanitizedStartDate = sanitizeHtml(req.body.start_date)
+            const sanitizedEndDate = sanitizeHtml(req.body.end_date)
+            const sanitizedTimeSlots = sanitizeHtml(req.body.time_slots)
+            const sanitizedMovieTime = sanitizeHtml(req.body.movie_time)
+            if (!wordsRegex.test(sanitizedTitle) || !wordsRegex.test(sanitizedCast) || !wordsRegex.test(sanitizedSynopsis)) {
                 var info = {
                     error:'Invalid text format'
                 }
@@ -564,7 +589,7 @@ const movie_controller = {
                 return;
             }
 
-            if (!trailerRegex.test(req.body.movie_trailer)) {
+            if (!trailerRegex.test(sanitizedTrailer)) {
                 var info = {
                     error:'Invalid URL for trailer'
                 }
@@ -575,7 +600,7 @@ const movie_controller = {
                 return;
             }
             
-            if (!numberRegex.test(req.body.movie_price) || !numberRegex.test(req.body.movie_quantity)) {
+            if (!numberRegex.test(sanitizedPrice) || !numberRegex.test(sanitizedQuantity)) {
                 var info = {
                     error:'Invalid input for ticket quantity and/or price'
                 }
@@ -587,8 +612,8 @@ const movie_controller = {
             }
 
             //check the input for start date and end date
-            const start = new Date(req.body.start_date);
-            const end = new Date(req.body.end_date);
+            const start = new Date(sanitizedStartDate);
+            const end = new Date(sanitizedEndDate);
 
             console.log("END AND START DATE INFO")
             console.log(end)
@@ -625,7 +650,7 @@ const movie_controller = {
                     return;
                 }
             }
-            if (!timeSlotRegex.test(req.body.time_slots) || !timeSlotRegex.test(req.body.movie_time)) {
+            if (!timeSlotRegex.test(sanitizedTimeSlots) || !timeSlotRegex.test(sanitizedMovieTime)) {
                 // Handle invalid time slots format
                     //date is not the same so error
                 var info = {
@@ -639,8 +664,8 @@ const movie_controller = {
             }
 
             //should only push through once the timeslot was valid
-            const [start_time_new, end_time_new] = req.body.time_slots.split(' - ')
-            const [start_time_old, end_time_old] = req.body.movie_time.split(' - ') 
+            const [start_time_new, end_time_new] = sanitizedTimeSlots.split(' - ')
+            const [start_time_old, end_time_old] = sanitizedMovieTime.split(' - ') 
             //the new is used since thats the one we are attempting to update
             const timeslot = await time_slots.findOne({ where: { 
                 start_time: start_time_new,
@@ -675,15 +700,16 @@ const movie_controller = {
             console.log("ALL INPUTS WERE OK")
 
             var newMovie = {
-                title: req.body.movie_title.toUpperCase(),
-                starring: req.body.movie_cast.toUpperCase(),
-                synopsis: req.body.movie_synopsis,
-                trailer: req.body.movie_trailer,
-                price: req.body.movie_price,
-                quantity: req.body.movie_quantity,
-                start_date: req.body.start_date,
-                end_date: req.body.end_date
+                title: sanitizedTitle.toUpperCase(),
+                starring: sanitizedCast.toUpperCase(),
+                synopsis: sanitizedSynopsis,
+                trailer: sanitizedTrailer,
+                price: sanitizedPrice,
+                quantity: sanitizedQuantity,
+                start_date: sanitizedStartDate,
+                end_date: sanitizedEndDate
             }
+
 
             //check if timeslot is part of movietimes db already given movieID
             const checkDupe = await movie_times.findOne({ where:{
@@ -808,7 +834,8 @@ const movie_controller = {
             //check contents of each field in the form
             //redirect to main page and show the updated list of movies
             try{
-                const movie_title = req.body.movie_title.toUpperCase()
+                const movie_name = sanitizeHtml(req.body.movie_title)
+                const movie_title = movie_name.toUpperCase()
                 
                 //given movie title find movie
                 const movie_all = await movies.findAll({ where: { title: movie_title }})
@@ -839,7 +866,8 @@ const movie_controller = {
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
         //means user is admin
         if (adminInfo){
-            const movie_update = await movies.findOne({ where: { movieID: req.body.movieID }})
+            const movie_ID = sanitizeHtml(req.body.movieID)
+            const movie_update = await movies.findOne({ where: { movieID: movie_ID }})
             const timeslots = await time_slots.findAll()
             
             if (movie_update) //means movie exists
@@ -865,12 +893,12 @@ const movie_controller = {
             //redirect to main page and show the updated list of movies
             console.log(req.body.movieID)
             try{
-                console.log("MOVIE TO BE UPDATED")
-                console.log(req.body.movieID)
-                const [start_time, end_time] = req.body.time_slots.split(' - ');
-                
+                const sanitizedTimeslots = sanitizeHtml(req.body.time_slots)
+                const [start_time, end_time] = sanitizedTimeslots.split(' - ');
+
+                const movie_ID = sanitizeHtml(req.body.movieID)
                 //given movie title find movie
-                const movie_update = await movies.findOne({ where: { movieID: req.body.movieID }})
+                const movie_update = await movies.findOne({ where: { movieID: movie_ID }})
                 
                 //means movie exists
                 if (movie_update){
@@ -952,7 +980,7 @@ const movie_controller = {
 
     findMovie: async function(req, res){
         //get movie title
-        const movie_name = req.body.search.toUpperCase()
+        const movie_name = sanitizeHtml(req.body.search.toUpperCase())
 
         //check movie if it exists
         const movie = await movies.findOne({ where: {title: movie_name }})
