@@ -187,7 +187,9 @@ app.post('/post-add-movie', credentials_controller.checkAuth, upload.single("fil
 
 app.get('/delete-movie', movie_controller.getDeleteMovie)
 
-app.post('/post-delete-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postDeleteMovie)
+app.post('/post-delete-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.listMoviesDelete)
+
+app.post('/final-delete', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postDeleteMovie)
 
 app.get('/update-movie', movie_controller.getUpdateMovie)
 

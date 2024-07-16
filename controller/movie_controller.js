@@ -1,6 +1,7 @@
 const { ResultWithContext } = require('express-validator/src/chain');
 const {movies, users, admins, reviews, time_slots, movie_reviews, movie_times} = require('../models/')
 const { v4: uuidv4 } = require('uuid');
+const { where } = require('sequelize');
 
 const movie_controller = {
     getMovies: async function(req, res) {   
@@ -132,6 +133,383 @@ const movie_controller = {
             const wordsRegex = /^[a-zA-Z0-9 ,.!?()_-]*$/
             const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
             const numberRegex = /^[0-9]+$/
+            const timeSlotRegex = /^(\d{2}:\d{2} (?:AM|PM) - \d{2}:\d{2} (?:AM|PM))$/;
+
+            if (!wordsRegex.test(req.body.movie_title) || !wordsRegex.test(req.body.movie_cast) || !wordsRegex.test(req.body.movie_synopsis)) {
+                var info = {
+                    error:'Invalid text format'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+
+            if (!trailerRegex.test(req.body.movie_trailer)) {
+                var info = {
+                    error:'Invalid URL for trailer'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+            
+            if (!numberRegex.test(req.body.movie_price) || !numberRegex.test(req.body.movie_quantity)) {
+                var info = {
+                    error:'Invalid input for ticket quantity and/or price'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+
+            if (req.file == undefined) {
+                var info = {
+                    error:'No file uploaded'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+
+            //check the input for start date and end date
+            const start = new Date(req.body.start_date);
+            const end = new Date(req.body.end_date);
+
+            console.log("END AND START DATE INFO")
+            console.log(end)
+            console.log(start)
+            
+            // Check if dates are not empty 
+            if (!start || !end) {
+                var info = {
+                    error:'Date input is not valid'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+            
+            // Check if end date is not earlier than start date
+
+            if (end < start) {
+                //if end is less than start check if they are equal
+                //if not equal error
+                if(!(start.getFullYear() === end.getFullYear() &&
+                start.getMonth() === end.getMonth() &&
+                start.getDate() === end.getDate())){
+                    //date is not the same so error
+                    var info = {
+                        error:'Date input is not valid'
+                    }
+                    res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                        error: info.error,
+                        title: 'Error - Filmworks'
+                    });
+                    return;
+                }
+            }
+
+            if (!timeSlotRegex.test(req.body.time_slots)) {
+                // Handle invalid time slots format
+                    //date is not the same so error
+                var info = {
+                    error:'Timeslot input is not valid'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+            //should only push through once the timeslot was valid
+            const [start_time, end_time] = req.body.time_slots.split(' - ')
+            const timeslot = await time_slots.findOne({ where: { 
+                start_time: start_time,
+                end_time: end_time
+            }})
+            
+            if (!timeslot){
+                //timeslot does not exist in db
+                var info = {
+                    error:'Timeslot input is not valid'
+                }
+                res.render('error',{layout: '/layouts/layout_admin.hbs', 
+                    error: info.error,
+                    title: 'Error - Filmworks'
+                });
+                return;
+            }
+
+            console.log("ALL INPUTS WERE OK")
+
+            var newMovie = {
+                title: req.body.movie_title.toUpperCase(),
+                starring: req.body.movie_cast.toUpperCase(),
+                synopsis: req.body.movie_synopsis,
+                trailer: req.body.movie_trailer,
+                price: req.body.movie_price,
+                quantity: req.body.movie_quantity,
+                start_date: req.body.start_date,
+                end_date: req.body.end_date
+            }
+            
+            newMovie.image = '../uploads/movies/' + req.file.filename
+
+            //add the newly created movie to the db
+            const insertMovie = await movies.create({
+                title: newMovie.title,
+                starring: newMovie.starring,
+                synopsis: newMovie.synopsis,
+                trailer:newMovie.trailer,
+                price: newMovie.price,
+                quantity: newMovie.quantity,
+                start_date: req.body.start_date,
+                end_date: req.body.end_date,
+                image: newMovie.image
+            })
+
+            //check if timeslot is part of movietimes db already given movieID, should be impossible
+            //but to be safe lang
+            const checkDupe = await movie_times.findOne({ where:{
+                movieID: insertMovie.movieID,  //get the ID of the movie 
+                timeID: timeslot.timeID
+            }})
+
+            if (checkDupe){
+                //means theres a duplicate already \
+                console.log(checkDupe)
+                if(process.env.NODE_ENV == "development"){
+                    console.error(`duplicate timeslot exists`);
+                }
+                
+                res.status(500).redirect('/error');
+            }else{
+
+                //adds the new timeslot to movie times db
+                const addedTimeslot = await movie_times.create({
+                    movieID: insertMovie.movieID,  
+                    timeID: timeslot.timeID   
+                });
+                
+                console.log("ADDING TO MOVIE TIMES DB")
+                console.log(addedTimeslot)
+                //means creation of movie and timeslot was successful
+                if (insertMovie && addedTimeslot){
+                    //movie was successfully created
+                    res.redirect('/')
+                }else{
+                    if(process.env.NODE_ENV == "development"){
+                        console.error(`error with movie creation`);
+                    }
+                    
+                    res.status(500).redirect('/error');
+                }
+            }
+
+            
+
+        }
+    },
+
+    getDeleteMovie: async function(req, res){
+        //render page for deleting movie information
+        //check first if user is admin
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //after checking if user is admin, display page to be rendered
+            res.render('delete-movie-db', {layout: '/layouts/layout_admin.hbs'});
+        }
+    },
+
+    listMoviesDelete: async function(req, res){
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //check contents of each field in the form
+            //redirect to main page and show the updated list of movies
+            try{
+                const movie_title = req.body.movie_title.toUpperCase()
+                
+                //given movie title find movie
+                const movie_delete = await movies.findAll({ where: { title: movie_title }})
+                //replace above with this
+                // const movie_delete = await movies.destroy({ where: { title: movie_title }})
+
+
+
+                // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
+    
+                console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
+                console.log(movie_delete)
+                // console.log(time_delete)
+
+                const allMovies = await movies.findAll(); //display movies that were not deleted
+                res.render('delete-movies-page',{layout: '/layouts/layout_admin.hbs',
+                    movie: movie_delete,
+                    title: "Movies to be deleted - Filmworks"
+                });
+            }catch(error){
+                //show error information
+                if(process.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
+                res.status(500).json({ message: 'An Error Occurred' });
+            }
+
+
+
+        }
+
+    },
+
+    postDeleteMovie: async function(req, res){
+        console.log("ENTERED THIS")
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //check contents of each field in the form
+            //redirect to main page and show the updated list of movies
+            try{
+                console.log("MOVIE TO BE DELETED")
+                console.log(req.body.movieID)
+                
+                //given movie ID find specific movie
+                const movie_find = await movies.findOne({ where: { movieID: req.body.movieID }})
+                if (movie_find){
+                    //movie was found
+                    const removeTime = await movie_times.destroy({ where: { movieID: req.body.movieID }})
+
+                    //replace above with this
+                    const movie_delete = await movies.destroy({ where: { movieID: req.body.movieID }})
+    
+                    // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
+                    if (movie_delete && removeTime){
+                        //means movie was deleted
+                        res.redirect('/')
+                    }else{
+                        if(process.env.NODE_ENV == "development"){
+                            console.error(error);
+                        }
+        
+                        res.status(500).json({ message: 'An Error Occurred' });
+                    }
+                }else{
+                    if(process.env.NODE_ENV == "development"){
+                        console.error(error);
+                    }
+    
+                    res.status(500).json({ message: 'An Error Occurred' });
+                }
+
+            }catch(error){
+                //show error information
+                if(process.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
+                res.status(500).json({ message: 'An Error Occurred' });
+            }
+
+
+
+        }
+
+    },
+
+    getUpdateMovie: async function(req, res){
+        //display first the get delete movie page except that user inputs the movie ID of page one wishes to update
+
+        //render page for deleting movie information
+        //check first if user is admin
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //after checking if user is admin, display page to be rendered
+            res.render('update-movie-db', {layout: '/layouts/layout_admin.hbs'});
+        }
+    },
+
+    updateMovieDetails: async function(req, res){
+        //after submitting it, redirect to this page and check 
+        //display the create page except the parameters are the ones from the db
+        //user has option to 
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+            //check contents of each field in the form
+            //redirect to main page and show the updated list of movies
+            try{
+                console.log("MOVIE TO BE UPDATED")
+                console.log(req.body.movie_title)
+                const movie_title = req.body.movie_title.toUpperCase()
+                
+                //given movie title find movie
+                const movie_update = await movies.findOne({ where: { title: movie_title }})
+                const timeslots = await time_slots.findAll()
+
+
+
+                //replace above with this
+                // const movie_delete = await movies.destroy({ where: { title: movie_title }})
+
+
+                //get the movietimes and information needed
+                //error with this code to be fixed later once the time slots db has been populated
+                // const movieTimes = await movie_times.findAll({ where: { movieID: movie_delete.movieID }})
+                // const timeIDs = movieTimes.map(entry => entry.timeID);
+                // const time_delete = await time_slots.findOne({ where: { timeID: timeIDs }})
+    
+                console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
+                console.log(movie_update.title)
+                res.render('update-movie-details', {layout: '/layouts/layout_admin.hbs', 
+                    movie_title: movie_update.title,
+                    movie_cast: movie_update.starring,
+                    movie_synopsis: movie_update.synopsis,
+                    movie_trailer: movie_update.trailer,
+                    movie_price: movie_update.price,
+                    movie_quantity: movie_update.quantity, 
+                    time: timeslots,
+                    start_date: movie_update.start_date,
+                    end_date: movie_update.end_date
+                });
+
+            }catch(error){
+                //show error information
+                if(process.env.NODE_ENV == "development"){
+                    console.error(error);
+                }
+
+                res.status(500).json({ message: 'An Error Occurred' });
+            }
+
+
+
+        }
+
+    },
+
+    postUpdateMovieDetails: async function(req, res){
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        //means user is admin
+        if (adminInfo){
+
+            console.log("USER IS ADMIN")
+            
+            const wordsRegex = /^[a-zA-Z0-9 ,.!?()_-]*$/
+            const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
+            const numberRegex = /^[0-9]+$/
 
             if (!wordsRegex.test(req.body.movie_title) || !wordsRegex.test(req.body.movie_cast) || !wordsRegex.test(req.body.movie_synopsis)) {
                 var info = {
@@ -220,8 +598,8 @@ const movie_controller = {
             console.log("ALL INPUTS WERE OK")
 
             var newMovie = {
-                title: req.body.movie_title,
-                starring: req.body.movie_cast,
+                title: req.body.movie_title.toUpperCase(),
+                starring: req.body.movie_cast.toUpperCase(),
                 synopsis: req.body.movie_synopsis,
                 trailer: req.body.movie_trailer,
                 price: req.body.movie_price,
@@ -233,7 +611,7 @@ const movie_controller = {
             newMovie.image = '../uploads/movies/' + req.file.filename
 
             //add the newly created movie to the db
-            const insertMovie = await movies.create({
+            const updateMovie = await movies.create({ where:{
                 title: newMovie.title,
                 starring: newMovie.starring,
                 synopsis: newMovie.synopsis,
@@ -243,144 +621,14 @@ const movie_controller = {
                 start_date: req.body.start_date,
                 end_date: req.body.end_date,
                 image: newMovie.image
-            })
+            }})
 
-            if (insertMovie){
-                //movie was successfully created
+            if (updateMovie){
+                //movie was successfully updated
                 res.redirect('/')
             }
 
         }
-    },
-
-    getDeleteMovie: async function(req, res){
-        //render page for deleting movie information
-        //check first if user is admin
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
-        //means user is admin
-        if (adminInfo){
-            //after checking if user is admin, display page to be rendered
-            res.render('delete-movie-db', {layout: '/layouts/layout_admin.hbs'});
-        }
-    },
-
-    postDeleteMovie: async function(req, res){
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
-        //means user is admin
-        if (adminInfo){
-            //check contents of each field in the form
-            //redirect to main page and show the updated list of movies
-            try{
-                console.log("MOVIE TO BE DELETED")
-                console.log(req.body.movie_title)
-                const movie_title = req.body.movie_title.toUpperCase()
-                
-                //given movie title find movie
-                const movie_delete = await movies.findOne({ where: { title: movie_title }})
-                //replace above with this
-                // const movie_delete = await movies.destroy({ where: { title: movie_title }})
-
-
-
-                // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
-    
-                console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
-                console.log(movie_delete)
-                // console.log(time_delete)
-
-                const allMovies = await movies.findAll(); //display movies that were not deleted
-                res.render('index',{layout: '/layouts/layout_admin.hbs',
-                    movie: allMovies,
-                    title: "Main - Filmworks"
-                });
-            }catch(error){
-                //show error information
-                if(process.env.NODE_ENV == "development"){
-                    console.error(error);
-                }
-
-                res.status(500).json({ message: 'An Error Occurred' });
-            }
-
-
-
-        }
-
-    },
-
-    getUpdateMovie: async function(req, res){
-        //display first the get delete movie page except that user inputs the movie ID of page one wishes to update
-
-        //render page for deleting movie information
-        //check first if user is admin
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
-        //means user is admin
-        if (adminInfo){
-            //after checking if user is admin, display page to be rendered
-            res.render('update-movie-db', {layout: '/layouts/layout_admin.hbs'});
-        }
-    },
-
-    updateMovieDetails: async function(req, res){
-        //after submitting it, redirect to this page and check 
-        //display the create page except the parameters are the ones from the db
-        //user has option to 
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
-        //means user is admin
-        if (adminInfo){
-            //check contents of each field in the form
-            //redirect to main page and show the updated list of movies
-            try{
-                console.log("MOVIE TO BE UPDATED")
-                console.log(req.body.movie_title)
-                const movie_title = req.body.movie_title.toUpperCase()
-                
-                //given movie title find movie
-                const movie_update = await movies.findOne({ where: { title: movie_title }})
-                const timeslots = await time_slots.findAll()
-
-
-
-                //replace above with this
-                // const movie_delete = await movies.destroy({ where: { title: movie_title }})
-
-
-                //get the movietimes and information needed
-                //error with this code to be fixed later once the time slots db has been populated
-                // const movieTimes = await movie_times.findAll({ where: { movieID: movie_delete.movieID }})
-                // const timeIDs = movieTimes.map(entry => entry.timeID);
-                // const time_delete = await time_slots.findOne({ where: { timeID: timeIDs }})
-    
-                console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
-                console.log(movie_update.title)
-                res.render('update-movie-details', {layout: '/layouts/layout_admin.hbs', 
-                    movie_title: movie_update.title,
-                    movie_cast: movie_update.starring,
-                    movie_synopsis: movie_update.synopsis,
-                    movie_trailer: movie_update.trailer,
-                    movie_price: movie_update.price,
-                    movie_quantity: movie_update.quantity, 
-                    time: timeslots
-                });
-
-            }catch(error){
-                //show error information
-                if(process.env.NODE_ENV == "development"){
-                    console.error(error);
-                }
-
-                res.status(500).json({ message: 'An Error Occurred' });
-            }
-
-
-
-        }
-
-    },
-
-    postUpdateMovieDetails: async function(req, res){
-        //check information in the form
-        //redirect to main page of website
     },
 
     getAddTimeSlot: async function(req, res){
