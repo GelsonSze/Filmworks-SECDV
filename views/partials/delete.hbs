@@ -1,0 +1,10 @@
+{{!-- <form id="movieForm" action="/get-movie" method="post" enctype="multipart/form-data"> --}}
+{{!-- <a href="javascript:;" onclick="this.parentNode.submit();" class="movieref" name="id"> --}}
+<form action="/final-delete" method="POST" id="movieForm">
+    <input type="hidden" name="movieID" value="{{movieID}}">
+    <button type="submit" class="movieref">
+        <img src="{{image}}" alt="{{movieID}}" class="movie2">
+    </button>
+</form>
+{{!-- <input type="hidden" name="id" value="{{id}}"> --}}
+{{!-- </form> --}}
