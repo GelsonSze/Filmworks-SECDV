@@ -952,8 +952,7 @@ const movie_controller = {
 
     findMovie: async function(req, res){
         //get movie title
-        const movie_name = req.body.search
-        movie_name = movie_name.toUpperCase()
+        const movie_name = req.body.search.toUpperCase()
 
         //check movie if it exists
         const movie = await movies.findOne({ where: {title: movie_name }})
