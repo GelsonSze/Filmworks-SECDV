@@ -1,5 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
     const error_logs = sequelize.define("error_logs", {
+        id:{
+            type: DataTypes.INTEGER, 
+            primaryKey: true,
+            allowNull: false,
+            notEmpty: true,
+            autoIncrement: true
+        },
         origin: {
             type: DataTypes.STRING,
             allowNull: false,

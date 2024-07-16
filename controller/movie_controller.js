@@ -59,6 +59,14 @@ const movie_controller = {
             console.log("MOVIE DETAILS")
             console.log(movie)
 
+            const movieReviews = await movie_reviews.findAll({
+                attributes: ['reviewID'],
+                where: {movieID: req.params.movieID}
+            })
+
+            const reviewIDs = movieReviews.map(review => review.reviewID);
+        
+            const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
         
             //adjust this depending on whether admin or user is accessing the page
             res.render('movie', {layout: '/layouts/layout.hbs', 
@@ -69,8 +77,8 @@ const movie_controller = {
                 m_cast: movie.starring,
                 m_synopsis: movie.synopsis,
                 timeSlotJQ: "outputJQ",
-                title: movie.title + " - Filmworks"
-                // review: movie.reviews 
+                title: movie.title + " - Filmworks",
+                review: allReviews
                 //idk how we will handle this for now but i will just leave design of webpage muna
             });
         }else{
@@ -564,6 +572,21 @@ const movie_controller = {
                     reviewID: id
                 })
 
+                const movieReviews = await movie_reviews.findAll({
+                    attributes: ['reviewID'],
+                    where: {movieID: req.params.movieID}
+                })
+
+                console.log("movieReviews")
+                console.log(movieReviews)
+
+                const reviewIDs = movieReviews.map(review => review.reviewID);
+            
+                const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
+
+                console.log("allReviews")
+                console.log(allReviews)
+                
                 //after adding the review to the db
                 //render the movie page again with the updated review
                 //get the reviews given the movieID from the DB
@@ -575,8 +598,8 @@ const movie_controller = {
                     m_cast: movie.starring,
                     m_synopsis: movie.synopsis,
                     timeSlotJQ: "outputJQ",
-                    title: movie.title + " - Filmworks"
-                    // review: movie.reviews 
+                    title: movie.title + " - Filmworks",
+                    review: allReviews 
                     //idk how we will handle this for now but i will just leave design of webpage muna
                 });
             }

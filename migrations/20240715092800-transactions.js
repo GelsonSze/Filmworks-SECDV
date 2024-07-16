@@ -14,7 +14,9 @@ module.exports = {
     await queryInterface.createTable('transactions', {
       transactionID: {
         type: Sequelize.DataTypes.UUID,
-        defaultValue: uuidv4(),
+        defaultValue: function(){
+          return uuidv4()
+        },
         allowNull: false,
         primaryKey: true
       },
@@ -74,5 +76,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
+    await queryInterface.dropTable('transactions')
   }
 };

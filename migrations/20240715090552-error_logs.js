@@ -14,6 +14,8 @@ module.exports = {
       id:{
         type: Sequelize.DataTypes.INTEGER,
         primaryKey: true,
+        allowNull: false,
+        notEmpty: true,
         autoIncrement: true
       },
       origin: {

@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     const transactions = sequelize.define("transactions", {
         transactionID: {
             type: DataTypes.UUID,
-            defaultValue: uuidv4(),
+            defaultValue: function(){
+                return uuidv4()
+            },
             allowNull: false,
             primaryKey: true
         },
@@ -53,8 +55,17 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.NOW,
             allowNull: false,
             notEmpty: true
+        },
+        userID: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            primaryKey: true
         }
     }, {timestamps: false})
+
+    transactions.associate = function(models){
+        transactions.belongsTo(models.users, {foreignKey: 'userID'})
+    }
 
     return transactions
 }

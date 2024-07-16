@@ -1,17 +1,18 @@
-const { v4: uuidv4 } = require('uuid');
-
 module.exports = (sequelize, DataTypes) => {
     const movie_times = sequelize.define("movie_times", {
         movieID: {
             type: DataTypes.UUID,
-            defaultValue: uuidv4(),
             allowNull: false,
             primaryKey: true
         },
         timeID: {
+<<<<<<< HEAD
             // type: DataTypes.UUID,
             // defaultValue: uuidv4(),
             type: DataTypes.INTEGER,
+=======
+            type: DataTypes.UUID,
+>>>>>>> d7b754bf9c86c76e87457824db060972a099f623
             allowNull: false,
             primaryKey: true
         }

@@ -14,7 +14,6 @@ module.exports = {
     await queryInterface.createTable('movie_times', {
       movieID: {
         type: Sequelize.DataTypes.UUID,
-        defaultValue: uuidv4(),
         allowNull: false,
         primaryKey: true,
         references: {

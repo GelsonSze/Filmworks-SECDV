@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     const users = sequelize.define("users", {
         userID: {
             type: DataTypes.UUID,
-            defaultValue: uuidv4(),
+            defaultValue: function(){
+                return uuidv4()
+            },
             allowNull: false,
             primaryKey: true
         },
@@ -45,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
 
     users.associate = function(models){
         users.hasMany(models.reviews, {foreignKey: 'userID'})
+        users.hasMany(models.transactions, {foreignKey: 'userID'})
         users.hasOne(models.carts, {foreignKey: 'userID'});
     }
 
