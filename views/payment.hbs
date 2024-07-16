@@ -14,14 +14,14 @@
                         
                        
                             <label class = "normal">Name in Card:</label>
-                            <input type="text" placeholder="Enter full name" id="fullname" required>
+                            <input type="text" name="fullname" placeholder="Enter full name" id="fullname" required>
                         
 
                             <label class = "normal">Expiration(YYYY/MM):</label>
-                            <input type="text" name = "expiration" placeholder="Enter expiration(yyyy/mm)" id="expiration" required>
+                            <input type="text" name = "expiration" minlength="7" maxlength="7" placeholder="Enter expiration(yyyy/mm)" id="expiration" required>
 
                             <label class = "normal">CVV:</label>
-                            <input type="text" minlength="3" maxlength="3" placeholder="Enter CVV" id="cvv" required>
+                            <input type="text" name="cvv"  minlength="3" maxlength="3" placeholder="Enter CVV" id="cvv" required>
                             <p id = "error">{{error}}<p></p>
 
                             <input type="submit" id = "pay" value = "Confirm">

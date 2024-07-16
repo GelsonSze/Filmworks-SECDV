@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         quantity: {
             type: DataTypes.INTEGER,
-            allowNullL: false,
+            allowNull: false,
             notEmpty: true
         }
     })
-
+    
     return cart_movies
 }

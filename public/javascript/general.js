@@ -49,58 +49,58 @@ $(document).ready(function() {
         $('#number').html(data);
 
         var quantity = $('#number').html();         // quantity of tickets
-        var movie = $(".normal4").attr('alt');      // id number of movie
-        var displayedDate = $('#date').html();      // date displayed in the page
-        var displayedTime = $('#time').html();      // time displayed in the page
-        var pm = false;
+        // var movie = $(".normal4").attr('alt');      // id number of movie
+        // var displayedDate = $('#date').html();      // date displayed in the page
+        // var displayedTime = $('#time').html();      // time displayed in the page
+        // var pm = false;
 
-        var currentDate = new Date();           
-        var year = currentDate.getFullYear();                       // year right now
-        var convertMonth = Date.parse(displayedDate + ", " + year); // temp variable to convert month
+        // var currentDate = new Date();           
+        // var year = currentDate.getFullYear();                       // year right now
+        // var convertMonth = Date.parse(displayedDate + ", " + year); // temp variable to convert month
 
-        if(!isNaN(convertMonth))
-            var month = new Date(convertMonth).getMonth() + 1;      // value corresponding to the month
+        // if(!isNaN(convertMonth))
+        //     var month = new Date(convertMonth).getMonth() + 1;      // value corresponding to the month
 
-        var date = displayedDate.split(" ");
-        date = date[2];
+        // var date = displayedDate.split(" ");
+        // date = date[2];
 
-        var hour;
-        var minute;
+        // var hour;
+        // var minute;
 
-        if (displayedTime.includes('AM'))
-            pm = false;
-        else if (displayedTime.includes('PM'))
-            pm = true;
+        // if (displayedTime.includes('AM'))
+        //     pm = false;
+        // else if (displayedTime.includes('PM'))
+        //     pm = true;
 
-        if (pm){
-            var a = displayedTime.replace('PM', '');
-            var b = a.split(" : ");
-            hour = parseInt(b[0]);
-            minute = parseInt(b[1]);
-            if (hour != 12)
-                hour += 12;
-        }
-        else {
-            var a = displayedTime.replace('AM', '');
-            var b = a.split(" : ");
-            hour = parseInt(b[0]);
-            minute = parseInt(b[1]);
-        }
+        // if (pm){
+        //     var a = displayedTime.replace('PM', '');
+        //     var b = a.split(" : ");
+        //     hour = parseInt(b[0]);
+        //     minute = parseInt(b[1]);
+        //     if (hour != 12)
+        //         hour += 12;
+        // }
+        // else {
+        //     var a = displayedTime.replace('AM', '');
+        //     var b = a.split(" : ");
+        //     hour = parseInt(b[0]);
+        //     minute = parseInt(b[1]);
+        // }
 
-        var dateQuery = new Date(year, month-1, date, hour, minute, 0, 0);
-        var dateQ = dateQuery.toISOString();
+        // var dateQuery = new Date(year, month-1, date, hour, minute, 0, 0);
+        // var dateQ = dateQuery.toISOString();
         
-        $.get('/find-quantity', {m_id: movie, ticket: dateQ}, function(result){
-            if (parseInt(result) < parseInt(quantity)) {
-                $('#plus').prop('disabled', true);
-                $('.addCartButton').prop('disabled', true);
-                $('#errorMessage').css('color', 'maroon');
-                $('#errorMessage').text('Quantity ordered exceeded the available amount of tickets.');
-            }
-            else {
-                $('#errorMessage').text(''); 
-            }
-        });
+        // $.get('/find-quantity', {m_id: movie, ticket: dateQ}, function(result){
+        //     if (parseInt(result) < parseInt(quantity)) {
+        //         $('#plus').prop('disabled', true);
+        //         $('.addCartButton').prop('disabled', true);
+        //         $('#errorMessage').css('color', 'maroon');
+        //         $('#errorMessage').text('Quantity ordered exceeded the available amount of tickets.');
+        //     }
+        //     else {
+        //         $('#errorMessage').text(''); 
+        //     }
+        // });
     });
 
     // adds a movie to the cart of the user
@@ -172,6 +172,30 @@ $(document).ready(function() {
     //         });
     //     }
     // });
+
+    $('.addCartButton').click(function () {
+        var quantity = $('#number').html();
+        var movieID = $('#movieTitle').attr('alt');
+        console.log(!isNaN(quantity))
+        console.log(movieID)
+
+        if(!isNaN(quantity) && Number(quantity) > 0){
+            quantity = Number(quantity)
+            $.post({url:`/addCart`, 
+                // type: "POST",
+                data: {
+                    "quantity": quantity,
+                    "movieID": movieID
+                },
+                success: async function(result) {
+                    window.location.href = '/cart';
+                },
+                error: async function(result){
+                    window.location.href = '/error';
+                }
+            });
+        }
+    })
 
     // if remove button is clicked, the movie is removed from the cart of the user
     $('.movieInfo').on('click', '.ticketRemove', function () {  
@@ -255,13 +279,31 @@ $(document).ready(function() {
     //         }
     //     })
     // });
+    // check value before submit
+    $('#paymentform').on('submit', function(event){
+        const cardNumRegex = /^[0-9]{16}$/
+        const nameRegex = /^[a-zA-Z\s]+$/
+        const cardExpireRegex = /^[0-9]{4}\/(0[1-9]|1[0-2])$/
+        const cvvRegex = /^[0-9]{3}$/
+
+        var num = $('#cardnum').val(); 
+        var name = $('#fullname').val(); 
+        var expiration = $('#expiration').val(); 
+        var cvv = $('#cvv').val(); 
+        if(!cardNumRegex.test(num) || !nameRegex.test(name) || !cardExpireRegex.test(expiration) || !cvvRegex.test(cvv)){
+            event.preventDefault();
+        }
+    });
 
     // if expiration is not greater than current date it is fine
     $('#expiration').keyup(function() {
         var expiration = $('#expiration').val(); 
-        expiration = new Date(Date.parse(expiration));
+        const cardExpireRegex = /^[0-9]{4}\/(0[1-9]|1[0-2])$/
+        expirationval = expiration 
+        expirationdate = new Date(Date.parse(expiration));
         var current = new Date();
-        if (expiration.getTime() > current.getTime()) {
+
+        if (expirationdate.getTime() > current.getTime() && cardExpireRegex.test(expirationval)) {
             $('#expiration').css('background-color', 'white');
             $('#error').text("");
         }
@@ -274,7 +316,8 @@ $(document).ready(function() {
     // ensures that input values for the card number is valid
     $('#cardnum').keyup(function() {
         var num = $('#cardnum').val(); 
-        if (num.length != 16 || isNaN(num) == true) {
+        const cardNumRegex = /^[0-9]{16}$/
+        if (!cardNumRegex.test(num)) {
             $('#cardnum').css('background-color', 'red');
             $('#error').text('Invalid card number or input!');
         }
@@ -284,10 +327,25 @@ $(document).ready(function() {
         }
     });
 
+    $('#fullname').keyup(function() {
+        var name = $('#fullname').val(); 
+        const nameRegex = /^[a-zA-Z\s]+$/
+        if (!nameRegex.test(name)) {
+            $('#fullname').css('background-color', 'red');
+            $('#error').text('Empty or Invalid name input!');
+        }
+        else {
+            $('#fullname').css('background-color', 'white');
+            $('#error').text("");
+        }
+    });
+
     // ensures that input values for the cvv is valid
     $('#cvv').keyup(function() {
         var cvv = $('#cvv').val(); 
-        if (cvv.length != 3) {
+        const cvvRegex = /^[0-9]{3}$/
+
+        if (!cvvRegex.test(cvv)) {
             $('#cvv').css('background-color', 'red');
             $('#error').text('Invalid CVV!');
         }
