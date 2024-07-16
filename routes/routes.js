@@ -181,7 +181,7 @@ app.get('/movie-details', movie_controller.getAddMovies)
 
 app.get('/add-movie-db', movie_controller.addMovie)
 
-app.post('/post-add-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postaddMovie)
+app.post('/post-add-movie', credentials_controller.checkAuth, upload.single("file"), multerError, movie_controller.postaddMovie)
 
 app.get('/delete-movie', movie_controller.getDeleteMovie)
 
