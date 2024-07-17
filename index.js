@@ -12,6 +12,7 @@ const expressSession  = require('express-session')
 const SessionStore = require('express-session-sequelize')(expressSession.Store)
 const db = require('./models')
 require('./config/passport.js')
+const helmet = require("helmet")
 
 const myDatabase = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
@@ -23,6 +24,7 @@ const sequelizeSessionStore = new SessionStore({
 });
 
 const app = new express();
+app.use(helmet())
 
 app.use(expressSession({
     secret: process.env.SECRET,

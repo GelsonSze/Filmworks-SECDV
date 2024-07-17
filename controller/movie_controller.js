@@ -223,7 +223,7 @@ const movie_controller = {
             // Check if dates are not empty 
             if (!start || !end) {
                 var info = {
-                    error:'Date input is not valid'
+                    error:'The application has encountered an unknown error.'
                 }
                 res.render('error',{layout: '/layouts/layout_admin.hbs', 
                     error: info.error,
@@ -252,7 +252,9 @@ const movie_controller = {
                 }
             }
 
+
             if (!timeSlotRegex.test(sanitizedTimeSlots)) {
+                console.log("REGEX DIDNT PASS")
                 // Handle invalid time slots format
                     //date is not the same so error
                 var info = {
@@ -271,10 +273,10 @@ const movie_controller = {
                 end_time: end_time
             }})
             
-            if (timeslot){
-                //means timeslot for movie already exists
+            if (!timeslot){
+                //means timeslot is not valid timeslot chosen
                 var info = {
-                    error:'Timeslot input is not valid'
+                    error:'The application has encountered an unknown error.'
                 }
                 res.render('error',{layout: '/layouts/layout_admin.hbs', 
                     error: info.error,
@@ -320,7 +322,7 @@ const movie_controller = {
                 //means theres a duplicate already \
                 console.log(checkDupe)
                 if(process.env.NODE_ENV == "development"){
-                    console.error(`duplicate timeslot exists`);
+                    console.error(`The application has encountered an unknown error.`);
                 }
                 
                 res.status(500).redirect('/error');
@@ -340,7 +342,7 @@ const movie_controller = {
                     res.redirect('/')
                 }else{
                     if(process.env.NODE_ENV == "development"){
-                        console.error(`error with movie creation`);
+                        console.error(`The application has encountered an unknown error.`);
                     }
                     
                     res.status(500).redirect('/error');
