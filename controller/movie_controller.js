@@ -580,14 +580,13 @@ const movie_controller = {
     },
 
     postUpdateMovieDetails: async function(req, res){
-        console.log("FINALLY")
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
         //means user is admin
         if (adminInfo){
 
             console.log("USER IS ADMIN")
             
-            const wordsRegex = /^[a-zA-Z0-9 ,.!?()_-]*$/
+            const wordsRegex = /^[a-zA-Z0-9 ,'.!?()_-]*$/
             const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
             const numberRegex = /^[0-9]+$/
             const timeSlotRegex = /^(\d{2}:\d{2} (?:AM|PM) - \d{2}:\d{2} (?:AM|PM))$/;
@@ -818,14 +817,6 @@ const movie_controller = {
                 }
             }
             
-
-
-
-            //add the newly created movie to the db
-
-
-
-
         }
     },
 
@@ -863,10 +854,6 @@ const movie_controller = {
                 
                 //given movie title find movie
                 const movie_all = await movies.findAll({ where: { title: movie_title }})
-                //replace above with this
-                // const movie_delete = await movies.destroy({ where: { title: movie_title }})
-
-                // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
 
                 res.render('timeslots-page',{layout: '/layouts/layout_admin.hbs',
                     movie: movie_all,
@@ -1005,9 +992,36 @@ const movie_controller = {
     findMovie: async function(req, res){
         //get movie title
         const movie_name = sanitizeHtml(req.body.search.toUpperCase())
+        var movieTime
 
         //check movie if it exists
         const movie = await movies.findOne({ where: {title: movie_name }})
+        try {
+            const timeslots = await movie_times.findAll({ where: { movieID: movie.movieID } });
+            
+            if (timeslots.length > 0) {
+                const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+            }
+        } catch (error) {
+            if(process.env.NODE_ENV == "development"){
+                console.error(`The application has encountered an unknown error.`);
+            }
+            
+            res.status(500).redirect('/error');
+        }
+
+        const movieReviews = await movie_reviews.findAll({
+            attributes: ['reviewID'],
+            where: {movieID: movie.movieID}
+        })
+
+
+        const reviewIDs = movieReviews.map(review => review.reviewID);
+
+        const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
+
+
 
         if (movie){
             res.render('movie', {layout: '/layouts/layout.hbs', 
@@ -1017,10 +1031,9 @@ const movie_controller = {
                 m_image: movie.image,
                 m_cast: movie.starring,
                 m_synopsis: movie.synopsis,
-                timeSlotJQ: "outputJQ",
-                title: movie.title + " - Filmworks"
-                // review: movie.reviews 
-                //idk how we will handle this for now but i will just leave design of webpage muna
+                timeSlotJQ: movieTime,
+                title: movie.title + " - Filmworks",
+                review: allReviews 
             });
         }else{
             if(process.env.NODE_ENV == "development"){
@@ -1037,6 +1050,7 @@ const movie_controller = {
         //check if movie ID exists 
 
         const movie = await movies.findOne({where: {movieID: req.params.movieID}})
+        var movieTime = ""
         
         //if movie ID exists in db, means we can post a review like normal
         if (movie){
@@ -1080,7 +1094,14 @@ const movie_controller = {
 
                 console.log("allReviews")
                 console.log(allReviews)
-                
+
+                const timeslots = await movie_times.findAll({ where: { movieID: req.params.movieID } });
+                if (timeslots.length > 0) {
+                    // Means movie has existing timeslot
+                    const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                    movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+
+                }
                 //after adding the review to the db
                 //render the movie page again with the updated review
                 //get the reviews given the movieID from the DB
@@ -1091,10 +1112,9 @@ const movie_controller = {
                     m_image: movie.image,
                     m_cast: movie.starring,
                     m_synopsis: movie.synopsis,
-                    timeSlotJQ: "outputJQ",
+                    timeSlotJQ: movieTime,
                     title: movie.title + " - Filmworks",
                     review: allReviews 
-                    //idk how we will handle this for now but i will just leave design of webpage muna
                 });
             }
             else{
@@ -1125,6 +1145,7 @@ const movie_controller = {
         const review = await reviews.findOne({where: {reviewID: req.params.reviewID}})
         console.log("review")
         console.log(review)
+        var movieTime = ""
         
         //if reviewID exists in db, means we can delete a review 
         if (review){
@@ -1148,7 +1169,15 @@ const movie_controller = {
                 const reviewIDs = movieReviews.map(review => review.reviewID);
             
                 const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
+                
 
+                const timeslots = await movie_times.findAll({ where: { movieID: movieReview.movieID} });
+                if (timeslots.length > 0) {
+                    // Means movie has existing timeslot
+                    const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                    movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+
+                }
                 //after removing the review from the db
                 //render the movie page again with the updated review list
                 //get the reviews given the movieID from the DB
@@ -1159,10 +1188,9 @@ const movie_controller = {
                     m_image: movie.image,
                     m_cast: movie.starring,
                     m_synopsis: movie.synopsis,
-                    timeSlotJQ: "outputJQ",
+                    timeSlotJQ: movieTime,
                     title: movie.title + " - Filmworks",
                     review: allReviews 
-                    //idk how we will handle this for now but i will just leave design of webpage muna
                 });
             }
             else{
@@ -1197,7 +1225,7 @@ const movie_controller = {
         console.log(req.body)
         console.log("req.params")
         console.log(req.params)
-        
+        var movieTime = ""
         //if reviewID exists in db, means we can edit the review 
         if (review){
             const currentUserID = await users.findOne({
@@ -1226,6 +1254,14 @@ const movie_controller = {
             
                 const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
 
+                const timeslots = await movie_times.findAll({ where: { movieID: movieReview.movieID } });
+                if (timeslots.length > 0) {
+                    // Means movie has existing timeslot
+                    const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                    movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+
+                }
+
                 //after removing the review from the db
                 //render the movie page again with the updated review list
                 //get the reviews given the movieID from the DB
@@ -1236,10 +1272,9 @@ const movie_controller = {
                     m_image: movie.image,
                     m_cast: movie.starring,
                     m_synopsis: movie.synopsis,
-                    timeSlotJQ: "outputJQ",
+                    timeSlotJQ: movieTime,
                     title: movie.title + " - Filmworks",
                     review: allReviews 
-                    //idk how we will handle this for now but i will just leave design of webpage muna
                 });
             }
             else{

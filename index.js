@@ -24,7 +24,7 @@ const sequelizeSessionStore = new SessionStore({
 });
 
 const app = new express();
-app.use(helmet())
+// app.use(helmet())
 
 app.use(expressSession({
     secret: process.env.SECRET,
