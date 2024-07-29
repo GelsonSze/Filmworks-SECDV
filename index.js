@@ -25,7 +25,16 @@ const sequelizeSessionStore = new SessionStore({
 
 const app = new express();
 // app.use(helmet())
-
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/"],
+      frameSrc: ["'self'", "https://www.google.com/recaptcha/"],
+      styleSrc: ["'self'"],
+      connectSrc: ["'self'", "https://www.google.com/recaptcha/"],
+      imgSrc: ["'self'", "data:", "https://www.gstatic.com/recaptcha/"],
+    }
+  }));
 app.use(expressSession({
     secret: process.env.SECRET,
     store: sequelizeSessionStore,

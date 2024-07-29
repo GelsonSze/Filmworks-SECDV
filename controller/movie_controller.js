@@ -86,7 +86,7 @@ const movie_controller = {
                     timeSlotJQ: movieTime,
                     title: movie.title + " - Filmworks",
                     review: allReviews
-                    //idk how we will handle this for now but i will just leave design of webpage muna
+
                 });
             }else{
                 res.render('movie', {layout: '/layouts/layout.hbs', 
@@ -99,7 +99,7 @@ const movie_controller = {
                     timeSlotJQ: "movieTime",
                     title: movie.title + " - Filmworks",
                     review: allReviews
-                    //idk how we will handle this for now but i will just leave design of webpage muna
+
                 });
             }
         
@@ -1069,8 +1069,8 @@ const movie_controller = {
                 //add it to reviews db
 
                 const newReview = await reviews.create({
-                    rating: req.body.rating,
-                    description: req.body.newReview,
+                    rating: sanitizeHtml(req.body.rating),
+                    description: sanitizeHtml(req.body.newReview),
                     reviewer: user.fullName,
                     userID: user.userID
                 })
@@ -1239,8 +1239,8 @@ const movie_controller = {
                 const movie = await movies.findOne({where: {movieID: movieReview.movieID} })
                 
                 review.set({
-                    description: req.body.description, 
-                    rating: req.body.rating
+                    description: sanitizeHtml(req.body.description), 
+                    rating: sanitizeHtml(req.body.rating)
                 })
 
                 await review.save();

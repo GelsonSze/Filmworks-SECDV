@@ -1,6 +1,7 @@
 const {users, admins, sessions, bannedIPs, carts, banned_users} = require('../models/')
 const bcrypt = require('bcryptjs')
 const db = require('../models/index.js')
+const sanitizeHtml = require('sanitize-html');
 const controller = {
     successfulRegister: async function(req, res){
 
@@ -19,7 +20,7 @@ const controller = {
         const passwordRegex = /^(?=(?:.*[A-Z]){1,})(?=(?:.*[a-z]){1,})(?=(?:.*[0-9]){1,})(?=(?:.*[^A-Za-z0-9]){1,}).{12,64}$/g
 
         // if the first and last name does not match the regex
-        if (!nameRegex.test(req.body.f_name) || !nameRegex.test(req.body.l_name)) {
+        if (!nameRegex.test(sanitizeHtml(req.body.f_name)) || !nameRegex.test(sanitizeHtml(req.body.l_name))) {
             var info = {
                 error:'Invalid name format'
             }
@@ -31,7 +32,7 @@ const controller = {
         }
         
         // if the phone number does not match the regex
-        if (!phoneRegex1.test(req.body.phone) && !phoneRegex2.test(req.body.phone)) {
+        if (!phoneRegex1.test(sanitizeHtml(req.body.phone)) && !phoneRegex2.test(sanitizeHtml(req.body.phone))) {
             var info = {
                 error:'Invalid phone number format'
             }
@@ -43,7 +44,7 @@ const controller = {
         }
 
         // if the email does not match the regex
-        if (!emailRegex.test(req.body.email)) {
+        if (!emailRegex.test(sanitizeHtml(req.body.email))) {
             var info = {
                 error:'Invalid email format'
             }
@@ -81,7 +82,7 @@ const controller = {
         }
 
         // if the password does not match the regex
-        if (!passwordRegex.test(req.body.password)) {
+        if (!passwordRegex.test(sanitizeHtml(req.body.password))) {
             var info = {
                 error:'Invalid password format'
             }
@@ -105,11 +106,11 @@ const controller = {
         }
 
         var newUser = {
-            f_name: req.body.f_name,
-            l_name: req.body.l_name,
-            email: req.body.email,
-            phone: req.body.phone,
-            password: req.body.password,
+            f_name: sanitizeHtml(req.body.f_name),
+            l_name: sanitizeHtml(req.body.l_name),
+            email: sanitizeHtml(req.body.email),
+            phone: sanitizeHtml(req.body.phone),
+            password: sanitizeHtml(req.body.password),
             image: ""
         }
 
