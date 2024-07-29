@@ -56,7 +56,7 @@ const controller = {
         }
 
         // if the email is already registered by another user
-        const existingUser = await users.findOne({ where: { emailAddress: req.body.email } });
+        const existingUser = await users.findOne({ where: { emailAddress: req.body.email }, attributes: ['userID']});
         if (existingUser) {
             var info = {
                 error: 'Email already registered'
@@ -69,7 +69,7 @@ const controller = {
         }
 
         // if the email is the admin email
-        const existingAdmin = await admins.findOne({ where: { emailAddress: req.body.email } });
+        const existingAdmin = await admins.findOne({ where: { emailAddress: req.body.email }, attributes: ['adminID'] });
         if (existingAdmin) {
             var info = {
                 error: 'Invalid Registration'
@@ -169,9 +169,9 @@ const controller = {
     displayAccount: async function(req, res){
         if (req.user != null){
             try{
-                const userInfo = await users.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                const userInfo = await users.findOne({ where: { emailAddress: req.user.username }, attributes: ['fullName', 'profilePhoto']}, function (result){
                 })
-                const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['fullName', 'profilePhoto']}, function (result){
                 })
     
                 if (userInfo){
@@ -218,10 +218,14 @@ const controller = {
     displayadminPage: async function(req, res){
         if (req.user){
             try{
-                const allUsers = await users.findAll();
-                const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                const allUsers = await users.findAll({
+                    attributes: ['userID']
+                });
+                const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['fullName', 'profilePhoto']}, function (result){
                 })
-                const bannedUsers = await banned_users.findAll()
+                const bannedUsers = await banned_users.findAll({
+                    attributes: ['userID']
+                })
 
     
                 if (adminInfo){
@@ -254,11 +258,13 @@ const controller = {
     banUser: async function(req, res, next){
         try {
             //check if current user is admin first
-            const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+            const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
 
             //if user is admin
             if (adminInfo){
-                const bannedUser = await users.findOne({ where: { userID: req.body.userID }})
+                const bannedUser = await users.findOne({ 
+                    where: { userID: req.body.userID },
+                })
                 //means user exists
                 if (bannedUser){
                     //add bannedUser to banned_users db
@@ -280,8 +286,12 @@ const controller = {
 
                     if (check && deleteUser && removeCart){
                         //means the banning of user was successful
-                        const users = await users.findAll()
-                        const banned = await banned_users.findAll()
+                        const users = await users.findAll({
+                                attributes: ['userID']
+                        })
+                        const banned = await banned_users.findAll({
+                            attributes: ['userID']
+                        })
                         res.render('admin',{layout: '/layouts/admin.hbs',
                             full_name: adminInfo.fullName, 
                             profile_pic: adminInfo.profilePhoto, 
@@ -350,14 +360,14 @@ const controller = {
     },
     userRedirect: async function(req, res){
         const email = req.user.username
-        const findUser = await users.findOne({ where: {emailAddress: email} })
+        const findUser = await users.findOne({ where: {emailAddress: email}, attributes: ['userID'] })
         
         if(findUser){
             findUser.lastLogin = new Date().toISOString().slice(0, 19).replace('T', ' ')
             await findUser.save();
             res.redirect('/main')
         }else{
-            const findAdmin = await admins.findOne({ where: {emailAddress: email} })
+            const findAdmin = await admins.findOne({ where: {emailAddress: email}, attributes: ['adminID'] })
             findAdmin.lastLogin = new Date().toISOString().slice(0, 19).replace('T', ' ')
             await findAdmin.save();
             res.redirect('/admin')

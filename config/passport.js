@@ -9,7 +9,7 @@ const userFields = {
 }
 
 const verifyCallback = async function(email, password, callback){
-    const findUser = await users.findOne({ where: {emailAddress: email} })
+    const findUser = await users.findOne({ where: {emailAddress: email}})
     const findAdmin = await admins.findOne({ where: {emailAddress: email} })
 
     if (!findUser && !findAdmin) {

@@ -12,9 +12,9 @@ const movie_controller = {
             try {
                 const allMovies = await movies.findAll();
                 //checks if user is admin or not 
-                const userInfo = await users.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                const userInfo = await users.findOne({ where: { emailAddress: req.user.username }, attributes: ['userID']}, function (result){
                 })
-                const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }}, function (result){
+                const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']}, function (result){
                 })
                 
                 //page rendered depends on if account exists as either admin or user
@@ -120,7 +120,7 @@ const movie_controller = {
 
     getAddMovies: async function(req, res){
         //get the page for adding movies
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //after checking if user is admin, display page to be rendered
@@ -131,7 +131,7 @@ const movie_controller = {
     addMovie: async function(req, res){
         //render page for adding movie information
         //check first if user is admin
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //get timeslots list from db
@@ -147,7 +147,7 @@ const movie_controller = {
         //check contents of each field in the form
         //redirect to main page and show the new movie 
 
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
 
@@ -357,7 +357,7 @@ const movie_controller = {
     getDeleteMovie: async function(req, res){
         //render page for deleting movie information
         //check first if user is admin
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //after checking if user is admin, display page to be rendered
@@ -366,7 +366,7 @@ const movie_controller = {
     },
 
     listMoviesDelete: async function(req, res){
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //check contents of each field in the form
@@ -408,7 +408,7 @@ const movie_controller = {
 
     postDeleteMovie: async function(req, res){
         console.log("ENTERED THIS")
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //check contents of each field in the form
@@ -467,7 +467,7 @@ const movie_controller = {
 
         //render page for updating movie information
         //check first if user is admin
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //after checking if user is admin, display page to be rendered
@@ -476,7 +476,7 @@ const movie_controller = {
     },
 
     listMoviesUpdate: async function(req, res){
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //check contents of each field in the form
@@ -520,7 +520,7 @@ const movie_controller = {
     updateMovieDetails: async function(req, res){
         try {
             // Assuming req.user.username contains the email address of the admin
-            const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username } });
+            const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID'] });
         
             // means user is admin
             if (adminInfo) {
@@ -580,7 +580,7 @@ const movie_controller = {
     },
 
     postUpdateMovieDetails: async function(req, res){
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
 
@@ -827,7 +827,7 @@ const movie_controller = {
 
         //render page for deleting movie information
         //check first if user is admin
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
 
@@ -843,7 +843,7 @@ const movie_controller = {
     },
 
     listMoviesTime: async function(req, res){
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //check contents of each field in the form
@@ -874,7 +874,7 @@ const movie_controller = {
     },
 
     showTimeSlotOptions: async function(req, res){
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             const movie_ID = sanitizeHtml(req.body.movieID)
@@ -897,7 +897,7 @@ const movie_controller = {
 
         //render page for deleting movie information
         //check first if user is admin
-        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //check contents of each field in the form
