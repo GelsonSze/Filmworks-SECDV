@@ -13,7 +13,8 @@ const controller = {
 
         }
         
-        const emailRegex = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/g
+        //the total length of email address is 255 characters and the part prior to the @ is at ost 64 characters
+        const emailRegex = /^(?=.{1,64}@)(?=.{1,255}$)[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/g
         const nameRegex = /^[a-zA-Z\s]+$/
         const phoneRegex1 = /^09[0-9]{9}$/g
         const phoneRegex2 = /^\+639[0-9]{9}$/g
