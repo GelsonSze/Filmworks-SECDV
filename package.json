@@ -9,7 +9,8 @@
     "create:migration": "npx sequelize-cli migration:generate",
     "db:setup": "npx sequelize-cli db:migrate --debug && npx sequelize-cli db:seed:all --debug",
     "db:upgrade": "npx sequelize-cli db:migrate --debug",
-    "db:reset": "npx sequelize-cli db:migrate:undo:all --debug"
+    "db:reset": "npx sequelize-cli db:migrate:undo:all --debug",
+    "db:rollback": "npx sequelize-cli db:migrate:undo"
   },
   "repository": {
     "type": "git",

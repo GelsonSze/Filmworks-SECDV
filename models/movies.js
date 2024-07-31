@@ -54,21 +54,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATEONLY,
             allowNull: false,
             notEmpty: true
-        },
-        start_time: {
-            type: DataTypes.STRING(128),
-            allowNull: false,
-            notEmpty: true,
-        },
-        end_time: {
-            type: DataTypes.STRING(128),
-            allowNull: false,
-            notEmpty: true,
         }
     })
 
     movies.associate = function(models){
         movies.belongsToMany(models.carts, {through: models.cart_movies, foreignKey: 'movieID', otherKey: 'cartID'})
+        movies.belongsToMany(models.time_slots, {through: models.movie_times, foreignKey: 'movieID', otherKey: 'timeID'})
         movies.belongsToMany(models.reviews, {through: models.movie_reviews, foreignKey: 'movieID', otherKey: 'reviewID'})
     }
 
