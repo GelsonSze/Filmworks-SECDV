@@ -41,6 +41,25 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
 
+    await queryInterface.createTable('time_slots', {
+      timeID: {
+        type: Sequelize.DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      start_time: {
+          type: Sequelize.DataTypes.STRING(128),
+          allowNull: false,
+          notEmpty: true,
+      },
+      end_time: {
+          type: Sequelize.DataTypes.STRING(128),
+          allowNull: false,
+          notEmpty: true,
+      }
+    })
+
     await queryInterface.createTable('movie_times', {
       movieID: {
         type: Sequelize.DataTypes.UUID,
@@ -60,25 +79,6 @@ module.exports = {
           model: 'time_slots',
           key: 'timeID'
         }
-      }
-    })
-
-    await queryInterface.createTable('time_slots', {
-      timeID: {
-        type: Sequelize.DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      start_time: {
-          type: Sequelize.DataTypes.STRING(128),
-          allowNull: false,
-          notEmpty: true,
-      },
-      end_time: {
-          type: Sequelize.DataTypes.STRING(128),
-          allowNull: false,
-          notEmpty: true,
       }
     })
 
