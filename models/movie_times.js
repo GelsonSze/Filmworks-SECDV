@@ -9,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true
+        },
+        quantity: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            notEmpty: true
         }
     }, {timestamps: false})
 
