@@ -10,7 +10,7 @@
     "db:setup": "npx sequelize-cli db:migrate --debug && npx sequelize-cli db:seed:all --debug",
     "db:populate": "npx sequelize-cli db:seed:all --debug",
     "db:upgrade": "npx sequelize-cli db:migrate --debug",
-    "db:reset": "npx sequelize-cli db:migrate:undo:all --debug",
+    "db:reset": "npx sequelize-cli db:migrate:undo:all --debug && npx sequelize-cli db:seed:undo:all --debug",
     "db:rollback": "npx sequelize-cli db:migrate:undo",
     "db:purge": "npx sequelize-cli db:seed:undo:all"
   },
