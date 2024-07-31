@@ -528,7 +528,7 @@ const movie_controller = {
                 // Redirect to the main page and show the updated list of movies
         
                 // Given movie title find all movies with the same title
-                const movie_ID = sanitizeHtml(req.body.movieID)
+                const movie_ID = sanitizeHtml(req.params.movieID)
                 const movie_update = await movies.findOne({ where: { movieID: movie_ID } });
         
                 let movieTime = "";
@@ -875,16 +875,19 @@ const movie_controller = {
 
     showTimeSlotOptions: async function(req, res){
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
+
+        console.log("MOVIE INFORMATION")
+        console.log(req.params.movieID)
         //means user is admin
         if (adminInfo){
-            const movie_ID = sanitizeHtml(req.body.movieID)
+            const movie_ID = sanitizeHtml(req.params.movieID)
             const movie_update = await movies.findOne({ where: { movieID: movie_ID }})
             const timeslots = await time_slots.findAll()
             
             if (movie_update) //means movie exists
             {
                 res.render('final-timeslot',{layout: '/layouts/layout_admin.hbs',
-                    movieID: req.body.movieID,
+                    movieID: req.params.movieID,
                     title: "Movie Timeslot - Filmworks",
                     time: timeslots
                 });
@@ -995,13 +998,44 @@ const movie_controller = {
         var movieTime
 
         //check movie if it exists
-        const movie = await movies.findOne({ where: {title: movie_name }})
+
         try {
+            const movie = await movies.findOne({ where: {title: movie_name }})
             const timeslots = await movie_times.findAll({ where: { movieID: movie.movieID } });
             
             if (timeslots.length > 0) {
                 const timeIDs = timeslots.map(timeslot => timeslot.timeID);
                 movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+            }
+
+            const movieReviews = await movie_reviews.findAll({
+                attributes: ['reviewID'],
+                where: {movieID: movie.movieID}
+            })
+    
+    
+            const reviewIDs = movieReviews.map(review => review.reviewID);
+    
+            const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
+
+            if (movie){
+                res.render('movie', {layout: '/layouts/layout.hbs', 
+                    m_id: movie.movieID,
+                    m_trailer: movie.trailer,
+                    m_name: movie.title,
+                    m_image: movie.image,
+                    m_cast: movie.starring,
+                    m_synopsis: movie.synopsis,
+                    timeSlotJQ: movieTime,
+                    title: movie.title + " - Filmworks",
+                    review: allReviews 
+                });
+            }else{
+                if(process.env.NODE_ENV == "development"){
+                    console.error(`movie with name ${movie_name} not found`);
+                }
+                
+                res.status(500).redirect('/error');
             }
         } catch (error) {
             if(process.env.NODE_ENV == "development"){
@@ -1011,37 +1045,7 @@ const movie_controller = {
             res.status(500).redirect('/error');
         }
 
-        const movieReviews = await movie_reviews.findAll({
-            attributes: ['reviewID'],
-            where: {movieID: movie.movieID}
-        })
 
-
-        const reviewIDs = movieReviews.map(review => review.reviewID);
-
-        const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
-
-
-
-        if (movie){
-            res.render('movie', {layout: '/layouts/layout.hbs', 
-                m_id: movie.movieID,
-                m_trailer: movie.trailer,
-                m_name: movie.title,
-                m_image: movie.image,
-                m_cast: movie.starring,
-                m_synopsis: movie.synopsis,
-                timeSlotJQ: movieTime,
-                title: movie.title + " - Filmworks",
-                review: allReviews 
-            });
-        }else{
-            if(process.env.NODE_ENV == "development"){
-                console.error(`movie with name ${movie_name} not found`);
-            }
-            
-            res.status(500).redirect('/error');
-        }
 
     }, 
 
@@ -1120,7 +1124,7 @@ const movie_controller = {
             else{
                 //error
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    console.error("error");
                 }
                 
                 res.status(500).json({ message: 'An Error Occurred' });

@@ -195,18 +195,18 @@ app.post('/final-delete', credentials_controller.checkAuth, flagProfileUpload, u
 
 app.get('/update-movie', movie_controller.getUpdateMovie)
 
-app.post('/update-movie-details', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.updateMovieDetails)
-
 app.post('/post-update-movie', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.listMoviesUpdate)
+
+app.get('/update-movie-details/:movieID', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.updateMovieDetails)
 
 app.post('/final-update', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postUpdateMovieDetails)
 
 
-app.get('/add-timeslot', movie_controller.getAddTimeSlot)
+app.get('/add-timeslot', movie_controller.getAddTimeSlot);
 
-app.post('/list-movies-timeslot', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.listMoviesTime)
+app.post('/list-movies-timeslot', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.listMoviesTime);
 
-app.post('/final-timeslot', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.showTimeSlotOptions)
+app.get('/final-timeslot/:movieID', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.showTimeSlotOptions)
 
 app.post('/update-movie-timeslot', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.postAddTimeSlot)
 
