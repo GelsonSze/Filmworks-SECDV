@@ -12,10 +12,17 @@ module.exports = {
      */
     
     await queryInterface.createTable('cart_movies', {
+      id: {
+        type: Sequelize.DataTypes.UUID,
+        defaultValue: function(){
+          return uuidv4()
+        },
+        allowNull: false,
+        primaryKey: true
+      },
       cartID: {
         type: Sequelize.DataTypes.UUID,
         allowNull: false,
-        primaryKey: true,
         unique: false,
         references: {
           model: 'carts',
@@ -25,7 +32,6 @@ module.exports = {
       movieID: {
         type: Sequelize.DataTypes.UUID,
         allowNull: false,
-        primaryKey: true,
         unique: false,
         references: {
           model: 'movies',

@@ -1,15 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
     const cart_movies = sequelize.define("cart_movies", {
+        id:{
+            type: DataTypes.UUID,
+            defaultValue: function(){
+                return uuidv4()
+            },
+            allowNull: false,
+            primaryKey: true
+        },
         cartID: {
             type: DataTypes.UUID,
             allowNull: false,
-            primaryKey: true,
             unique: false
         },
         movieID: {
             type: DataTypes.UUID,
             allowNull: false,
-            primaryKey: true,
             unique: false
         },
         quantity: {
