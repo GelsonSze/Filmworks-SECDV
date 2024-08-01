@@ -3,12 +3,14 @@ module.exports = (sequelize, DataTypes) => {
         cartID: {
             type: DataTypes.UUID,
             allowNull: false,
-            primaryKey: true
+            primaryKey: true,
+            unique: false
         },
         movieID: {
             type: DataTypes.UUID,
             allowNull: false,
-            primaryKey: true
+            primaryKey: true,
+            unique: false
         },
         quantity: {
             type: DataTypes.INTEGER,

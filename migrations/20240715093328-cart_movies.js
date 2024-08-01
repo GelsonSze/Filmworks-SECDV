@@ -16,6 +16,7 @@ module.exports = {
         type: Sequelize.DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
+        unique: false,
         references: {
           model: 'carts',
           key: 'cartID'
@@ -25,6 +26,7 @@ module.exports = {
         type: Sequelize.DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
+        unique: false,
         references: {
           model: 'movies',
           key: 'movieID'
