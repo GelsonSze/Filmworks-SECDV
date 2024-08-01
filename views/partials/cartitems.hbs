@@ -1,10 +1,10 @@
 <div class="movie">
-    <img src={{image}} alt={{title}} class="moviePicture">
+    <img src={{movie.image}} alt={{movie.movieID}} class="moviePicture">
     <div class="movieInfo">
-        <h2 class="movieTitle" alt="{{movieID}}"><small></small>{{title}}  </h2>
-        <h2 class="ticketTime">{{movie_timeSlot}}</h2>
-        <h2 class="ticketPrice"><small> PRICE: ₱ </small>{{price}}</h2>
-        <h2 class="ticketQuantity"><small> QTY: </small>{{cart_movies.quantity}}</h2>
-        <button class="ticketRemove">Remove</button>
+        <h2 class="movieTitle" alt="{{movie.movieID}}"><small></small>{{movie.title}}  </h2>
+        <h2 class="ticketTime"><small> Time: </small>{{start_time}} - {{end_time}}</h2>
+        <h2 class="ticketPrice"><small> PRICE: ₱ </small>{{movie.price}}</h2>
+        <h2 class="ticketQuantity"><small> QTY: </small>{{quantity}}</h2>
+        <button class="ticketRemove" itemid={{id}}>Remove</button>
     </div>
 </div>

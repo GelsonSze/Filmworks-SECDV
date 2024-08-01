@@ -1,23 +1,29 @@
 const { Association } = require('sequelize')
 const {users, admins, sessions, bannedIPs} = require('../models/')
-const {movies, carts, cart_movies, transactions} = require('../models/')
+const {movies, carts, cart_movies, transactions, time_slots} = require('../models/')
 
 const db = require('../models/index.js')
-const maxQuantity = 250; //max quantity of movie
 
 const cart_controller = {
     getCart: async function(req, res) {
         const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
-        const usercart = await carts.findOne({where: {userID: user.userID}, include:movies})
-
+        // const usercart = await carts.findAll({where: {userID: user.userID}, include:movies})
+        const userCart = await carts.findOne({where: {userID: user.userID}})
+        const userCartMovies = await cart_movies.findAll({where: {cartID: userCart.cartID}})
+        
         var totalPrice = 0;
         var totalQuantity = 0;
-        usercart.movies.forEach(async (movie)=>{
-            totalQuantity = totalQuantity + movie.cart_movies.quantity;
-            totalPrice = totalPrice + (movie.price * movie.cart_movies.quantity);
+        const cartMoviePromises = userCartMovies.map(async (cartMovie)=>{
+            var movie = await movies.findOne({where: {movieID: cartMovie.movieID}})
+            cartMovie['movie'] = movie
+            totalQuantity = totalQuantity + cartMovie.quantity;
+            totalPrice = totalPrice + (movie.price * cartMovie.quantity);
         })
+
+        await Promise.all(cartMoviePromises)
+
         res.render('cart', {layout: '/layouts/account.hbs', 
-                            item: usercart.movies, 
+                            item: userCartMovies, 
                             totalPrice: totalPrice, 
                             totalQuantity: totalQuantity, 
                             title: "Cart - Filmworks"});
@@ -29,60 +35,94 @@ const cart_controller = {
             console.log(req.body)
         }
         //modify this to get the ID of the movie clicked by user or title and etc
-        const movie = await movies.findOne({where: {movieID: req.body.movieID}})
+        const movie = await movies.findOne({where: {movieID: req.body.movieID}, include: time_slots})
         const quantity = req.body.quantity
+        const timeslotRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM) - (0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/gm
+        const timeslot = req.body.timeslot
+        if(process.env.NODE_ENV == "development"){
+            console.log("ADD MOVIE TO CART: movie details")
+            console.log(movie)
+        }
 
-        
-        if (movie && !isNaN(quantity) && (Number(quantity) < maxQuantity)) { //means movie was found
-            if(process.env.NODE_ENV == "development"){
-                console.log("Add movie if statement successful")
-            }
-            const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
-            const usercart = await carts.findOne({where: {userID: user.userID}})
-            const cartmovies = await cart_movies.findAll({where: {cartID: usercart.cartID}})
-            var existing = cartmovies.find((cartmovie)=> cartmovie.movieID === movie.movieID)
-            //check user current movies and if id already exists prior, update cart and increase ticket count
-            if (existing){
-                var newquantity = existing.quantity += Number(quantity)
-                await cart_movies.update({"quantity": newquantity}, 
-                    {where: {cartID: existing.cartID, movieID: existing.movieID}})
-            }
-            else{
-                //else just add regularly to cart
-                await cart_movies.create({
-                    "cartID": usercart.cartID,
-                    "movieID": movie.movieID,
-                    "quantity": Number(quantity)
+        try{
+            if (movie && !isNaN(quantity) && timeslotRegex.test(timeslot)) { //movie was found, quantity is a number, and timeslot is valid format
+                if(process.env.NODE_ENV == "development"){
+                    console.log("Add movie if statement successful")
+                }
+                const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
+                const userCart = await carts.findOne({where: {userID: user.userID}})
+                const userCartMovies = await cart_movies.findAll({where: {cartID: userCart.cartID}})
+
+                starttime = timeslot.split("-")[0].trim()
+                endtime = timeslot.split("-")[1].trim()
+                validtime = false
+
+                //check if time slot input is valid
+                movie.time_slots.forEach(async (time_slot)=>{
+                    if (starttime == time_slot.start_time && endtime == time_slot.end_time){
+                        validtime = true;
+                    }
                 })
-            }
+                
+                if(!validtime){
+                    throw `Invalid time slot values\ngiven start time: ${starttime} end time: ${endtime}`;
+                }
+                
+                //check user current movies and if id already exists prior and if same time
+                //then update cart and increase ticket count 
+                var existing = await cart_movies.findOne({where: {cartID: userCart.cartID, movieID: movie.movieID, 
+                                                        start_time: starttime, end_time: endtime}})
+                
+                if (existing){
+                    var newquantity = existing.quantity += Number(quantity)
+                    if(process.env.NODE_ENV == "development"){console.log("Adding existing movie with same time slot to cart")}
+                    await cart_movies.update({"quantity": newquantity},{where: {id: existing.id}})
+                }
+                //else add row
+                else{
+                    if(process.env.NODE_ENV == "development"){console.log("Adding new movie to cart")}
+                    //else just add regularly to cart
+                    await cart_movies.create({
+                        "cartID": userCart.cartID,
+                        "movieID": movie.movieID,
+                        "quantity": Number(quantity),
+                        "date": Date.now(),
+                        "start_time": starttime,
+                        "end_time": endtime,
+                    })
+                }
 
-            if(process.env.NODE_ENV == "development"){
-                console.log("PRINTING USER CART")
-                console.log(usercart)
-                console.log("PRINTING Cart Movies")
-                console.log(cartmovies)
+                if(process.env.NODE_ENV == "development"){
+                    console.log("PRINTING USER CART")
+                    console.log(userCart)
+                    console.log("PRINTING Cart Movies")
+                    console.log(userCartMovies)
+                }
+                res.sendStatus(200)
+            } else {
+                throw "Invalid inputs"
             }
-            res.sendStatus(200)
-        } else {
+        }catch(error){
             if(process.env.NODE_ENV == "development"){
-                console.log("Add movie if statement failed")
+                console.log(`Error caught in addMovieToCart with error: \n${error}\n${error.stack}`)
             }
             //movie selection does not exist and/or input has errors 
             //display error page
             res.sendStatus(500);
         }
-        
     },
 
     deleteMovieFromCart: async function(req, res){
         //delete one copy of movie from cart db
-        const movie = await movies.findOne({where: {movieID: req.params.movieID}})
-        if (movie) { //means movie was found
-            const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
-            const usercart = await carts.findOne({where: {userID: user.userID}})
-            
-            //else just add regularly to cart
-            usercart.removeMovie(movie.movieID)
+        console.log("IN DELETE MOVIE CART")
+        itemID = req.params.cartItemID
+
+        const item = await cart_movies.findOne({where: {id: itemID}})
+        if (item) { //means movie in cart was found
+            // const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
+            // const usercart = await carts.findOne({where: {userID: user.userID}})
+            //else just remove regularly to cart
+            cart_movies.destroy({where: {id: itemID}})
             res.sendStatus(200);
         }
         else {

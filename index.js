@@ -13,6 +13,7 @@ const SessionStore = require('express-session-sequelize')(expressSession.Store)
 const db = require('./models')
 require('./config/passport.js')
 const helmet = require("helmet")
+const Promise = require("promise")
 
 const myDatabase = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,

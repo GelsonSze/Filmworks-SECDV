@@ -151,7 +151,7 @@ app.post('/login', credentials_controller.checknoAuth, recaptcha.middleware.veri
 app.get('/getmovie/:movieID', credentials_controller.checkAuth, flagProfileUpload, upload.single("file"), multerError, movie_controller.redirectToMoviePage)
 
 app.post('/addcart', credentials_controller.checkAuth, cart_controller.addMovieToCart)
-app.delete('/deletecart/:movieID', credentials_controller.checkAuth, cart_controller.deleteMovieFromCart)
+app.delete('/deletecart/:cartItemID', credentials_controller.checkAuth, cart_controller.deleteMovieFromCart)
 
 app.get('/post-login', credentials_controller.userRedirect)
 
