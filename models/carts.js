@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
 
     carts.associate = function(models){
         carts.belongsTo(models.users, {foreignKey: 'userID'});
-        carts.belongsToMany(models.movies, {through: {model: models.cart_movies, unique:false}, foreignKey: 'cartID', otherkey: 'movieID'})
+        carts.belongsToMany(models.movies, {through: {model: models.cart_movies, unique:false}, constraints: false, foreignKey: 'cartID', otherkey: 'movieID'})
     }
 
     return carts
