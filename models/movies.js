@@ -53,9 +53,9 @@ module.exports = (sequelize, DataTypes) => {
     })
 
     movies.associate = function(models){
-        movies.belongsToMany(models.carts, {through: {model: models.cart_movies, unique:false}})
-        movies.belongsToMany(models.time_slots, {through: {model: models.movie_times, unique: false} })
-        movies.belongsToMany(models.reviews, {through: {model: models.movie_reviews, unique: false}})
+        movies.belongsToMany(models.carts, {through: {model: models.cart_movies, unique: false, foreignKey: 'movieID', otherKey: 'cartID'}})
+        movies.belongsToMany(models.time_slots, {through: {model: models.movie_times, unique: false, foreignKey: 'movieID', otherKey: 'timeID'} })
+        movies.belongsToMany(models.reviews, {through: {model: models.movie_reviews, unique:false, foreignKey: 'movieID', otherKey: 'reviewID'}})
     }
 
     return movies
