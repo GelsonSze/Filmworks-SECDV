@@ -1,6 +1,6 @@
 const { Association } = require('sequelize')
 const {users, admins, sessions, bannedIPs} = require('../models/')
-const {movies, carts, cart_movies, transactions, time_slots} = require('../models/')
+const {movies, carts, cart_movies, transactions, time_slots, movie_times} = require('../models/')
 
 const db = require('../models/index.js')
 
@@ -144,47 +144,72 @@ const cart_controller = {
 
     // passes the data in payment page
     postPayment: async function(req,res){
+        try{
+            const cardNumRegex = /^[0-9]{16}$/g
+            const nameRegex = /^[a-zA-Z\s]+$/
+            const cardExpireRegex = /^[0-9]{4}\/(0[1-9]|1[0-2])$/
+            const cvvRegex = /^[0-9]{3}$/g
 
-        console.log("Entered payment")
-        console.log(req.body)
+            if(cardNumRegex.test(req.body.cardnum) && nameRegex.test(req.body.fullname)
+            && cardExpireRegex.test(req.body.expiration) && cvvRegex.test(req.body.cvv)){
+                const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
+                const userCart = await carts.findOne({where: {userID: user.userID}})
+                const userCartMovies = await cart_movies.findAll({where: {cartID: userCart.cartID}})
 
-        const cardNumRegex = /^[0-9]{16}$/g
-        const nameRegex = /^[a-zA-Z\s]+$/
-        const cardExpireRegex = /^[0-9]{4}\/(0[1-9]|1[0-2])$/
-        const cvvRegex = /^[0-9]{3}$/g
-
-        if(cardNumRegex.test(req.body.cardnum) && nameRegex.test(req.body.fullname)
-        && cardExpireRegex.test(req.body.expiration) && cvvRegex.test(req.body.cvv)){
-            const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
-            const usercart = await carts.findOne({where: {userID: user.userID}, include:movies})
-
-            usercart.movies.forEach(async (movie)=>{
-                totalPrice = movie.price * movie.cart_movies.quantity;
-                creditCardNumber = req.body.cardnum
-                await transactions.create({
-                    "title": movie.title,
-                    "date": Date.now(),
-                    "start_time": "12:00 PM",
-                    "end_time": "02:30 PM",
-                    "individual_price": movie.price,
-                    "quantity_purchased": movie.cart_movies.quantity,
-                    "total_price": totalPrice,
-                    "credit_card": "**** ".repeat(3) + creditCardNumber.substr(creditCardNumber.length - 4),
-                    "date_purchased": Date.now(),
-                    "userID": user.userID
+                await userCartMovies.forEach(async (cartMovie)=>{
+                    try{
+                        var movie = await movies.findOne({where: {movieID: cartMovie.movieID}})
+                        creditCardNumber = req.body.cardnum
+                        totalPrice = movie.price * cartMovie.quantity;
+                        await movies.findAll({where: {movieID: cartMovie.movieID}, include:time_slots}).then(element =>{
+                            movietimes = element[0]
+                            movietimes.time_slots.forEach(async(movietime) =>{
+                                if(movietime.start_time == cartMovie.start_time && movietime.end_time == cartMovie.end_time){
+                                    timeid = movietime.timeID
+                                    return;
+                                }
+                            })
+                        })
+                        movieItem = await movie_times.findOne({where: {movieID: movie.movieID, timeID: timeid}})
+                        var newQuantity = movieItem.quantity - cartMovie.quantity
+                        if(newQuantity < 0){
+                            throw "No More Slots"
+                        }
+                        else{
+                            await movie_times.update({quantity: newQuantity}, {where: {movieID: movie.movieID, timeID: timeid}})
+                            await transactions.create({
+                                "title": movie.title,
+                                "date": Date.now(),
+                                "start_time": cartMovie.start_time,
+                                "end_time": cartMovie.end_time,
+                                "individual_price": movie.price,
+                                "quantity_purchased": cartMovie.quantity,
+                                "total_price": totalPrice,
+                                "credit_card": "**** ".repeat(3) + creditCardNumber.substr(creditCardNumber.length - 4),
+                                "date_purchased": Date.now(),
+                                "userID": user.userID
+                            })
+                            cart_movies.destroy({where: {id :cartMovie.id}})
+                            res.redirect("/account")
+                        }
+                    }catch(error){
+                        if(process.env.NODE_ENV == "development"){
+                            console.log(`Error caught in postPayment with error: \n${error}\n${error.stack}`)
+                        }
+                        res.status(500).redirect('/error');
+                    }
                 })
-                usercart.removeMovie(movie.movieID)
-            })
-            res.redirect('/account')
-        }
-        else{
-            //failed payment
+            }
+            else{
+                throw "Failed Credit Card Validation"
+            }
+        }catch(error){
+            if(process.env.NODE_ENV == "development"){
+                console.log(`Error caught in postPayment with error: \n${error}\n${error.stack}`)
+            }
             res.status(500).redirect('/error');
         }
-        
     }
-
-
     
 }
 
