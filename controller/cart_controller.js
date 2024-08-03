@@ -3,6 +3,7 @@ const {users, admins, sessions, bannedIPs} = require('../models/')
 const {movies, carts, cart_movies, transactions, time_slots, movie_times} = require('../models/')
 
 const db = require('../models/index.js')
+const {sequelize} = require('../models/index.js')
 
 const cart_controller = {
     getCart: async function(req, res) {
@@ -49,56 +50,58 @@ const cart_controller = {
                 if(process.env.NODE_ENV == "development"){
                     console.log("Add movie if statement successful")
                 }
-                const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
-                const userCart = await carts.findOne({where: {userID: user.userID}})
-                const userCartMovies = await cart_movies.findAll({where: {cartID: userCart.cartID}})
+                var result = await sequelize.transaction(async t =>{
+                    const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}},{transaction: t})
+                    const userCart = await carts.findOne({where: {userID: user.userID}},{transaction: t})
+                    const userCartMovies = await cart_movies.findAll({where: {cartID: userCart.cartID}},{transaction: t})
 
-                starttime = timeslot.split("-")[0].trim()
-                endtime = timeslot.split("-")[1].trim()
-                validtime = false
+                    starttime = timeslot.split("-")[0].trim()
+                    endtime = timeslot.split("-")[1].trim()
+                    validtime = false
 
-                //check if time slot input is valid
-                movie.time_slots.forEach(async (time_slot)=>{
-                    if (starttime == time_slot.start_time && endtime == time_slot.end_time){
-                        validtime = true;
-                    }
-                })
-                
-                if(!validtime){
-                    throw `Invalid time slot values\ngiven start time: ${starttime} end time: ${endtime}`;
-                }
-                
-                //check user current movies and if id already exists prior and if same time
-                //then update cart and increase ticket count 
-                var existing = await cart_movies.findOne({where: {cartID: userCart.cartID, movieID: movie.movieID, 
-                                                        start_time: starttime, end_time: endtime}})
-                
-                if (existing){
-                    var newquantity = existing.quantity += Number(quantity)
-                    if(process.env.NODE_ENV == "development"){console.log("Adding existing movie with same time slot to cart")}
-                    await cart_movies.update({"quantity": newquantity},{where: {id: existing.id}})
-                }
-                //else add row
-                else{
-                    if(process.env.NODE_ENV == "development"){console.log("Adding new movie to cart")}
-                    //else just add regularly to cart
-                    await cart_movies.create({
-                        "cartID": userCart.cartID,
-                        "movieID": movie.movieID,
-                        "quantity": Number(quantity),
-                        "date": Date.now(),
-                        "start_time": starttime,
-                        "end_time": endtime,
+                    //check if time slot input is valid
+                    movie.time_slots.forEach(async (time_slot)=>{
+                        if (starttime == time_slot.start_time && endtime == time_slot.end_time){
+                            validtime = true;
+                        }
                     })
-                }
+                    
+                    if(!validtime){
+                        throw `Invalid time slot values\ngiven start time: ${starttime} end time: ${endtime}`;
+                    }
+                    
+                    //check user current movies and if id already exists prior and if same time
+                    //then update cart and increase ticket count 
+                    var existing = await cart_movies.findOne({where: {cartID: userCart.cartID, movieID: movie.movieID, 
+                                                            start_time: starttime, end_time: endtime}},{transaction: t})
+                    
+                    if (existing){
+                        var newquantity = existing.quantity += Number(quantity)
+                        if(process.env.NODE_ENV == "development"){console.log("Adding existing movie with same time slot to cart")}
+                        await cart_movies.update({"quantity": newquantity},{where: {id: existing.id}},{transaction: t})
+                    }
+                    //else add row
+                    else{
+                        if(process.env.NODE_ENV == "development"){console.log("Adding new movie to cart")}
+                        //else just add regularly to cart
+                        await cart_movies.create({
+                            "cartID": userCart.cartID,
+                            "movieID": movie.movieID,
+                            "quantity": Number(quantity),
+                            "date": Date.now(),
+                            "start_time": starttime,
+                            "end_time": endtime,
+                        },{transaction: t})
+                    }
 
-                if(process.env.NODE_ENV == "development"){
-                    console.log("PRINTING USER CART")
-                    console.log(userCart)
-                    console.log("PRINTING Cart Movies")
-                    console.log(userCartMovies)
-                }
-                res.sendStatus(200)
+                    if(process.env.NODE_ENV == "development"){
+                        console.log("PRINTING USER CART")
+                        console.log(userCart)
+                        console.log("PRINTING Cart Movies")
+                        console.log(userCartMovies)
+                    }
+                    res.sendStatus(200)
+                })
             } else {
                 throw "Invalid inputs"
             }
@@ -152,53 +155,66 @@ const cart_controller = {
 
             if(cardNumRegex.test(req.body.cardnum) && nameRegex.test(req.body.fullname)
             && cardExpireRegex.test(req.body.expiration) && cvvRegex.test(req.body.cvv)){
-                const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
-                const userCart = await carts.findOne({where: {userID: user.userID}})
-                const userCartMovies = await cart_movies.findAll({where: {cartID: userCart.cartID}})
+                var result = await sequelize.transaction(async t =>{
+                    const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}},{transaction: t})
+                    const userCart = await carts.findOne({where: {userID: user.userID}},{transaction: t})
+                    const userCartMovies = await cart_movies.findAll({where: {cartID: userCart.cartID}},{transaction: t})
 
-                await userCartMovies.forEach(async (cartMovie)=>{
-                    try{
-                        var movie = await movies.findOne({where: {movieID: cartMovie.movieID}})
-                        creditCardNumber = req.body.cardnum
-                        totalPrice = movie.price * cartMovie.quantity;
-                        await movies.findAll({where: {movieID: cartMovie.movieID}, include:time_slots}).then(element =>{
-                            movietimes = element[0]
-                            movietimes.time_slots.forEach(async(movietime) =>{
-                                if(movietime.start_time == cartMovie.start_time && movietime.end_time == cartMovie.end_time){
-                                    timeid = movietime.timeID
-                                    return;
+                    return sequelize.transaction(async t2 =>{
+                        var flag = true;
+                        const userCartMoviesPromises = await userCartMovies.map(async (cartMovie)=>{
+                            try{
+                                var movie = await movies.findOne({where: {movieID: cartMovie.movieID}},{transaction: t2})
+                                creditCardNumber = req.body.cardnum
+                                totalPrice = movie.price * cartMovie.quantity;
+                                await movies.findAll({where: {movieID: cartMovie.movieID}, include:time_slots},{transaction: t2}).then(element =>{
+                                    movietimes = element[0]
+                                    movietimes.time_slots.forEach(async(movietime) =>{
+                                        if(movietime.start_time == cartMovie.start_time && movietime.end_time == cartMovie.end_time){
+                                            timeid = movietime.timeID
+                                            return;
+                                        }
+                                    })
+                                })
+                                movieItem = await movie_times.findOne({where: {movieID: movie.movieID, timeID: timeid}},{transaction: t2})
+                                var newQuantity = movieItem.quantity - cartMovie.quantity
+                                if(newQuantity < 0){
+                                    flag = false;
+                                    throw "No More Slots"
                                 }
-                            })
+                                else{
+                                    await movie_times.update({quantity: newQuantity}, 
+                                        {where: {movieID: movie.movieID, timeID: timeid}},{transaction: t2})
+                                    await transactions.create({
+                                        "title": movie.title,
+                                        "date": Date.now(),
+                                        "start_time": cartMovie.start_time,
+                                        "end_time": cartMovie.end_time,
+                                        "individual_price": movie.price,
+                                        "quantity_purchased": cartMovie.quantity,
+                                        "total_price": totalPrice,
+                                        "credit_card": "**** ".repeat(3) + creditCardNumber.substr(creditCardNumber.length - 4),
+                                        "date_purchased": Date.now(),
+                                        "userID": user.userID
+                                    },{transaction: t2})
+                                    await cart_movies.destroy({where: {id :cartMovie.id}},{transaction: t2})
+                                }
+                            }catch(error){
+                                if(process.env.NODE_ENV == "development"){
+                                    console.log(`Error caught in postPayment with error: \n${error}\n${error.stack}`)
+                                }
+                            }
                         })
-                        movieItem = await movie_times.findOne({where: {movieID: movie.movieID, timeID: timeid}})
-                        var newQuantity = movieItem.quantity - cartMovie.quantity
-                        if(newQuantity < 0){
-                            throw "No More Slots"
-                        }
-                        else{
-                            await movie_times.update({quantity: newQuantity}, {where: {movieID: movie.movieID, timeID: timeid}})
-                            await transactions.create({
-                                "title": movie.title,
-                                "date": Date.now(),
-                                "start_time": cartMovie.start_time,
-                                "end_time": cartMovie.end_time,
-                                "individual_price": movie.price,
-                                "quantity_purchased": cartMovie.quantity,
-                                "total_price": totalPrice,
-                                "credit_card": "**** ".repeat(3) + creditCardNumber.substr(creditCardNumber.length - 4),
-                                "date_purchased": Date.now(),
-                                "userID": user.userID
-                            })
-                            cart_movies.destroy({where: {id :cartMovie.id}})
-                            res.redirect("/account")
-                        }
-                    }catch(error){
-                        if(process.env.NODE_ENV == "development"){
-                            console.log(`Error caught in postPayment with error: \n${error}\n${error.stack}`)
-                        }
-                        res.status(500).redirect('/error');
-                    }
+                        await Promise.all(userCartMoviesPromises)
+                        return flag;
+                    })
                 })
+                if (result){
+                    res.redirect("/account")
+                }
+                else{
+                    throw "Error occurred in PostPayment"
+                }
             }
             else{
                 throw "Failed Credit Card Validation"
