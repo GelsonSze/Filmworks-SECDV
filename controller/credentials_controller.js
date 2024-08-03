@@ -1,4 +1,4 @@
-const {users, admins, sessions, bannedIPs, carts, banned_users} = require('../models/')
+const {users, admins, Session, bannedIPs, carts, banned_users} = require('../models/')
 const bcrypt = require('bcryptjs')
 const db = require('../models/index.js')
 const sanitizeHtml = require('sanitize-html');
@@ -212,10 +212,8 @@ const controller = {
         }else{
             res.redirect('/')
         }
-
-
-
     },
+
     displayadminPage: async function(req, res){
         if (req.user){
             try{
@@ -314,17 +312,29 @@ const controller = {
     },
 
     checkAuth: async function(req, res, next){
-        if(req.user){
-            return next()
-        }else{
-            res.redirect('/login')
+
+        const noAuthRequired = ['/', '/register', '/postregister', '/login']
+        const urlPath = req.path
+
+        if(process.env.NODE_ENV == "development"){
+            console.log("Current URL path: " + urlPath)
         }
-    },
-    checknoAuth: async function(req, res, next){
-        if(!req.user){
-            return next()
+
+        if(req.user){
+
+            if(noAuthRequired.includes(urlPath) == false){ 
+                return next() 
+            }else{ 
+                res.redirect('/main')
+            }
+
         }else{
-            res.redirect('/main')
+
+            if(noAuthRequired.includes(urlPath) == true){
+                return next()
+            }else{
+                res.redirect('/login')
+            }
         }
     },
     logoutAccount: async function(req, res, next) {
@@ -335,7 +345,7 @@ const controller = {
             }
 
             await res.clearCookie('connect.sid')
-            const doneDestroy = await sessions.destroy({ where: { session_id: req.sessionID }});
+            const doneDestroy = await Session.destroy({ where: { session_id: req.sessionID }})
 
             if(process.env.NODE_ENV == "development"){
                 console.log("LOGOUT RESULTS")
