@@ -14,6 +14,8 @@ const db = require('./models')
 require('./config/passport.js')
 const helmet = require("helmet")
 const Promise = require("promise")
+const https = require('https');
+const fs = require('fs');
 
 const myDatabase = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
@@ -67,8 +69,19 @@ hbs.registerPartials(__dirname + `/views/partials`);
 
 app.use(`/`, routes);
 
-app.listen(PORT, function(){
+const options = {
+    key: fs.readFileSync('server.key'), 
+    cert: fs.readFileSync('server.crt'), 
+}
+
+// app.listen(PORT, function(){
+//     if(process.env.NODE_ENV == "development"){
+//         console.log("Node server is running at port 3000.....");
+//     }
+// });
+
+https.createServer(options, app).listen(PORT, () => {
     if(process.env.NODE_ENV == "development"){
-        console.log("Node server is running at port 3000.....");
+        console.log(`Node server is running at port ${PORT}.....`);
     }
 });
