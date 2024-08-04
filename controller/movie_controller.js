@@ -243,7 +243,6 @@ const movie_controller = {
             }
 
             if (!timeSlotRegex.test(sanitizedTimeSlots)) {
-                console.log("REGEX DIDNT PASS")
                 // Handle invalid time slots format
                     //date is not the same so error
                 var info = {
@@ -393,15 +392,12 @@ const movie_controller = {
     },
 
     postDeleteMovie: async function(req, res){
-        console.log("ENTERED THIS")
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
             //check contents of each field in the form
             //redirect to main page and show the updated list of movies
             try{
-                console.log("MOVIE TO BE DELETED")
-                console.log(req.body.movieID)
 
                 const movie_ID = sanitizeHtml(req.body.movieID)
                 
@@ -494,9 +490,6 @@ const movie_controller = {
 
                 // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
     
-                console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
-                console.log(movie_update)
-
                 //shows all movies with the same title
                 res.render('update-movies-page',{layout: '/layouts/layout_admin.hbs',
                     movie: movie_update,
@@ -540,7 +533,6 @@ const movie_controller = {
         
                     if (timeslots.length > 0) {
                         // Means movie has existing timeslot
-                        console.log("TIMESLOT EXISTS");
                         const timeIDs = timeslots.map(timeslot => timeslot.timeID);
                         movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
                         originalTimeslots = await time_slots.findAll();
@@ -583,8 +575,6 @@ const movie_controller = {
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
-
-            console.log("USER IS ADMIN")
             
             const wordsRegex = /^[a-zA-Z0-9 ,'.!?()_-]*$/
             const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
@@ -637,10 +627,6 @@ const movie_controller = {
             //check the input for start date and end date
             const start = new Date(sanitizedStartDate);
             const end = new Date(sanitizedEndDate);
-
-            console.log("END AND START DATE INFO")
-            console.log(end)
-            console.log(start)
             
             // Check if dates are not empty 
             if (!start || !end) {
@@ -708,7 +694,6 @@ const movie_controller = {
 
             //means timeslot was not found and movie times does not have given time chosen
             if (!check || !timeslot){
-                console.log("TIMESLOT NOT FOUND")
                 //means timeslot for movie already exists or input is not valid
                 var info = {
                     error:'Timeslot input is not valid'
@@ -719,8 +704,6 @@ const movie_controller = {
                 });
                 return;
             }
-
-            console.log("ALL INPUTS WERE OK")
 
             var newMovie = {
                 title: sanitizedTitle.toUpperCase(),
@@ -742,7 +725,6 @@ const movie_controller = {
 
             if (checkDupe){
                 //means theres a duplicate already \
-                console.log("DUPLICATE TIMESLOT")
                 var info = {
                     error:'Timeslot input is not valid'
                 }
@@ -752,7 +734,6 @@ const movie_controller = {
                 });
                 return;
             }else{
-                console.log("NO DUPLICATE")
 
                 //adds the new timeslot to movie times db
                 const addedTimeslot = await movie_times.create({
@@ -765,9 +746,6 @@ const movie_controller = {
                     timeID: originalTime.timeID
                 }
                 });
-                
-                console.log("ADDING TO MOVIE TIMES DB")
-                console.log(addedTimeslot)
                 //means creation of movie and timeslot was successful
                 if (!addedTimeslot || !deleteTimeslot){
                     //timeslot was not added properly
@@ -888,8 +866,6 @@ const movie_controller = {
     showTimeSlotOptions: async function(req, res){
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
 
-        console.log("MOVIE INFORMATION")
-        console.log(req.params.movieID)
         //means user is admin
         if (adminInfo){
             const movie_ID = sanitizeHtml(req.params.movieID)
@@ -917,7 +893,6 @@ const movie_controller = {
         if (adminInfo){
             //check contents of each field in the form
             //redirect to main page and show the updated list of movies
-            console.log(req.body.movieID)
             try{
                 const sanitizedTimeslots = sanitizeHtml(req.body.time_slots)
                 const [start_time, end_time] = sanitizedTimeslots.split(' - ');
@@ -935,10 +910,6 @@ const movie_controller = {
 
                     const timeslotID = timeslot.timeID
                     const movieInfo = movie_update.movieID
-
-                    
-                    console.log("TESTING RESULTS OBTAINED FROM TIMESLOT")
-                    console.log(timeslot.timeID)
                     
                     //check first if timeslot is already part of DB
                     const checkDupe = await movie_times.findOne({ where:{
@@ -948,7 +919,6 @@ const movie_controller = {
 
                     if (checkDupe){
                         //means theres a duplicate already \
-                        console.log(checkDupe)
 
                         if(process.env.NODE_ENV == "development"){
                             devLogger.error(`Admin ${adminInfo.adminID} failed to add time slot ${timeslotID} to movie ${movieInfo}: time slot already exists`);
@@ -959,18 +929,11 @@ const movie_controller = {
                         res.status(500).redirect('/error');
                     }else{
 
-                        console.log("INPUT PLACED IN DB")
-                        console.log(movieInfo)
-                        console.log(timeslotID)
-
-
                         const addedTimeslot = await movie_times.create({
                             movieID: movieInfo,  
                             timeID: timeslotID   
                         });
                         
-                        console.log("ADDING TO MOVIE TIMES DB")
-                        console.log(addedTimeslot)
                         if (addedTimeslot){
                             //means it was added to DB
 
@@ -1078,13 +1041,8 @@ const movie_controller = {
         
         //if movie ID exists in db, means we can post a review like normal
         if (movie){
-            console.log("MOVIE EXISTS")
             //check if user exists first
             const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}})
-            console.log("USER DETAILS")
-            console.log(user)
-            console.log("req.body")
-            console.log(req.body)
 
             //get and add details of review and place it into the review database
             //check first if user exists
@@ -1109,15 +1067,9 @@ const movie_controller = {
                     where: {movieID: req.params.movieID}
                 })
 
-                console.log("movieReviews")
-                console.log(movieReviews)
-
                 const reviewIDs = movieReviews.map(review => review.reviewID);
             
                 const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
-
-                console.log("allReviews")
-                console.log(allReviews)
 
                 const timeslots = await movie_times.findAll({ where: { movieID: req.params.movieID } });
                 if (timeslots.length > 0) {
@@ -1174,10 +1126,7 @@ const movie_controller = {
         //function for deleting reviews for a specific movie
         //check if reviewID exists 
 
-        console.log(req.params.reviewID)
         const review = await reviews.findOne({where: {reviewID: req.params.reviewID}})
-        console.log("review")
-        console.log(review)
         var movieTime = ""
         
         //if reviewID exists in db, means we can delete a review 
@@ -1255,15 +1204,7 @@ const movie_controller = {
         //function for deleting reviews for a specific movie
         //check if reviewID exists 
 
-        console.log(req.params.reviewID)
         const review = await reviews.findOne({where: {reviewID: req.params.reviewID}})
-        console.log("review")
-        console.log(review)
-
-        console.log("req.body")
-        console.log(req.body)
-        console.log("req.params")
-        console.log(req.params)
         var movieTime = ""
         //if reviewID exists in db, means we can edit the review 
         if (review){

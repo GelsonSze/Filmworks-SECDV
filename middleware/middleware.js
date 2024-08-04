@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
     filename: function(req, file, callback){
 
         if(process.env.NODE_ENV == "development"){
-            devLogger.info(file)
+            devLogger.info(JSON.stringify(file))
         }
 
         callback(null, Date.now() + "_" + file.originalname)
@@ -100,11 +100,6 @@ const limiter = rateLimit({
 })
 
 const checkValidInput = (req, res, next) => {
-
-    if(process.env.NODE_ENV == "development"){
-        devLogger.info(req.body)
-        devLogger.info(req.recaptcha)
-    }
 
     if (!req.recaptcha.error) {
         res.status(200);

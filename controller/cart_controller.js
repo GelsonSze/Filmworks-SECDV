@@ -33,19 +33,11 @@ const cart_controller = {
     },
 
     addMovieToCart: async function(req, res){
-        if(process.env.NODE_ENV == "development"){
-            console.log("addMovieToCart req.body: ")
-            console.log(req.body)
-        }
         //modify this to get the ID of the movie clicked by user or title and etc
         const movie = await movies.findOne({where: {movieID: req.body.movieID}, include: time_slots})
         const quantity = req.body.quantity
         const timeslotRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM) - (0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/gm
         const timeslot = req.body.timeslot
-        if(process.env.NODE_ENV == "development"){
-            console.log("ADD MOVIE TO CART: movie details")
-            console.log(movie)
-        }
 
         try{
             if (movie && !isNaN(quantity) && timeslotRegex.test(timeslot)) { //movie was found, quantity is a number, and timeslot is valid format
@@ -125,7 +117,6 @@ const cart_controller = {
 
     deleteMovieFromCart: async function(req, res){
         //delete one copy of movie from cart db
-        console.log("IN DELETE MOVIE CART")
         itemID = req.params.cartItemID
 
         const item = await cart_movies.findOne({where: {id: itemID}})

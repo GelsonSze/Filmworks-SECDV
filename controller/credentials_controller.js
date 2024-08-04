@@ -13,7 +13,7 @@ const controller = {
 
 
         if(process.env.NODE_ENV == "development"){
-            devLogger.info(req.body)
+            devLogger.info(JSON.stringify(req.body))
 
         }
         
@@ -150,7 +150,6 @@ const controller = {
 
     checkLogin: async function(req, res){
         const { l_email, l_password } = req.body;
-        
         try {
             // Find user by email
             const existingUser = await users.findOne({ where: {emailAddress: l_email } });
@@ -163,7 +162,7 @@ const controller = {
                     authLogger.error(`Failed login attempt using ${l_email}`)
                 }
 
-                return res.status(404).json({ message: 'Invalid user or password'});
+                return res.status(404).json({ message: 'Invalid user or password'});                
             }
 
             // Compare provided password with stored hash
@@ -325,17 +324,17 @@ const controller = {
                             adminLogger.info(`Admin ${adminInfo.adminID} banned user ${bannedUser.emailAddress} with ID ${bannedUser.userID}`)
                         }
 
-                        const users = await users.findAll({
+                        const usersList = await users.findAll({
                                 attributes: ['userID']
                         })
-                        const banned = await banned_users.findAll({
+                        const bannedList = await banned_users.findAll({
                             attributes: ['userID']
                         })
                         res.render('admin',{layout: '/layouts/admin.hbs',
                             full_name: adminInfo.fullName, 
                             profile_pic: adminInfo.profilePhoto, 
-                            user: users,
-                            bannedUsers: banned,
+                            user: usersList,
+                            bannedUsers: bannedList,
                             title: 'Admin - Filmworks'
                         });
                     }
@@ -344,7 +343,7 @@ const controller = {
 
         } catch (error) {
             if(process.env.NODE_ENV == "development"){
-               devLogger.error(`On banning: ${error}`)
+               devLogger.error(`On banning: ${error.stack}`)
             }
 
             res.status(500).json({ message: 'An Error Occurred' });
