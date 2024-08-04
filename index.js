@@ -43,7 +43,7 @@ app.use(expressSession({
     store: sequelizeSessionStore,
     resave: false,
     saveUninitialized: false,
-    cookie: {httpOnly: true, secure: true, sameSite: true, maxAge: 3600}
+    cookie: {httpOnly: true, secure: true, sameSite: true, maxAge: 900000}
 }));
 
 app.use(express.static('public'));
