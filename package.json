@@ -62,7 +62,8 @@
     "save": "^2.9.0",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "winston": "^3.13.1"
   },
   "description": ""
 }

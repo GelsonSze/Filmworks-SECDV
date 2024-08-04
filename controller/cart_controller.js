@@ -1,9 +1,11 @@
-const { Association } = require('sequelize')
 const {users, admins, sessions, bannedIPs} = require('../models/')
 const {movies, carts, cart_movies, transactions, time_slots, movie_times} = require('../models/')
-
-const db = require('../models/index.js')
 const {sequelize} = require('../models/index.js')
+const winston = require('winston')
+
+const devLogger = winston.loggers.get('DevLogger')
+const userActivityLogger = winston.loggers.get('UserActivityLogger')
+const transactionLogger = winston.loggers.get('TransactionLogger')
 
 const cart_controller = {
     getCart: async function(req, res) {
@@ -47,9 +49,6 @@ const cart_controller = {
 
         try{
             if (movie && !isNaN(quantity) && timeslotRegex.test(timeslot)) { //movie was found, quantity is a number, and timeslot is valid format
-                if(process.env.NODE_ENV == "development"){
-                    console.log("Add movie if statement successful")
-                }
                 var result = await sequelize.transaction(async t =>{
                     const user = await users.findOne({where: {emailAddress: req.session.passport.user.username}},{transaction: t})
                     const userCart = await carts.findOne({where: {userID: user.userID}},{transaction: t})
@@ -77,12 +76,17 @@ const cart_controller = {
                     
                     if (existing){
                         var newquantity = existing.quantity += Number(quantity)
-                        if(process.env.NODE_ENV == "development"){console.log("Adding existing movie with same time slot to cart")}
+
                         await cart_movies.update({"quantity": newquantity},{where: {id: existing.id}},{transaction: t})
+
+                        if(process.env.NODE_ENV == "development"){
+                            devLogger.info(`User ${user.userID} updated quantity of movie ${movie.movieID} in their cart`)
+                        }else{
+                            userActivityLogger.info(`User ${user.userID} updated quantity of movie ${movie.movieID} in their cart`)
+                        }
                     }
                     //else add row
                     else{
-                        if(process.env.NODE_ENV == "development"){console.log("Adding new movie to cart")}
                         //else just add regularly to cart
                         await cart_movies.create({
                             "cartID": userCart.cartID,
@@ -95,20 +99,24 @@ const cart_controller = {
                     }
 
                     if(process.env.NODE_ENV == "development"){
-                        console.log("PRINTING USER CART")
-                        console.log(userCart)
-                        console.log("PRINTING Cart Movies")
-                        console.log(userCartMovies)
+                        devLogger.info(`User ${user.userID} successfully added movie ${movie.movieID} to their cart`)
+                    }else{
+                        userActivityLogger.info(`User ${user.userID} successfully added movie ${movie.movieID} to their cart`)
                     }
+                    
                     res.sendStatus(200)
                 })
             } else {
                 throw "Invalid inputs"
             }
         }catch(error){
+
             if(process.env.NODE_ENV == "development"){
-                console.log(`Error caught in addMovieToCart with error: \n${error}\n${error.stack}`)
+                devLogger.error(`User ${user.userID} failed to add movie ${movie.movieID} to their cart: ${error.stack}`)
+            }else{
+                userActivityLogger.error(`User ${user.userID} failed to add movie ${movie.movieID} to their cart`)
             }
+
             //movie selection does not exist and/or input has errors 
             //display error page
             res.sendStatus(500);
@@ -126,11 +134,19 @@ const cart_controller = {
             // const usercart = await carts.findOne({where: {userID: user.userID}})
             //else just remove regularly to cart
             cart_movies.destroy({where: {id: itemID}})
+
+            if(process.env.NODE_ENV == "development"){
+                devLogger.info(`Movie ${item.movieID} successfully deleted from cart: ${item.cartID}`)
+            }else{
+                userActivityLogger.info(`Movie ${item.movieID} successfully deleted from cart: ${item.cartID}`)
+            }
+
             res.sendStatus(200);
         }
         else {
             //movie selection does not exist and has errors
             //display error page
+
             res.status(500).redirect('/error');
         }
     },
@@ -198,10 +214,18 @@ const cart_controller = {
                                         "userID": user.userID
                                     },{transaction: t2})
                                     await cart_movies.destroy({where: {id :cartMovie.id}},{transaction: t2})
+
+                                    if(process.env.NODE_ENV == "development"){
+                                        devLogger.info(`User ${user.userID} successfully checked out from their cart: recorded as transaction ${transactions.transactionID}`)
+                                    }else{
+                                        userActivityLogger.info(`User ${user.userID} successfully checked out from their cart: recorded as transaction ${transactions.transactionID}`)
+                                        transactionLogger.info(`Recorded transaction from user ${user.userID}: ${transactions.transactionID}`)
+                                    }
+
                                 }
                             }catch(error){
                                 if(process.env.NODE_ENV == "development"){
-                                    console.log(`Error caught in postPayment with error: \n${error}\n${error.stack}`)
+                                    devLogger.error(`Something went wrong with the transaction: ${error.stack}`)
                                 }
                             }
                         })
@@ -221,7 +245,7 @@ const cart_controller = {
             }
         }catch(error){
             if(process.env.NODE_ENV == "development"){
-                console.log(`Error caught in postPayment with error: \n${error}\n${error.stack}`)
+                devLogger.error(`Something went wrong with the transaction: ${error.stack}`)
             }
             res.status(500).redirect('/error');
         }

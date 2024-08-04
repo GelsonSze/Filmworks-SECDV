@@ -1,8 +1,10 @@
-const { ResultWithContext } = require('express-validator/src/chain');
 const {movies, users, admins, reviews, time_slots, movie_reviews, movie_times} = require('../models/')
-const { v4: uuidv4 } = require('uuid');
-const { where } = require('sequelize');
 const sanitizeHtml = require('sanitize-html');
+const winston = require('winston')
+
+const devLogger = winston.loggers.get('DevLogger')
+const adminLogger = winston.loggers.get('AdminLogger')
+const userActivityLogger = winston.loggers.get('UserActivityLogger')
 
 const movie_controller = {
     getMovies: async function(req, res) {   
@@ -32,14 +34,15 @@ const movie_controller = {
                     //error showing account details
 
                     if(process.env.NODE_ENV == "development"){
-                        console.error(error);
+                        devLogger.error(`Cannot retrieve movie list`)
                     }
                     
                     res.status(500).json({ message: 'An Error Occurred' });
                 }
             } catch (error) {
+
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`On retrieving movie list: ${error.stack}`)
                 }
 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -49,17 +52,11 @@ const movie_controller = {
     },
 
     redirectToMoviePage: async function(req, res) {  
-        //code not working and displaying page as intended 
-        console.log("MOVIE INFORMATION")
-        console.log(req.params.movieID)
        
         const movie = await movies.findOne({ where: { movieID:  req.params.movieID } });
-        // const review = await reviews.findAll({where: {}})
-        // const movie = await movies.findOne({ where: { id:  1} });
+
         if (movie){
             //insert code for adding timestamp of website
-            console.log("MOVIE DETAILS")
-            console.log(movie)
 
             const movieReviews = await movie_reviews.findAll({
                 attributes: ['reviewID'],
@@ -73,7 +70,6 @@ const movie_controller = {
         
             if (timeslots.length > 0) {
                 // Means movie has existing timeslot
-                console.log("TIMESLOT EXISTS");
                 const timeIDs = timeslots.map(timeslot => timeslot.timeID);
                 const movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
                 res.render('movie', {layout: '/layouts/layout.hbs', 
@@ -109,7 +105,7 @@ const movie_controller = {
             //means there was no movie found given that information
             //redirect to error page
             if(process.env.NODE_ENV == "development"){
-                console.error(`movie with id ${req.params.movieID} not found`);
+                devLogger.error(`Cannot retrieve movie with ID ${req.params.movieID}`);
             }
             
             res.status(500).redirect('/error');
@@ -150,8 +146,6 @@ const movie_controller = {
         const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }, attributes: ['adminID']})
         //means user is admin
         if (adminInfo){
-
-            console.log("USER IS ADMIN")
             
             const wordsRegex = /^[a-zA-Z0-9 ',.!?()_-]*$/
             const trailerRegex= /^https:\/\/youtu\.be\/[^&<>#"\\]*$/
@@ -215,10 +209,6 @@ const movie_controller = {
             //check the input for start date and end date
             const start = new Date(sanitizedStartDate);
             const end = new Date(sanitizedEndDate);
-
-            console.log("END AND START DATE INFO")
-            console.log(end)
-            console.log(start)
             
             // Check if dates are not empty 
             if (!start || !end) {
@@ -251,7 +241,6 @@ const movie_controller = {
                     return;
                 }
             }
-
 
             if (!timeSlotRegex.test(sanitizedTimeSlots)) {
                 console.log("REGEX DIDNT PASS")
@@ -320,9 +309,10 @@ const movie_controller = {
 
             if (checkDupe){
                 //means theres a duplicate already \
-                console.log(checkDupe)
                 if(process.env.NODE_ENV == "development"){
-                    console.error(`The application has encountered an unknown error.`);
+                    devLogger.error(`Admin ${adminInfo.adminID} failed adding movie with ID ${insertMovie.movieID}: movie already exists for time slot`)
+                }else{
+                    adminLogger.error(`Admin ${adminInfo.adminID} failed adding movie with ID ${insertMovie.movieID}: movie already exists for time slot`)
                 }
                 
                 res.status(500).redirect('/error');
@@ -334,23 +324,27 @@ const movie_controller = {
                     timeID: timeslot.timeID   
                 });
                 
-                console.log("ADDING TO MOVIE TIMES DB")
-                console.log(addedTimeslot)
                 //means creation of movie and timeslot was successful
                 if (insertMovie && addedTimeslot){
                     //movie was successfully created
+
+                    if(process.env.NODE_ENV == "development"){
+                        devLogger.info(`Admin ${adminInfo.adminID} successfully added a movie ${addedTimeslot.movieID} on time slot ${addedTimeslot.timeID}`)
+                    }else{
+                        adminLogger.info(`Admin ${adminInfo.adminID} successfully added a movie ${addedTimeslot.movieID} on time slot ${addedTimeslot.timeID}`)
+                    }
+
                     res.redirect('/')
                 }else{
                     if(process.env.NODE_ENV == "development"){
-                        console.error(`The application has encountered an unknown error.`);
+                        devLogger.error(`Admin ${adminInfo.adminID} failed to add ${addedTimeslot.movieID} on ${addedTimeslot.timeID}`);
+                    }else{
+                        adminLogger.error(`Admin ${adminInfo.adminID} failed to add ${addedTimeslot.movieID} on ${addedTimeslot.timeID}`);
                     }
                     
                     res.status(500).redirect('/error');
                 }
             }
-
-            
-
         }
     },
 
@@ -382,10 +376,6 @@ const movie_controller = {
 
                 // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
     
-                console.log("CHECKER FOR IF MOVIE AND TIME WERE FOUND")
-                console.log(movie_delete)
-                // console.log(time_delete)
-
                 const allMovies = await movies.findAll(); //display movies that were not deleted
                 res.render('delete-movies-page',{layout: '/layouts/layout_admin.hbs',
                     movie: movie_delete,
@@ -394,16 +384,12 @@ const movie_controller = {
             }catch(error){
                 //show error information
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`On retrieving movie: ${error.stack}`);
                 }
 
                 res.status(500).json({ message: 'An Error Occurred' });
             }
-
-
-
         }
-
     },
 
     postDeleteMovie: async function(req, res){
@@ -431,17 +417,29 @@ const movie_controller = {
                     // const movieTimes = await movie_times.destroy({ where: { movieID: movie_delete.movieID }})
                     if (movie_delete && removeTime){
                         //means movie was deleted
+
+                        if(process.env.NODE_ENV == "development"){
+                            devLogger.info(`Admin ${adminInfo.adminID} successfully deleted ${movie_delete.movieID} on time slot ${removeTime.timeID}`);
+                        }else{
+                            adminLogger.info(`Admin ${adminInfo.adminID} successfully deleted ${movie_delete.movieID} on time slot ${removeTime.timeID}`)
+                        }
+
                         res.redirect('/')
                     }else{
+
                         if(process.env.NODE_ENV == "development"){
-                            console.error(error);
+                            devLogger.error(`Admin ${adminInfo.adminID} failed to delete ${movie_delete.movieID} on time slot ${removeTime.timeID}`);
+                        }else{
+                            adminLogger.error(`Admin ${adminInfo.adminID} failed to delete ${movie_delete.movieID} on time slot ${removeTime.timeID}`)
                         }
         
                         res.status(500).json({ message: 'An Error Occurred' });
                     }
                 }else{
                     if(process.env.NODE_ENV == "development"){
-                        console.error(error);
+                        devLogger.error(`Admin ${adminInfo.adminID} failed to delete ${movie_delete.movieID} on time slot ${removeTime.timeID}`);
+                    }else{
+                        adminLogger.error(`Admin ${adminInfo.adminID} failed to delete ${movie_delete.movieID} on time slot ${removeTime.timeID}`)
                     }
     
                     res.status(500).json({ message: 'An Error Occurred' });
@@ -450,7 +448,9 @@ const movie_controller = {
             }catch(error){
                 //show error information
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`Admin ${adminInfo.adminID} failed to delete ${movie_delete.movieID} on time slot ${removeTime.timeID}: ${error.stack}`);
+                }else{
+                    adminLogger.error(`Admin ${adminInfo.adminID} failed to delete ${movie_delete.movieID} on time slot ${removeTime.timeID}`)
                 }
 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -505,7 +505,7 @@ const movie_controller = {
             }catch(error){
                 //show error information
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`On retrieving movie: ${error.stack}`);
                 }
 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -571,7 +571,7 @@ const movie_controller = {
         } catch (error) {
             // Show error information
             if (process.env.NODE_ENV === "development") {
-                console.error(error);
+                devLogger.error(`Failed to update movie details: ${error.stack}`);
             }
             res.status(500).json({ message: 'An Error Occurred' });
         }
@@ -772,7 +772,7 @@ const movie_controller = {
                 if (!addedTimeslot || !deleteTimeslot){
                     //timeslot was not added properly
                     if(process.env.NODE_ENV == "development"){
-                        console.error(`error with movie creation`);
+                        devLogger.error(`Admin ${adminInfo.adminID} failed to update movie ${addedTimeslot.movieID} on ${addedTimeslot.timeID}: time slot conflict`);
                     }
                     
                     res.status(500).redirect('/error');
@@ -795,7 +795,13 @@ const movie_controller = {
                 }, {where: {movieID: req.body.movieID}})
 
                 if (updateMovie){
-                    //movie was successfully updated
+                    
+                    if(process.env.NODE_ENV == "development"){
+                        devLogger.info(`Admin ${adminInfo.adminID} successfully updated ${updateMovie.movieID}`);
+                    }else{
+                        adminLogger.info(`Admin ${adminInfo.adminID} successfully updated ${updateMovie.movieID}`)
+                    }
+
                     res.redirect('/')
                 }
             }else{
@@ -812,7 +818,13 @@ const movie_controller = {
                     )
 
                 if (updateMovie){
-                    //movie was successfully updated
+                    
+                    if(process.env.NODE_ENV == "development"){
+                        devLogger.info(`Admin ${adminInfo.adminID} successfully updated ${updateMovie.movieID}`);
+                    }else{
+                        adminLogger.info(`Admin ${adminInfo.adminID} successfully updated ${updateMovie.movieID}`)
+                    }
+
                     res.redirect('/')
                 }
             }
@@ -862,7 +874,7 @@ const movie_controller = {
             }catch(error){
                 //show error information
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`On retrieving movie: ${error.stack}`);
                 }
 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -937,8 +949,11 @@ const movie_controller = {
                     if (checkDupe){
                         //means theres a duplicate already \
                         console.log(checkDupe)
+
                         if(process.env.NODE_ENV == "development"){
-                            console.error(`duplicate timeslot exists`);
+                            devLogger.error(`Admin ${adminInfo.adminID} failed to add time slot ${timeslotID} to movie ${movieInfo}: time slot already exists`);
+                        }else{
+                            adminLogger.error(`Admin ${adminInfo.adminID} failed to add time slot ${timeslotID} to movie ${movieInfo}: time slot already exists`);
                         }
                         
                         res.status(500).redirect('/error');
@@ -958,10 +973,20 @@ const movie_controller = {
                         console.log(addedTimeslot)
                         if (addedTimeslot){
                             //means it was added to DB
+
+                            if(process.env.NODE_ENV == "development"){
+                                devLogger.info(`Admin ${adminInfo.adminID} successfully added time slot ${addedTimeslot.timeID} to movie ${addedTimeslot.movieID}`);
+                            }else{
+                                adminLogger.info(`Admin ${adminInfo.adminID} successfully added time slot ${addedTimeslot.timeID} to movie ${addedTimeslot.movieID}`)
+                            }
+
                             res.redirect('/')
                         }else{
+
                             if(process.env.NODE_ENV == "development"){
-                                console.error('timeslot not added properly');
+                                devLogger.error(`Admin ${adminInfo.adminID} failed to add time slot ${addedTimeslot.timeID} to movie ${addedTimeslot.movieID}`);
+                            }else{
+                                adminLogger.error(`Admin ${adminInfo.adminID} failed to add time slot ${addedTimeslot.timeID} to movie ${addedTimeslot.movieID}`)
                             }
         
                             res.status(500).json({ message: 'An Error Occurred' });
@@ -970,19 +995,12 @@ const movie_controller = {
                     
 
                 }else{
-                    //movie doesnt exist so error happens
-                    if(process.env.NODE_ENV == "development"){
-                        console.error(error);
-                    }
-
                     res.status(500).json({ message: 'An Error Occurred' });
                 }
-
-
             }catch(error){
-                //show error information
+
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`Failed to add time slot: ${error.stack}`);
                 }
 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -1031,15 +1049,17 @@ const movie_controller = {
                     review: allReviews 
                 });
             }else{
+
                 if(process.env.NODE_ENV == "development"){
-                    console.error(`movie with name ${movie_name} not found`);
+                    devLogger.error(`${movie_name} cannot be found`);
                 }
                 
                 res.status(500).redirect('/error');
             }
         } catch (error) {
+
             if(process.env.NODE_ENV == "development"){
-                console.error(`The application has encountered an unknown error.`);
+                devLogger.error(`On retrieving ${movie_name}: ${error.stack}`);
             }
             
             res.status(500).redirect('/error');
@@ -1109,6 +1129,13 @@ const movie_controller = {
                 //after adding the review to the db
                 //render the movie page again with the updated review
                 //get the reviews given the movieID from the DB
+
+                if(process.env.NODE_ENV == "development"){
+                    devLogger.info(`User ${user.userID} successfully posted a review ${newMovieReview.reviewID} for movie ${newMovieReview.movieID}`);
+                }else{
+                    userActivityLogger.info(`User ${user.userID} successfully posted a review ${newMovieReview.reviewID} for movie ${newMovieReview.movieID}`);
+                }
+
                 res.render('movie', {layout: '/layouts/layout.hbs', 
                     m_id: movie.movieID,
                     m_trailer: movie.trailer,
@@ -1123,8 +1150,9 @@ const movie_controller = {
             }
             else{
                 //error
+                
                 if(process.env.NODE_ENV == "development"){
-                    console.error("error");
+                    devLogger.error("On adding review: user does not exist");
                 }
                 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -1132,8 +1160,9 @@ const movie_controller = {
 
         }else{
             //error occured
+
             if(process.env.NODE_ENV == "development"){
-                console.error(`movie with id ${req.params.movieID} not found`);
+                devLogger.error(`On adding a review: Movie ${req.params.movieID} cannot be found`);
             }
             
             res.status(500).redirect('/error');
@@ -1174,7 +1203,6 @@ const movie_controller = {
             
                 const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
                 
-
                 const timeslots = await movie_times.findAll({ where: { movieID: movieReview.movieID} });
                 if (timeslots.length > 0) {
                     // Means movie has existing timeslot
@@ -1185,6 +1213,13 @@ const movie_controller = {
                 //after removing the review from the db
                 //render the movie page again with the updated review list
                 //get the reviews given the movieID from the DB
+
+                if(process.env.NODE_ENV == "development"){
+                    devLogger.info(`User ${currentUserID.userID} successfully deleted a review ${movieReview.reviewID} for movie ${movie.movieID}`);
+                }else{
+                    userActivityLogger.info(`User ${currentUserID.userID} successfully deleted a review ${movieReview.reviewID} for movie ${movie.movieID}`);
+                }
+
                 res.render('movie', {layout: '/layouts/layout.hbs', 
                     m_id: movie.movieID,
                     m_trailer: movie.trailer,
@@ -1200,7 +1235,7 @@ const movie_controller = {
             else{
                 //error
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error("On deleting a review: user does not exist");
                 }
                 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -1209,7 +1244,7 @@ const movie_controller = {
         }else{
             //error occured
             if(process.env.NODE_ENV == "development"){
-                console.error(`movie with id ${req.params.movieID} not found`);
+                console.error(`On deleting a review: Movie ${req.params.movieID} cannot be found`);
             }
             
             res.status(500).redirect('/error');
@@ -1269,6 +1304,13 @@ const movie_controller = {
                 //after removing the review from the db
                 //render the movie page again with the updated review list
                 //get the reviews given the movieID from the DB
+
+                if(process.env.NODE_ENV == "development"){
+                    devLogger.info(`User ${currentUserID.userID} successfully edited a review ${movieReview.reviewID} for movie ${movie.movieID}`);
+                }else{
+                    userActivityLogger.info(`User ${currentUserID.userID} successfully edited a review ${movieReview.reviewID} for movie ${movie.movieID}`);
+                }
+
                 res.render('movie', {layout: '/layouts/layout.hbs', 
                     m_id: movie.movieID,
                     m_trailer: movie.trailer,
@@ -1284,7 +1326,7 @@ const movie_controller = {
             else{
                 //error
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`On editing a review: user does not exist`);
                 }
                 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -1293,7 +1335,7 @@ const movie_controller = {
         }else{
             //error occured
             if(process.env.NODE_ENV == "development"){
-                console.error(`movie with id ${req.params.movieID} not found`);
+                console.error(`On editing a review: Movie ${req.params.movieID} cannot be found`);
             }
             
             res.status(500).redirect('/error');

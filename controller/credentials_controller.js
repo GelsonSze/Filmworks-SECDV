@@ -1,15 +1,19 @@
 const {users, admins, Session, bannedIPs, carts, banned_users} = require('../models/')
 const bcrypt = require('bcryptjs')
-const db = require('../models/index.js')
 const sanitizeHtml = require('sanitize-html');
+const winston = require('winston')
+
+const devLogger = winston.loggers.get("DevLogger")
+const registrationLogger = winston.loggers.get("RegistrationLogger")
+const authLogger = winston.loggers.get("AuthenticationLogger")
+const adminLogger = winston.loggers.get("AdminLogger")
+
 const controller = {
     successfulRegister: async function(req, res){
 
-        console.log("REGISTRATION CONTENTS")
-        console.log(req.body)
 
         if(process.env.NODE_ENV == "development"){
-            console.log(req.body)
+            devLogger.info(req.body)
 
         }
         
@@ -134,8 +138,11 @@ const controller = {
         const newCart = await carts.create({userID: newRegister.userID})
 
         if(process.env.NODE_ENV == "development"){
-            console.log("New Register ID " + newRegister.userID)
-            console.log("New User Cart ID " + newCart.cartID)
+            devLogger.info(`Created user ${newRegister.userID} for ${newRegister.emailAddress}`)
+            devLogger.info(`Created cart ${newCart.cartID} for user ${newRegister.userID}`)
+        }else{
+            registrationLogger.info(`Created user ${newRegister.userID} for ${newRegister.emailAddress}`)
+            registrationLogger.info(`Created cart ${newCart.cartID} for user ${newRegister.userID}`)
         }
 
         res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
@@ -149,6 +156,13 @@ const controller = {
             const existingUser = await users.findOne({ where: {emailAddress: l_email } });
 
             if (!existingUser) {
+
+                if(process.env.NODE_ENV == "development"){
+                    devLogger.error(`Failed login attempt using ${l_email}`)
+                }else{
+                    authLogger.error(`Failed login attempt using ${l_email}`)
+                }
+
                 return res.status(404).json({ message: 'Invalid user or password'});
             }
 
@@ -157,12 +171,30 @@ const controller = {
 
 
             if (isMatch) {
+                
+                if(process.env.NODE_ENV == "development"){
+                    devLogger.info(`Successful login attempt using ${l_email}`)
+                }else{
+                    authLogger.info(`Successful login attempt using ${l_email}`)
+                }
+
                 res.redirect('/main');
             } else {
+
+                if(process.env.NODE_ENV == "development"){
+                    devLogger.error(`Failed login attempt using ${l_email}`)
+                }else{
+                    authLogger.error(`Failed login attempt using ${l_email}`)
+                }
+
                 res.status(401).json({ message: 'Invalid user or password'});
             }
         } catch (error) {
-            console.error(error);
+            if(process.env.NODE_ENV == "development"){
+                devLogger.error(`On login attempt using ${l_email}: ${error.stack}`)
+            }else{
+                authLogger.error(`On login attempt using ${l_email}`)
+            }
             res.status(500).json({ message: 'An Error Occurred' });
         }
     },
@@ -196,7 +228,7 @@ const controller = {
                     //error showing account details
 
                     if(process.env.NODE_ENV == "development"){
-                        console.error(error);
+                        devLogger.error(`On retreiving account details for ${req.user.username}`)
                     }
                     
                     res.status(500).json({ message: 'An Error Occurred' });
@@ -204,7 +236,7 @@ const controller = {
             } catch (error) {
                 
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`On displaying account details for ${req.user.username}: ${error.stack}`)
                 }
 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -242,7 +274,7 @@ const controller = {
             } catch (error) {
                 
                 if(process.env.NODE_ENV == "development"){
-                    console.error(error);
+                    devLogger.error(`On displaying admin page: ${error.stack}`)
                 }
 
                 res.status(500).json({ message: 'An Error Occurred' });
@@ -285,6 +317,14 @@ const controller = {
 
                     if (check && deleteUser && removeCart){
                         //means the banning of user was successful
+
+                        if(process.env.NODE_ENV == "development"){
+                            devLogger.info(`Banned user ${bannedUser.emailAddress} with ID ${bannedUser.userID}`)
+                        }else{
+                            authLogger.info(`Banned user ${bannedUser.emailAddress} with ID ${bannedUser.userID}`)
+                            adminLogger.info(`Admin ${adminInfo.adminID} banned user ${bannedUser.emailAddress} with ID ${bannedUser.userID}`)
+                        }
+
                         const users = await users.findAll({
                                 attributes: ['userID']
                         })
@@ -304,7 +344,7 @@ const controller = {
 
         } catch (error) {
             if(process.env.NODE_ENV == "development"){
-                console.error(error);
+               devLogger.error(`On banning: ${error}`)
             }
 
             res.status(500).json({ message: 'An Error Occurred' });
@@ -315,10 +355,6 @@ const controller = {
 
         const noAuthRequired = ['/', '/register', '/postregister', '/login']
         const urlPath = req.path
-
-        if(process.env.NODE_ENV == "development"){
-            console.log("Current URL path: " + urlPath)
-        }
 
         if(req.user){
 
@@ -340,31 +376,50 @@ const controller = {
     logoutAccount: async function(req, res, next) {
         try {
 
-            if(process.env.NODE_ENV == "development"){
-                console.log(req.sessionID)
-            }
-
             await res.clearCookie('connect.sid')
-            const doneDestroy = await Session.destroy({ where: { session_id: req.sessionID }})
-
-            if(process.env.NODE_ENV == "development"){
-                console.log("LOGOUT RESULTS")
-                console.log(doneDestroy)
-            }
+            await Session.destroy({ where: { session_id: req.sessionID }})
             
         } catch (err) {
+            
+            if(process.env.NODE_ENV == "development"){
+                devLogger.error(`On logging out session ${req.sessionID}: ${err.stack}`)
+            }else{
+                authLogger.error(`On logging out session ${req.sessionID}`)
+            }
+
             return next(err);
         }
 
         await req.logout(function(err){
             if(err){
+
+                if(process.env.NODE_ENV == "development"){
+                    devLogger.error(`On logging out session ${req.sessionID}: ${err.stack}`)
+                }else{
+                    authLogger.error(`On logging out session ${req.sessionID}`)
+                }
+
                 return next(err)
             }
 
             req.session.destroy(function(err) {
                 if (err) {
+
+                    if(process.env.NODE_ENV == "development"){
+                        devLogger.error(`On logging out session ${req.sessionID}: ${err.stack}`)
+                    }else{
+                        authLogger.error(`On logging out session ${req.sessionID}`)
+                    }
+
                     return next(err);
                 }
+
+                if(process.env.NODE_ENV == "development"){
+                    devLogger.info(`Successful logout on session ${req.sessionID}`)
+                }else{
+                    authLogger.info(`Successful logout on session ${req.sessionID}`)
+                }
+
                 res.redirect('/login'); // Redirect after successful logout
             });
         })
@@ -397,6 +452,12 @@ const controller = {
         const newBannedIP = await bannedIPs.create({
             IPAddress: req.clientIp
         })
+
+        if(process.env.NODE_ENV == "development"){
+            devLogger.info(`Banned IP address: ${newBannedIP.IPAddress}`)
+        }else{
+            authLogger.info(`Banned IP address: ${newBannedIP.IPAddress}`)
+        }
 
         res.status(400).json({
             message: 'Your IP has been permanently banned',

@@ -16,6 +16,10 @@ const helmet = require("helmet")
 const Promise = require("promise")
 const https = require('https');
 const fs = require('fs');
+const winston = require('winston');
+require('./logger/logger.js')
+
+const devLogger = winston.loggers.get('DevLogger') 
 
 const myDatabase = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
@@ -27,7 +31,7 @@ const sequelizeSessionStore = new SessionStore({
 });
 
 const app = new express();
-// app.use(helmet())
+
 app.use(helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
@@ -38,6 +42,7 @@ app.use(helmet.contentSecurityPolicy({
       imgSrc: ["'self'", "data:", "https://www.gstatic.com/recaptcha/"],
     }
   }));
+
 app.use(expressSession({
     secret: process.env.SECRET,
     store: sequelizeSessionStore,
@@ -54,14 +59,6 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(nocache());
 
-if(process.env.NODE_ENV == "development"){
-    app.use(function(req, res, next){
-        console.log(req.session)
-        console.log(req.user)
-        next()
-    })
-}
-
 const routes = require(`./routes/routes.js`);
 
 app.set('views', __dirname + './views'); 
@@ -75,14 +72,8 @@ const options = {
     cert: fs.readFileSync('server.crt'), 
 }
 
-// app.listen(PORT, function(){
-//     if(process.env.NODE_ENV == "development"){
-//         console.log("Node server is running at port 3000.....");
-//     }
-// });
-
 https.createServer(options, app).listen(PORT, () => {
     if(process.env.NODE_ENV == "development"){
-        console.log(`Node server is running at port ${PORT}.....`);
+        devLogger.info(`Node server is running at port ${PORT}.....`);
     }
 });

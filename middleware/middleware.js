@@ -1,5 +1,6 @@
 const multer = require('multer')
 const passport = require('passport');
+const winston = require('winston')
 
 const rateLimit = require('express-rate-limit');
 
@@ -8,6 +9,7 @@ var options = { hl: 'de' }
 var recaptcha = new Recaptcha('6LcWdvQpAAAAAGmO7xTH5juQyGA99Ye46XycpBif', '6LcWdvQpAAAAACw4JmltpAPbZ_xPJlQag-JNfpDY', options)
 
 const credentials_controller = require('../controller/credentials_controller')
+const devLogger = winston.loggers.get('DevLogger')
 
 const flagProfileUpload = (req, res, next) => {
     req.uploadType = "profile"
@@ -25,7 +27,7 @@ const storage = multer.diskStorage({
     filename: function(req, file, callback){
 
         if(process.env.NODE_ENV == "development"){
-            console.log(file)
+            devLogger.info(file)
         }
 
         callback(null, Date.now() + "_" + file.originalname)
@@ -100,8 +102,8 @@ const limiter = rateLimit({
 const checkValidInput = (req, res, next) => {
 
     if(process.env.NODE_ENV == "development"){
-        console.log(req.body)
-        console.log(req.recaptcha)
+        devLogger.info(req.body)
+        devLogger.info(req.recaptcha)
     }
 
     if (!req.recaptcha.error) {
