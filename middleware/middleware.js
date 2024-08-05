@@ -6,7 +6,7 @@ const rateLimit = require('express-rate-limit');
 
 const Recaptcha = require('express-recaptcha').RecaptchaV3
 var options = { hl: 'de' }
-var recaptcha = new Recaptcha('6LcWdvQpAAAAAGmO7xTH5juQyGA99Ye46XycpBif', '6LcWdvQpAAAAACw4JmltpAPbZ_xPJlQag-JNfpDY', options)
+var recaptcha = new Recaptcha(process.env.CAPTCHA_KEY_1, process.env.CAPTCHA_KEY_2, options)
 
 const credentials_controller = require('../controller/credentials_controller')
 const devLogger = winston.loggers.get('DevLogger')
