@@ -1,6 +1,7 @@
 const {movies, users, admins, reviews, time_slots, movie_reviews, movie_times} = require('../models/')
 const sanitizeHtml = require('sanitize-html');
 const winston = require('winston')
+require('../logger/logger.js')
 
 const devLogger = winston.loggers.get('DevLogger')
 const adminLogger = winston.loggers.get('AdminLogger')

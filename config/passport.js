@@ -2,6 +2,11 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcrypt')
 const {users, admins} = require('../models/')
+const winston = require('winston')
+require('../logger/logger.js')
+
+const devLogger = winston.loggers.get("DevLogger")
+const authLogger = winston.loggers.get("AuthenticationLogger")
 
 const userFields = {
     usernameField: 'l_email',
@@ -13,6 +18,13 @@ const verifyCallback = async function(email, password, callback){
     const findAdmin = await admins.findOne({ where: {emailAddress: email} })
 
     if (!findUser && !findAdmin) {
+
+      if(process.env.NODE_ENV == "development"){
+        devLogger.error(`Failed login attempt using ${email}`)
+      }else{
+        authLogger.error(`Failed login attempt using ${email}`)
+      }
+
        return callback(null, false)
     }
 
@@ -20,21 +32,31 @@ const verifyCallback = async function(email, password, callback){
     let existingUser = null
 
     if(findUser){
-      console.log(findUser)
       existingUser = findUser
       isMatch = await bcrypt.compare(password, existingUser.password)
     }else{
-      console.log(findAdmin)
       existingUser = findAdmin
       isMatch = await bcrypt.compare(password, existingUser.password)
     }
 
     if(!isMatch){
-        console.log("no match")
-        return callback(null, false)
+      
+      if(process.env.NODE_ENV == "development"){
+        devLogger.error(`Failed login attempt using ${email}`)
+      }else{
+        authLogger.error(`Failed login attempt using ${email}`)
+      }
+      
+      return callback(null, false)
     }else{
-        console.log("match")
-        return callback(null, existingUser)
+
+      if(process.env.NODE_ENV == "development"){
+        devLogger.info(`Successful login attempt using ${email}`)
+      }else{
+        authLogger.info(`Successful login attempt using ${email}`)
+      }
+
+      return callback(null, existingUser)
     }
 }
 

@@ -2,6 +2,7 @@ const {users, admins, Session, bannedIPs, carts, banned_users} = require('../mod
 const bcrypt = require('bcryptjs')
 const sanitizeHtml = require('sanitize-html');
 const winston = require('winston')
+require('../logger/logger.js')
 
 const devLogger = winston.loggers.get("DevLogger")
 const registrationLogger = winston.loggers.get("RegistrationLogger")
@@ -147,57 +148,7 @@ const controller = {
 
         res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
     },
-
-    checkLogin: async function(req, res){
-        const { l_email, l_password } = req.body;
-        try {
-            // Find user by email
-            const existingUser = await users.findOne({ where: {emailAddress: l_email } });
-
-            if (!existingUser) {
-
-                if(process.env.NODE_ENV == "development"){
-                    devLogger.error(`Failed login attempt using ${l_email}`)
-                }else{
-                    authLogger.error(`Failed login attempt using ${l_email}`)
-                }
-
-                return res.status(404).json({ message: 'Invalid user or password'});                
-            }
-
-            // Compare provided password with stored hash
-            const isMatch = await bcrypt.compare(l_password, existingUser.password);
-
-
-            if (isMatch) {
-                
-                if(process.env.NODE_ENV == "development"){
-                    devLogger.info(`Successful login attempt using ${l_email}`)
-                }else{
-                    authLogger.info(`Successful login attempt using ${l_email}`)
-                }
-
-                res.redirect('/main');
-            } else {
-
-                if(process.env.NODE_ENV == "development"){
-                    devLogger.error(`Failed login attempt using ${l_email}`)
-                }else{
-                    authLogger.error(`Failed login attempt using ${l_email}`)
-                }
-
-                res.status(401).json({ message: 'Invalid user or password'});
-            }
-        } catch (error) {
-            if(process.env.NODE_ENV == "development"){
-                devLogger.error(`On login attempt using ${l_email}: ${error.stack}`)
-            }else{
-                authLogger.error(`On login attempt using ${l_email}`)
-            }
-            res.status(500).json({ message: 'An Error Occurred' });
-        }
-    },
-
+    
     displayAccount: async function(req, res){
         if (req.user != null){
             try{
@@ -282,8 +233,6 @@ const controller = {
         else{
             res.redirect('/')
         }
-
-
     },
     banUser: async function(req, res, next){
         try {

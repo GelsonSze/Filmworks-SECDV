@@ -2,6 +2,7 @@ const {users, admins, sessions, bannedIPs} = require('../models/')
 const {movies, carts, cart_movies, transactions, time_slots, movie_times} = require('../models/')
 const {sequelize} = require('../models/index.js')
 const winston = require('winston')
+require('../logger/logger.js')
 
 const devLogger = winston.loggers.get('DevLogger')
 const userActivityLogger = winston.loggers.get('UserActivityLogger')
