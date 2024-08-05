@@ -105,9 +105,9 @@ const cart_controller = {
         }catch(error){
 
             if(process.env.NODE_ENV == "development"){
-                devLogger.error(`User ${user.userID} failed to add movie ${movie.movieID} to their cart: ${error.stack}`)
+                devLogger.error(`User ${req.session.passport.user.username} failed to add movie ${movie.movieID} to their cart: ${error}`)
             }else{
-                userActivityLogger.error(`User ${user.userID} failed to add movie ${movie.movieID} to their cart`)
+                userActivityLogger.error(`User ${req.session.passport.user.username} failed to add movie ${movie.movieID} to their cart`)
             }
 
             //movie selection does not exist and/or input has errors 
