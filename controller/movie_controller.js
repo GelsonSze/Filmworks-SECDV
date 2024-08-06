@@ -931,7 +931,8 @@ const movie_controller = {
 
                         const addedTimeslot = await movie_times.create({
                             movieID: movieInfo,  
-                            timeID: timeslotID   
+                            timeID: timeslotID,
+                            quantity: 200
                         });
                         
                         if (addedTimeslot){
