@@ -2,6 +2,7 @@ const {users, admins, sessions, bannedIPs} = require('../models/')
 const {movies, carts, cart_movies, transactions, time_slots, movie_times} = require('../models/')
 const {sequelize} = require('../models/index.js')
 const winston = require('winston')
+require('../logger/logger.js')
 
 const devLogger = winston.loggers.get('DevLogger')
 const userActivityLogger = winston.loggers.get('UserActivityLogger')
@@ -104,9 +105,9 @@ const cart_controller = {
         }catch(error){
 
             if(process.env.NODE_ENV == "development"){
-                devLogger.error(`User ${user.userID} failed to add movie ${movie.movieID} to their cart: ${error.stack}`)
+                devLogger.error(`User ${req.session.passport.user.username} failed to add movie ${movie.movieID} to their cart: ${error}`)
             }else{
-                userActivityLogger.error(`User ${user.userID} failed to add movie ${movie.movieID} to their cart`)
+                userActivityLogger.error(`User ${req.session.passport.user.username} failed to add movie ${movie.movieID} to their cart`)
             }
 
             //movie selection does not exist and/or input has errors 
