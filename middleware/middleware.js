@@ -12,7 +12,17 @@ const credentials_controller = require('../controller/credentials_controller')
 const devLogger = winston.loggers.get('DevLogger')
 
 const flagProfileUpload = (req, res, next) => {
-    req.uploadType = "profile"
+
+    const userUploads = ['/register', '/postregister']
+    const urlPath = req.path
+    
+    if(userUploads.includes(urlPath) == true){
+        req.uploadType = "profile"
+    }else{
+        req.uploadType = "movie"
+    }
+
+    
     next()
 }
 
