@@ -1243,82 +1243,87 @@ const movie_controller = {
         //function for deleting reviews for a specific movie
         //check if reviewID exists 
         try {
-            const review = await reviews.findOne({where: {reviewID: req.params.reviewID}})
-            var movieTime = ""
-            //if reviewID exists in db, means we can edit the review 
-            if (review){
-                const currentUserID = await users.findOne({
-                    attributes: ['userID'],
-                    where: {emailAddress: req.session.passport.user.username}
-                })
+            const ratingRegex = /^[1-5]{1}$/g
+            const reviewRegex = /^[a-zA-Z\s]{1,4096}$/g
 
-                // if user updating review is the user that posted the review  
-                if (currentUserID.userID === review.userID){
-                    const movieReview = await movie_reviews.findOne({where: {reviewID: req.params.reviewID}})
-                    const movie = await movies.findOne({where: {movieID: movieReview.movieID} })
-                    
-                    review.set({
-                        description: sanitizeHtml(req.body.description), 
-                        rating: sanitizeHtml(req.body.rating)
+            if (ratingRegex.test(sanitizeHtml(req.body.rating)) && reviewRegex.test(sanitizeHtml(req.body.description))){
+                const review = await reviews.findOne({where: {reviewID: req.params.reviewID}})
+                var movieTime = ""
+                //if reviewID exists in db, means we can edit the review 
+                if (review){
+                    const currentUserID = await users.findOne({
+                        attributes: ['userID'],
+                        where: {emailAddress: req.session.passport.user.username}
                     })
 
-                    await review.save();
+                    // if user updating review is the user that posted the review  
+                    if (currentUserID.userID === review.userID){
+                        const movieReview = await movie_reviews.findOne({where: {reviewID: req.params.reviewID}})
+                        const movie = await movies.findOne({where: {movieID: movieReview.movieID} })
+                        
+                        review.set({
+                            description: sanitizeHtml(req.body.description), 
+                            rating: sanitizeHtml(req.body.rating)
+                        })
 
-                    const movieReviews = await movie_reviews.findAll({
-                        attributes: ['reviewID'],
-                        where: {movieID: movie.movieID}
-                    })
+                        await review.save();
 
-                    const reviewIDs = movieReviews.map(review => review.reviewID);
-                
-                    const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
+                        const movieReviews = await movie_reviews.findAll({
+                            attributes: ['reviewID'],
+                            where: {movieID: movie.movieID}
+                        })
 
-                    const timeslots = await movie_times.findAll({ where: { movieID: movieReview.movieID } });
-                    if (timeslots.length > 0) {
-                        // Means movie has existing timeslot
-                        const timeIDs = timeslots.map(timeslot => timeslot.timeID);
-                        movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+                        const reviewIDs = movieReviews.map(review => review.reviewID);
+                    
+                        const allReviews = await reviews.findAll({where: {reviewID: reviewIDs}})
 
+                        const timeslots = await movie_times.findAll({ where: { movieID: movieReview.movieID } });
+                        if (timeslots.length > 0) {
+                            // Means movie has existing timeslot
+                            const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                            movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+
+                        }
+
+                        //after removing the review from the db
+                        //render the movie page again with the updated review list
+                        //get the reviews given the movieID from the DB
+
+                        if(process.env.NODE_ENV == "development"){
+                            devLogger.info(`User ${currentUserID.userID} successfully edited a review ${movieReview.reviewID} for movie ${movie.movieID}`);
+                        }else{
+                            userActivityLogger.info(`User ${currentUserID.userID} successfully edited a review ${movieReview.reviewID} for movie ${movie.movieID}`);
+                        }
+
+                        res.render('movie', {layout: '/layouts/layout.hbs', 
+                            m_id: movie.movieID,
+                            m_trailer: movie.trailer,
+                            m_name: movie.title,
+                            m_image: movie.image,
+                            m_cast: movie.starring,
+                            m_synopsis: movie.synopsis,
+                            timeSlotJQ: movieTime,
+                            title: movie.title + " - Filmworks",
+                            review: allReviews 
+                        });
+                    }
+                    else{
+                        //error
+                        if(process.env.NODE_ENV == "development"){
+                            devLogger.error(`On editing a review: user does not exist`);
+                        }
+                        
+                        res.status(500).json({ message: 'An Error Occurred' });
                     }
 
-                    //after removing the review from the db
-                    //render the movie page again with the updated review list
-                    //get the reviews given the movieID from the DB
-
+                }else{
+                    //error occured
                     if(process.env.NODE_ENV == "development"){
-                        devLogger.info(`User ${currentUserID.userID} successfully edited a review ${movieReview.reviewID} for movie ${movie.movieID}`);
-                    }else{
-                        userActivityLogger.info(`User ${currentUserID.userID} successfully edited a review ${movieReview.reviewID} for movie ${movie.movieID}`);
-                    }
-
-                    res.render('movie', {layout: '/layouts/layout.hbs', 
-                        m_id: movie.movieID,
-                        m_trailer: movie.trailer,
-                        m_name: movie.title,
-                        m_image: movie.image,
-                        m_cast: movie.starring,
-                        m_synopsis: movie.synopsis,
-                        timeSlotJQ: movieTime,
-                        title: movie.title + " - Filmworks",
-                        review: allReviews 
-                    });
-                }
-                else{
-                    //error
-                    if(process.env.NODE_ENV == "development"){
-                        devLogger.error(`On editing a review: user does not exist`);
+                        console.error(`On editing a review: Review ${req.params.reviewID} cannot be found`);
                     }
                     
-                    res.status(500).json({ message: 'An Error Occurred' });
+                    res.status(500).redirect('/error');
                 }
-
-            }else{
-                //error occured
-                if(process.env.NODE_ENV == "development"){
-                    console.error(`On editing a review: Review ${req.params.reviewID} cannot be found`);
-                }
-                
-                res.status(500).redirect('/error');
             }
         } catch (error) {
             //error occured
