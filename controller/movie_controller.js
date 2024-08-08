@@ -56,6 +56,7 @@ const movie_controller = {
        
         const movie = await movies.findOne({ where: { movieID:  req.params.movieID } });
 
+        const adminInfo = await admins.findOne({ where: { emailAddress: req.user.username }})
         if (movie){
             //insert code for adding timestamp of website
 
@@ -71,21 +72,54 @@ const movie_controller = {
         
             if (timeslots.length > 0) {
                 // Means movie has existing timeslot
-                const timeIDs = timeslots.map(timeslot => timeslot.timeID);
-                const movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
-                res.render('movie', {layout: '/layouts/layout.hbs', 
-                    m_id: movie.movieID,
-                    m_trailer: movie.trailer,
-                    m_name: movie.title,
-                    m_image: movie.image,
-                    m_cast: movie.starring,
-                    m_synopsis: movie.synopsis,
-                    timeSlotJQ: movieTime,
-                    title: movie.title + " - Filmworks",
-                    review: allReviews
 
-                });
+                if (adminInfo){
+                    const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                    const movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+                    res.render('movie', {layout: '/layouts/layout_admin.hbs', 
+                        m_id: movie.movieID,
+                        m_trailer: movie.trailer,
+                        m_name: movie.title,
+                        m_image: movie.image,
+                        m_cast: movie.starring,
+                        m_synopsis: movie.synopsis,
+                        timeSlotJQ: movieTime,
+                        title: movie.title + " - Filmworks",
+                        review: allReviews
+    
+                    });
+                }else{
+                    const timeIDs = timeslots.map(timeslot => timeslot.timeID);
+                    const movieTime = await time_slots.findAll({ where: { timeID: timeIDs } });
+                    res.render('movie', {layout: '/layouts/layout_admin.hbs', 
+                        m_id: movie.movieID,
+                        m_trailer: movie.trailer,
+                        m_name: movie.title,
+                        m_image: movie.image,
+                        m_cast: movie.starring,
+                        m_synopsis: movie.synopsis,
+                        timeSlotJQ: movieTime,
+                        title: movie.title + " - Filmworks",
+                        review: allReviews
+    
+                    });
+                }
+
             }else{
+                if (adminInfo){
+                    res.render('movie', {layout: '/layouts/layout.hbs', 
+                        m_id: movie.movieID,
+                        m_trailer: movie.trailer,
+                        m_name: movie.title,
+                        m_image: movie.image,
+                        m_cast: movie.starring,
+                        m_synopsis: movie.synopsis,
+                        timeSlotJQ: "movieTime",
+                        title: movie.title + " - Filmworks",
+                        review: allReviews
+    
+                    });
+                }
                 res.render('movie', {layout: '/layouts/layout.hbs', 
                     m_id: movie.movieID,
                     m_trailer: movie.trailer,
