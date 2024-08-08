@@ -11,142 +11,148 @@ const adminLogger = winston.loggers.get("AdminLogger")
 
 const controller = {
     successfulRegister: async function(req, res){
-
-
-        if(process.env.NODE_ENV == "development"){
-            devLogger.info(JSON.stringify(req.body))
-
-        }
-        
-        //the total length of email address is 255 characters and the part prior to the @ is at ost 64 characters
-        const emailRegex = /^(?=.{1,64}@)(?=.{1,255}$)[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/g
-        const nameRegex = /^[a-zA-Z\s]+$/
-        const phoneRegex1 = /^09[0-9]{9}$/g
-        const phoneRegex2 = /^\+639[0-9]{9}$/g
-        const passwordRegex = /^(?=(?:.*[A-Z]){1,})(?=(?:.*[a-z]){1,})(?=(?:.*[0-9]){1,})(?=(?:.*[^A-Za-z0-9]){1,}).{12,64}$/g
-
-        // if the first and last name does not match the regex
-        if (!nameRegex.test(sanitizeHtml(req.body.f_name)) || !nameRegex.test(sanitizeHtml(req.body.l_name))) {
-            var info = {
-                error:'Invalid name format'
+        try {
+            if(process.env.NODE_ENV == "development"){
+                devLogger.info(JSON.stringify(req.body))
             }
-            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
-        }
-        
-        // if the phone number does not match the regex
-        if (!phoneRegex1.test(sanitizeHtml(req.body.phone)) && !phoneRegex2.test(sanitizeHtml(req.body.phone))) {
-            var info = {
-                error:'Invalid phone number format'
+            
+            //the total length of email address is 255 characters and the part prior to the @ is at ost 64 characters
+            const emailRegex = /^(?=.{1,64}@)(?=.{1,255}$)[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/g
+            const fullNameRegex = /^[a-zA-Z\s]{1, 256}$/g
+            const phoneRegex1 = /^09[0-9]{9}$/g
+            const phoneRegex2 = /^\+639[0-9]{9}$/g
+            const passwordRegex = /^(?=(?:.*[A-Z]){1,})(?=(?:.*[a-z]){1,})(?=(?:.*[0-9]){1,})(?=(?:.*[^A-Za-z0-9]){1,}).{12,64}$/g
+    
+            const fullName = sanitizeHtml(req.body.f_name) + " " + sanitizeHtml(req.body.l_name)
+    
+            // if the first and last name does not match the regex
+            if (!fullNameRegex.test(fullName)) {
+                var info = {
+                    error:'Invalid name format'
+                }
+                res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+                    error: info.error,
+                    title: 'Sign-Up - Filmworks'
+                });
+                return;
             }
-            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
-        }
-
-        // if the email does not match the regex
-        if (!emailRegex.test(sanitizeHtml(req.body.email))) {
-            var info = {
-                error:'Invalid email format'
+            
+            // if the phone number does not match the regex
+            if (!phoneRegex1.test(sanitizeHtml(req.body.phone)) && !phoneRegex2.test(sanitizeHtml(req.body.phone))) {
+                var info = {
+                    error:'Invalid phone number format'
+                }
+                res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+                    error: info.error,
+                    title: 'Sign-Up - Filmworks'
+                });
+                return;
             }
-            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
-        }
-
-        // if the email is already registered by another user
-        const existingUser = await users.findOne({ where: { emailAddress: req.body.email }, attributes: ['userID']});
-        if (existingUser) {
-            var info = {
-                error: 'Email already registered'
-            };
-            res.render('sign_up', { layout: '/layouts/prelogin.hbs',
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
-        }
-
-        // if the email is the admin email
-        const existingAdmin = await admins.findOne({ where: { emailAddress: req.body.email }, attributes: ['adminID'] });
-        if (existingAdmin) {
-            var info = {
-                error: 'Invalid Registration'
-            };
-            res.render('sign_up', { layout: '/layouts/prelogin.hbs',
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
-        }
-
-        // if the password does not match the regex
-        if (!passwordRegex.test(sanitizeHtml(req.body.password))) {
-            var info = {
-                error:'Invalid password format'
+    
+            // if the email does not match the regex
+            if (!emailRegex.test(sanitizeHtml(req.body.email))) {
+                var info = {
+                    error:'Invalid email format'
+                }
+                res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+                    error: info.error,
+                    title: 'Sign-Up - Filmworks'
+                });
+                return;
             }
-            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
-        }
-
-        // if there is no file uploaded
-        if (req.file == undefined) {
-            var info = {
-                error:'No file uploaded'
+    
+            // if the email is already registered by another user
+            const existingUser = await users.findOne({ where: { emailAddress: req.body.email }, attributes: ['userID']});
+            if (existingUser) {
+                var info = {
+                    error: 'Email already registered'
+                };
+                res.render('sign_up', { layout: '/layouts/prelogin.hbs',
+                    error: info.error,
+                    title: 'Sign-Up - Filmworks'
+                });
+                return;
             }
-            res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
-                error: info.error,
-                title: 'Sign-Up - Filmworks'
-            });
-            return;
+    
+            // if the email is the admin email
+            const existingAdmin = await admins.findOne({ where: { emailAddress: req.body.email }, attributes: ['adminID'] });
+            if (existingAdmin) {
+                var info = {
+                    error: 'Invalid Registration'
+                };
+                res.render('sign_up', { layout: '/layouts/prelogin.hbs',
+                    error: info.error,
+                    title: 'Sign-Up - Filmworks'
+                });
+                return;
+            }
+    
+            // if the password does not match the regex
+            if (!passwordRegex.test(sanitizeHtml(req.body.password))) {
+                var info = {
+                    error:'Invalid password format'
+                }
+                res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+                    error: info.error,
+                    title: 'Sign-Up - Filmworks'
+                });
+                return;
+            }
+    
+            // if there is no file uploaded
+            if (req.file == undefined) {
+                var info = {
+                    error:'No file uploaded'
+                }
+                res.render('sign_up',{layout: '/layouts/prelogin.hbs', 
+                    error: info.error,
+                    title: 'Sign-Up - Filmworks'
+                });
+                return;
+            }
+    
+            var newUser = {
+                fullName: sanitizeHtml(req.body.f_name) + " " + sanitizeHtml(req.body.l_name),
+                email: sanitizeHtml(req.body.email),
+                phone: sanitizeHtml(req.body.phone),
+                password: sanitizeHtml(req.body.password),
+                image: ""
+            }
+    
+            newUser.password = await bcrypt.hash(req.body.password, 10);
+    
+            newUser.image = '../uploads/profiles/' + req.file.filename
+    
+            newUser.phone = newUser.phone.replace(/^\+63/, "0");
+    
+            const newRegister = await users.create({
+                                fullName: newUser.fullName,
+                                emailAddress: newUser.email,
+                                phoneNumber: newUser.phone,
+                                profilePhoto: newUser.image,
+                                password: newUser.password,
+                                lastLogin: null
+            })
+            
+            //create cart for user
+            const newCart = await carts.create({userID: newRegister.userID})
+    
+            if(process.env.NODE_ENV == "development"){
+                devLogger.info(`Created user ${newRegister.userID} for ${newRegister.emailAddress}`)
+                devLogger.info(`Created cart ${newCart.cartID} for user ${newRegister.userID}`)
+            }else{
+                registrationLogger.info(`Created user ${newRegister.userID} for ${newRegister.emailAddress}`)
+                registrationLogger.info(`Created cart ${newCart.cartID} for user ${newRegister.userID}`)
+            }
+    
+            res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
+        } catch (error) {
+            if(process.env.NODE_ENV == "development"){
+                devLogger.error(`On registering account details for ${req.body.email}: ${error.stack}`)
+            }
+
+            res.status(500).json({ message: 'An Error Occurred' });
         }
-
-        var newUser = {
-            f_name: sanitizeHtml(req.body.f_name),
-            l_name: sanitizeHtml(req.body.l_name),
-            email: sanitizeHtml(req.body.email),
-            phone: sanitizeHtml(req.body.phone),
-            password: sanitizeHtml(req.body.password),
-            image: ""
-        }
-
-        newUser.password = await bcrypt.hash(req.body.password, 10);
-
-        newUser.image = '../uploads/profiles/' + req.file.filename
-
-        newUser.phone = newUser.phone.replace(/^\+63/, "0");
-
-        const newRegister = await users.create({
-                            fullName: newUser.f_name + " " + newUser.l_name,
-                            emailAddress: newUser.email,
-                            phoneNumber: newUser.phone,
-                            profilePhoto: newUser.image,
-                            password: newUser.password,
-                            lastLogin: null
-        })
-        
-        //create cart for user
-        const newCart = await carts.create({userID: newRegister.userID})
-
-        if(process.env.NODE_ENV == "development"){
-            devLogger.info(`Created user ${newRegister.userID} for ${newRegister.emailAddress}`)
-            devLogger.info(`Created cart ${newCart.cartID} for user ${newRegister.userID}`)
-        }else{
-            registrationLogger.info(`Created user ${newRegister.userID} for ${newRegister.emailAddress}`)
-            registrationLogger.info(`Created cart ${newCart.cartID} for user ${newRegister.userID}`)
-        }
-
-        res.render('sign_in',  {layout: '/layouts/prelogin.hbs',  title: 'Sign-In - Filmworks'})
     },
     
     displayAccount: async function(req, res){
