@@ -321,7 +321,8 @@ const movie_controller = {
                 //adds the new timeslot to movie times db
                 const addedTimeslot = await movie_times.create({
                     movieID: insertMovie.movieID,  
-                    timeID: timeslot.timeID   
+                    timeID: timeslot.timeID,
+                    quantity: sanitizedQuantity   
                 });
                 
                 //means creation of movie and timeslot was successful
