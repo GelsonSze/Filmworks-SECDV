@@ -70,7 +70,7 @@ app.get('/movie-details', movie_controller.getAddMovies)
 
 app.get('/add-movie-db', movie_controller.addMovie)
 
-app.post('/post-add-movie', movie_controller.postaddMovie)
+app.post('/post-add-movie', middleware.fileHandler, movie_controller.postaddMovie)
 
 app.get('/delete-movie', movie_controller.getDeleteMovie)
 
@@ -84,7 +84,7 @@ app.post('/post-update-movie', movie_controller.listMoviesUpdate)
 
 app.get('/update-movie-details/:movieID', movie_controller.updateMovieDetails)
 
-app.post('/final-update', movie_controller.postUpdateMovieDetails)
+app.post('/final-update', middleware.fileHandler, movie_controller.postUpdateMovieDetails)
 
 
 app.get('/add-timeslot', movie_controller.getAddTimeSlot);
