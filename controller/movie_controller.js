@@ -1133,7 +1133,7 @@ const movie_controller = {
                 //error occured
 
                 if(process.env.NODE_ENV == "development"){
-                    devLogger.error(`On adding a review: Rating ${req.body.rating} Review ${req.body.review} does not follow regex`);
+                    devLogger.error(`On adding a review: Rating ${req.body.rating} Review ${req.body.newReview} does not follow regex`);
                 }
                 
                 res.status(500).redirect('/error');

@@ -73,6 +73,18 @@ const controller = {
                 });
                 return;
             }
+
+            const bannedUser = await banned_users.findOne({ where: { emailAddress: req.body.email}, attributes: ['userID']});
+            if (bannedUser){
+                var info = {
+                    error: 'Email already banned'
+                };
+                res.render('sign_up', { layout: '/layouts/prelogin.hbs',
+                    error: info.error,
+                    title: 'Sign-Up - Filmworks'
+                });
+                return;                
+            }
     
             // if the email is the admin email
             const existingAdmin = await admins.findOne({ where: { emailAddress: req.body.email }, attributes: ['adminID'] });
