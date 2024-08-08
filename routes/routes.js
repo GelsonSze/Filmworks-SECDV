@@ -84,7 +84,7 @@ app.post('/post-update-movie', movie_controller.listMoviesUpdate)
 
 app.get('/update-movie-details/:movieID', movie_controller.updateMovieDetails)
 
-app.post('/final-update', movie_controller.postUpdateMovieDetails)
+app.post('/final-update', middleware.fileHandler, movie_controller.postUpdateMovieDetails)
 
 
 app.get('/add-timeslot', movie_controller.getAddTimeSlot);

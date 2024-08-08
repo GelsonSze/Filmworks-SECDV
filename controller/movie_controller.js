@@ -740,12 +740,14 @@ const movie_controller = {
                 //adds the new timeslot to movie times db
                 const addedTimeslot = await movie_times.create({
                     movieID: req.body.movieID,  
-                    timeID: timeslot.timeID   
+                    timeID: timeslot.timeID,   
+                    quantity: sanitizedQuantity
                 });
 
                 const deleteTimeslot = await movie_times.destroy({ where:{
                     movieID: req.body.movieID,  
-                    timeID: originalTime.timeID
+                    timeID: originalTime.timeID,
+                    quantity: sanitizedQuantity
                 }
                 });
                 //means creation of movie and timeslot was successful
