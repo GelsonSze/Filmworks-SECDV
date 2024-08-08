@@ -18,7 +18,7 @@ const controller = {
             
             //the total length of email address is 255 characters and the part prior to the @ is at ost 64 characters
             const emailRegex = /^(?=.{1,64}@)(?=.{1,255}$)[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(([a-zA-Z0-9]+\.[a-zA-Z]{2,}){1,})$/g
-            const fullNameRegex = /^[a-zA-Z\s]{1, 256}$/g
+            const fullNameRegex = /^[a-zA-Z\s]{1,256}$/g
             const phoneRegex1 = /^09[0-9]{9}$/g
             const phoneRegex2 = /^\+639[0-9]{9}$/g
             const passwordRegex = /^(?=(?:.*[A-Z]){1,})(?=(?:.*[a-z]){1,})(?=(?:.*[0-9]){1,})(?=(?:.*[^A-Za-z0-9]){1,}).{12,64}$/g

@@ -1324,6 +1324,13 @@ const movie_controller = {
                     
                     res.status(500).redirect('/error');
                 }
+            }else{
+                //error occured
+                if(process.env.NODE_ENV == "development"){
+                    console.error(`On editing a review: Rating ${req.body.rating} Review ${req.body.review} does not follow regex`);
+                }
+                
+                res.status(500).redirect('/error');
             }
         } catch (error) {
             //error occured
