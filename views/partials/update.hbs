@@ -1,6 +1,10 @@
-<form action="/update-movie-details" method="POST" id="movieForm">
+{{!-- <form action="/update-movie-details" method="POST" id="movieForm">
     <input type="hidden" name="movieID" value="{{movieID}}">
     <button type="submit" class="movieref">
         <img src="{{image}}" alt="{{movieID}}" class="movie2">
     </button>
-</form>
+</form> --}}
+
+<a href="/update-movie-details/{{movieID}}" class="movieref" name="movieForm">
+    <img src="{{image}}" alt="{{movieID}}" class="movie2">
+</a>

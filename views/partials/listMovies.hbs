@@ -1,6 +1,12 @@
-<form action="/final-timeslot" method="POST" id="movieForm">
+{{!-- <form action="/final-timeslot" method="POST" id="movieForm">
     <input type="hidden" name="movieID" value="{{movieID}}">
     <button type="submit" class="movieref">
         <img src="{{image}}" alt="{{movieID}}" class="movie2">
     </button>
-</form>
+</form> --}}
+
+<a href="/final-timeslot/{{movieID}}" class="movieref" name="movieForm">
+    <img src="{{image}}" alt="{{movieID}}" class="movie2">
+</a>
+{{!-- <input type="hidden" name="id" value="{{id}}"> --}}
+{{!-- </form> --}}
