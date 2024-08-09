@@ -13,7 +13,7 @@ In order to run the code. Please follow the steps.
 10. You can also decide to login using the admin account to view/perform admin features 
 11. In order to use the admin account, input the following:
     Email: tetsukasuya@gmail.com
-    Password: SomePassword00!!
+    Password: TetsuPassword00!!
 
 On checking logs, take note of the following:
 - When the environment is set to "development", logs will only output to the console
